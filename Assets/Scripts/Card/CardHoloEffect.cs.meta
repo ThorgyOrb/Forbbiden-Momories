@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f8d08661871c40b498332b3a9b0cce31
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - matHolo: {instanceID: 0}
+  - frameBorder: {instanceID: 0}
+  - matRainbowBorder: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

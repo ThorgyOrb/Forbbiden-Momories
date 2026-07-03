@@ -1,0 +1,70 @@
+# ==============================================================
+#  Unity .gitignore
+#  Basado en la plantilla oficial de Unity para GitHub.
+# ==============================================================
+
+# Carpetas generadas por Unity (NO se versionan: se regeneran solas).
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+
+# Recorder (grabaciones temporales)
+/[Rr]ecordings/
+
+# No ignorar los .meta de assets versionados (Unity los necesita).
+!/[Aa]ssets/**/*.meta
+
+# Proyectos/soluciones autogenerados de IDEs.
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Reporte de Unity al crashear.
+sysinfo.txt
+
+# Builds empaquetados.
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Crashlytics
+crashlytics-build.properties
+
+# Addressables empaquetados.
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# StreamingAssets autogenerados de Android.
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# IDEs / editores
+.idea/
+.vs/
+.vscode/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b852f2c9ebe26147adbc049b497d98f, type: 3}
+  m_Name: CardIconConfig
+  m_EditorClassIdentifier: 
+  darkIcon: {fileID: 21300000, guid: 67113d39cda979d4f97cbfbc0ae505d0, type: 3}
+  lightIcon: {fileID: 21300000, guid: 67113d39cda979d4f97cbfbc0ae505d0, type: 3}
+  fireIcon: {fileID: 21300000, guid: 67113d39cda979d4f97cbfbc0ae505d0, type: 3}
+  waterIcon: {fileID: 21300000, guid: 67113d39cda979d4f97cbfbc0ae505d0, type: 3}
+  earthIcon: {fileID: 21300000, guid: 67113d39cda979d4f97cbfbc0ae505d0, type: 3}
+  windIcon: {fileID: 21300000, guid: 67113d39cda979d4f97cbfbc0ae505d0, type: 3}
+  dragonIcon: {fileID: 21300000, guid: a74da5e2687d1be4b9bb0337c3fcb897, type: 3}
+  spellcasterIcon: {fileID: 21300000, guid: 9b3117c8463cdfa49ad5754044623c81, type: 3}
+  fiendIcon: {fileID: 21300000, guid: 1fd891b65976ca04d815f817af77288b, type: 3}
+  beastIcon: {fileID: 21300000, guid: a427f63d757270b4b891bcb6d4ced17f, type: 3}
+  insectIcon: {fileID: 21300000, guid: 7aa59e423ea1d08459cb7c55c8cb7ced, type: 3}
+  plantIcon: {fileID: 21300000, guid: 5ecf6fcc00e738444b99d54d255f6a13, type: 3}
+  fishIcon: {fileID: 21300000, guid: 953ae18f82157e84dbb165fe4355e0a2, type: 3}
+  aquaIcon: {fileID: 21300000, guid: ea49aa91320891d4e8a035ace10befb3, type: 3}
+  seaSerpentIcon: {fileID: 21300000, guid: 9d753d06946931946b2fe033445ee8aa, type: 3}
+  zombieIcon: {fileID: 21300000, guid: a5c09278e3d5e504ba4adeffae1066ed, type: 3}
+  dinosaurIcon: {fileID: 21300000, guid: 8b215bdb58551d74fa694bde10b8cd5e, type: 3}
+  wingedBeastIcon: {fileID: 21300000, guid: 8137a0c76a9fd1d438dcc0e58c9b153a, type: 3}
+  warriorIcon: {fileID: 21300000, guid: 0ad485687a352cb4395039c3b434d81d, type: 3}
+  machineIcon: {fileID: 21300000, guid: 9b4fb771be1aa0047af642e0ed3b735c, type: 3}
+  thunderIcon: {fileID: 21300000, guid: e2be1b052a832f543b73ba05af9eb2b6, type: 3}

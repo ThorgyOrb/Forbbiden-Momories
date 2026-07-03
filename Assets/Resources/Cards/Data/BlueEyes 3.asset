@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: BlueEyes 3
+  m_EditorClassIdentifier: 
+  cardId: 4
+  cardName: Blue Eyes
+  artwork: {fileID: 21300000, guid: cecc40d0f014df24e837af8ec6cb5e57, type: 3}
+  monsterType: 0
+  baseAtk: 3000
+  baseDef: 2500
+  stars: 8
+  rarity: 2
+  starA: 0
+  starB: 1
+  attribute: 1
+  sources: []
