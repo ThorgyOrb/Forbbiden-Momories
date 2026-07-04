@@ -2,13 +2,16 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Herramienta de editor para dejar el Menú Principal listo con un clic:
-///   1. Crea la escena Assets/Scenes/MainMenu.unity (si no existe) con un
-///      GameObject que ya tiene el MainMenuController.
-///   2. Registra esa escena — y todas las de Assets/Scenes — en Build Settings,
-///      dejando MainMenu como escena inicial (índice 0).
+///   1. Crea/abre la escena Assets/Scenes/MainMenu.unity.
+///   2. Asegura un GameObject con el <see cref="MainMenuController"/>.
+///   3. Construye la UI como OBJETOS REALES editables (vía <see cref="MainMenuBuilder"/>)
+///      y cablea todas las referencias del controlador.
+///   4. Registra todas las escenas de Assets/Scenes en Build Settings, con
+///      MainMenu como escena inicial (índice 0).
 ///
 /// Menú de Unity:  YGO > Setup > ...
 /// </summary>
@@ -20,27 +23,65 @@ public static class MainMenuSetup
     [MenuItem("YGO/Setup/Configurar Menú Principal (escena + Build Settings)")]
     public static void ConfigureMainMenu()
     {
-        bool created = false;
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            return; // el usuario canceló
 
-        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(MainMenuPath) == null)
+        bool createdScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(MainMenuPath) == null;
+
+        Scene scene = createdScene
+            ? EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single)
+            : EditorSceneManager.OpenScene(MainMenuPath, OpenSceneMode.Single);
+
+        // Asegura el controlador en la escena.
+        var controller = Object.FindObjectOfType<MainMenuController>();
+        if (controller == null)
         {
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                return; // el usuario canceló
-
-            CreateMainMenuScene();
-            created = true;
+            var go = new GameObject("MainMenu");
+            controller = go.AddComponent<MainMenuController>();
         }
+
+        // Construye la UI solo si aún no existe (para no pisar tus ajustes manuales).
+        bool builtUI = GameObject.Find("MainMenuCanvas") == null;
+        if (builtUI)
+            MainMenuBuilder.BuildInScene(controller);
+
+        if (createdScene)
+            EditorSceneManager.SaveScene(scene, MainMenuPath);
+        else
+            EditorSceneManager.SaveScene(scene);
 
         RegisterBuildScenes();
 
         EditorUtility.DisplayDialog(
             "Menú Principal configurado",
-            (created
-                ? "Se creó la escena MainMenu con el MainMenuController.\n\n"
-                : "La escena MainMenu ya existía.\n\n") +
-            "Todas las escenas de Assets/Scenes quedaron registradas en Build Settings, " +
-            "con MainMenu como escena inicial.\n\nPulsa Play para probar el menú.",
+            (createdScene ? "Se creó la escena MainMenu.\n" : "Se abrió la escena MainMenu existente.\n") +
+            (builtUI
+                ? "Se construyó la UI como objetos reales (editables en la Hierarchy) y se cablearon las referencias.\n"
+                : "La UI del menú ya existía; no se tocó nada.\n") +
+            "Todas las escenas quedaron en Build Settings, con MainMenu como inicial.\n\n" +
+            "Pulsa Play para probar. Puedes mover y reestilizar los objetos libremente.",
             "Genial");
+    }
+
+    [MenuItem("YGO/Setup/Reconstruir UI del Menú (borra la actual)")]
+    public static void RebuildUI()
+    {
+        var controller = Object.FindObjectOfType<MainMenuController>();
+        if (controller == null)
+        {
+            EditorUtility.DisplayDialog("Sin menú en la escena",
+                "Abre la escena MainMenu (o usa 'Configurar Menú Principal') antes de reconstruir.", "Ok");
+            return;
+        }
+
+        bool ok = EditorUtility.DisplayDialog("Reconstruir UI del menú",
+            "Esto BORRA el canvas actual del menú y lo genera de nuevo. " +
+            "Perderás los ajustes manuales de posición y estilo. ¿Continuar?",
+            "Sí, reconstruir", "Cancelar");
+        if (!ok) return;
+
+        MainMenuBuilder.BuildInScene(controller);
+        EditorSceneManager.MarkSceneDirty(controller.gameObject.scene);
     }
 
     [MenuItem("YGO/Setup/Abrir escena de Menú Principal")]
@@ -60,22 +101,12 @@ public static class MainMenuSetup
 
     // ── Interno ──────────────────────────────────────────────────────────
 
-    private static void CreateMainMenuScene()
-    {
-        var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-
-        var go = new GameObject("MainMenu");
-        go.AddComponent<MainMenuController>();
-
-        EditorSceneManager.SaveScene(scene, MainMenuPath);
-        Debug.Log($"MainMenuSetup: escena creada en {MainMenuPath}");
-    }
-
     /// <summary>
     /// Deja en Build Settings todas las escenas de Assets/Scenes, con MainMenu
-    /// primero (índice 0) para que sea la que arranca el juego.
+    /// primero (índice 0) para que sea la que arranca el juego. Público para que
+    /// otros setups (p. ej. Duelo Libre) reutilicen el mismo registro.
     /// </summary>
-    private static void RegisterBuildScenes()
+    public static void RegisterBuildScenes()
     {
         var result = new List<EditorBuildSettingsScene>
         {

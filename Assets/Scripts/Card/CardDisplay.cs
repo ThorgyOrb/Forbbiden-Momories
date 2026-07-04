@@ -144,7 +144,7 @@ public class CardDisplay : MonoBehaviour
         bool isFaceDown = _position == CardPosition.FaceDownAttack
                        || _position == CardPosition.FaceDownDefense;
         bool isMonster = _data.IsMonster;
-        bool isSpellOrEquip = _data.IsSpell || _data.IsEquip;
+        bool isNonMonster = !isMonster; // Magia, Equipo, Ritual o Especial
 
         // Reverso
         if (cardBack != null)
@@ -180,8 +180,8 @@ public class CardDisplay : MonoBehaviour
         if (starAButton != null) starAButton.gameObject.SetActive(showMonsterBlock);
         if (starBButton != null) starBButton.gameObject.SetActive(showMonsterBlock);
 
-        // ── Bloque Spell/Equip: panel descriptivo ────────────────────────
-        bool showSpellEquipBlock = !isFaceDown && isSpellOrEquip;
+        // ── Bloque no-monstruo (Magia/Equipo/Ritual/Especial): panel descriptivo ──
+        bool showSpellEquipBlock = !isFaceDown && isNonMonster;
         if (spellEquipPanel != null) spellEquipPanel.SetActive(showSpellEquipBlock);
 
         // Position Badge — solo tiene sentido para monstruos en campo (ATK/DEF visual)
@@ -237,8 +237,9 @@ public class CardDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Rellena el panel descriptivo para Spell/Equip: nombre, categoría y
-    /// una descripción generada según el tipo de efecto/bonus.
+    /// Rellena el panel descriptivo para cualquier carta NO-monstruo (Magia,
+    /// Equipo, Ritual, Especial): nombre, badge de categoría y una descripción
+    /// (la propia de la carta, o una generada según su efecto/bonus).
     /// </summary>
     private void RefreshSpellEquipText()
     {
@@ -246,40 +247,76 @@ public class CardDisplay : MonoBehaviour
             spellEquipNameText.text = _data.cardName;
 
         if (categoryBadge != null)
-            categoryBadge.text = _data.IsEquip ? "EQUIPO" : "MAGIA";
+            categoryBadge.text = _data.CategoryLabel;
 
         if (spellEquipDescriptionText == null) return;
 
-        if (_data.IsEquip)
+        // 1) Descripción propia de la carta, si la tiene.
+        if (!string.IsNullOrEmpty(_data.DisplayDescription))
         {
-            string atkPart = _data.equipAtkBonus != 0 ? $"+{_data.equipAtkBonus} ATK" : null;
-            string defPart = _data.equipDefBonus != 0 ? $"+{_data.equipDefBonus} DEF" : null;
-            var parts = new System.Collections.Generic.List<string>();
-            if (atkPart != null) parts.Add(atkPart);
-            if (defPart != null) parts.Add(defPart);
-            spellEquipDescriptionText.text = parts.Count > 0
-                ? $"Equipar: {string.Join(" / ", parts)}"
-                : "Carta de equipo sin bonus configurado.";
+            spellEquipDescriptionText.text = _data.DisplayDescription;
+            return;
         }
-        else // Spell
+
+        // 2) Respaldo generado según la categoría.
+        spellEquipDescriptionText.text = _data.cardCategory switch
         {
-            if (!string.IsNullOrEmpty(_data.spellDescription))
-            {
-                spellEquipDescriptionText.text = _data.spellDescription;
-            }
-            else
-            {
-                // Descripción genérica de respaldo basada en el tipo de efecto,
-                // por si la carta no tiene texto propio escrito todavía.
-                spellEquipDescriptionText.text = _data.spellEffect switch
-                {
-                    SpellEffectType.HealLP => $"Recupera {_data.spellValue} LP.",
-                    SpellEffectType.DamageOpponentLP => $"Inflige {_data.spellValue} de daño directo al rival.",
-                    SpellEffectType.BuffAtkAllMonsters => $"Otorga +{_data.spellValue} ATK a todos tus monstruos en campo.",
-                    SpellEffectType.DestroyWeakestEnemyMonster => "Destruye al monstruo rival con menor ATK.",
-                    _ => "Sin efecto definido."
-                };
-            }
-        }
+            CardCategory.Equip => DescribeEquip(),
+            CardCategory.Spell => DescribeSpell(),
+            CardCategory.Ritual => _data.ritualResult != null
+                ? $"Ritual: invoca a {_data.ritualResult.cardName}."
+                : "Carta de ritual.",
+            CardCategory.Special => "Carta especial.",
+            CardCategory.Trap => DescribeTrap(),
+            _ => "Sin efecto definido."
+        };
+    }
+
+    private string DescribeTrap()
+    {
+        return _data.trapEffect switch
+        {
+            TrapEffectType.DestroyAttackingMonster => "Destruye el monstruo atacante.",
+            TrapEffectType.DestroyAllAttackingMonsters => "Destruye todos los monstruos enemigos en ataque.",
+            TrapEffectType.NegateAttack => "Niega el ataque.",
+            TrapEffectType.DestroySummonedMonster => "Destruye el monstruo invocado.",
+            TrapEffectType.DamageOpponent => $"Inflige {_data.trapValue} de daño al rival.",
+            TrapEffectType.DestroyOneSpell => "Destruye una Carta Mágica.",
+            TrapEffectType.NegateSpell => "Niega la activación de una Carta Mágica.",
+            TrapEffectType.NegateTrap => "Niega otra Trampa.",
+            TrapEffectType.NegateSummon => "Cancela una invocación.",
+            TrapEffectType.ReduceEnemyAtk => $"Reduce {_data.trapValue} ATK a los monstruos enemigos.",
+            TrapEffectType.PreventDirectAttacks => "Impide los ataques directos.",
+            TrapEffectType.LockPositionChanges => "Bloquea los cambios de posición.",
+            _ => "Sin efecto definido."
+        };
+    }
+
+    private string DescribeEquip()
+    {
+        string atkPart = _data.equipAtkBonus != 0 ? $"+{_data.equipAtkBonus} ATK" : null;
+        string defPart = _data.equipDefBonus != 0 ? $"+{_data.equipDefBonus} DEF" : null;
+        var parts = new System.Collections.Generic.List<string>();
+        if (atkPart != null) parts.Add(atkPart);
+        if (defPart != null) parts.Add(defPart);
+        return parts.Count > 0
+            ? $"Equipar: {string.Join(" / ", parts)}"
+            : "Carta de equipo sin bonus configurado.";
+    }
+
+    private string DescribeSpell()
+    {
+        if (_data.IsFieldSpell)
+            return $"Magia de terreno: cambia el escenario a {_data.fieldTerrain}.";
+
+        return _data.spellEffect switch
+        {
+            SpellEffectType.HealLP => $"Recupera {_data.spellValue} LP.",
+            SpellEffectType.DamageOpponentLP => $"Inflige {_data.spellValue} de daño directo al rival.",
+            SpellEffectType.BuffAtkAllMonsters => $"Otorga +{_data.spellValue} ATK a todos tus monstruos en campo.",
+            SpellEffectType.DestroyWeakestEnemyMonster => "Destruye al monstruo rival con menor ATK.",
+            SpellEffectType.DestroyAllEnemyMonsters => "Destruye todos los monstruos del rival.",
+            _ => "Sin efecto definido."
+        };
     }
 }

@@ -15,22 +15,35 @@ MonoBehaviour:
   cardId: 1
   cardName: Blue Eyes
   artwork: {fileID: 21300000, guid: cecc40d0f014df24e837af8ec6cb5e57, type: 3}
+  rarity: 3
   cardCategory: 0
+  attribute: 1
+  description: 
+  fusionGroup: 
   monsterType: 0
   baseAtk: 3000
   baseDef: 2500
   stars: 8
   starA: 0
   starB: 0
-  attribute: 1
+  favoriteTerrain: 0
   monsterModelPrefab: {fileID: 7178784996046058431, guid: 12881647ef5169641a90e4721f7705a3, type: 3}
-  rarity: 3
-  fusionGroup: 
-  equipAtkBonus: 0
-  equipDefBonus: 0
+  spellKind: 0
   spellEffect: 0
   spellValue: 0
+  fieldTerrain: 0
   spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
   sources:
   - sourceType: 4
     opponentId: 1
@@ -40,7 +53,4 @@ MonoBehaviour:
     description: 33322332
   - sourceType: 0
     opponentId: 3
-    description: 33322332
-  - sourceType: 0
-    opponentId: 3
-    description: 33322332
+    description: 1111111

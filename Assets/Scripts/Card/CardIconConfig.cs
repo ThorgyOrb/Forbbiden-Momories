@@ -27,6 +27,10 @@ public class CardIconConfig : ScriptableObject
     public Sprite warriorIcon;
     public Sprite machineIcon;
     public Sprite thunderIcon;
+    public Sprite fairyIcon;
+    public Sprite reptileIcon;
+    public Sprite rockIcon;
+    public Sprite pyroIcon;
 
     public Sprite GetAttributeIcon(CardAttribute attr) => attr switch
     {
@@ -56,6 +60,10 @@ public class CardIconConfig : ScriptableObject
         MonsterType.Warrior => warriorIcon,
         MonsterType.Machine => machineIcon,
         MonsterType.Thunder => thunderIcon,
+        MonsterType.Fairy => fairyIcon,
+        MonsterType.Reptile => reptileIcon,
+        MonsterType.Rock => rockIcon,
+        MonsterType.Pyro => pyroIcon,
         _ => null
     };
 }

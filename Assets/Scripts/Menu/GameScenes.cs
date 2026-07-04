@@ -18,6 +18,9 @@ public static class GameScenes
 
     // Escenas ya existentes en Assets/Scenes.
     public const string Duel = "DuelScene";
+    public const string Story = "StoryScene";
+    public const string FreeDuel = "FreeDuelScene";
+    public const string DeckBuilder = "DeckBuilderScene";
     public const string Library = "LibraryScene";
     public const string LibraryCatalog = "LibraryCatalogScene";
     public const string Wireframe = "WireframeStage";

@@ -13,5 +13,22 @@ MonoBehaviour:
   m_Name: Oponent1 1
   m_EditorClassIdentifier: 
   opponentId: 3
-  opponentName: Test Oponent
+  opponentName: Oponente 3
   portrait: {fileID: 21300000, guid: a74da5e2687d1be4b9bb0337c3fcb897, type: 3}
+  story: 
+  difficultyLevel: 1
+  appearanceOrder: 0
+  region: 
+  isBoss: 0
+  deck: []
+  aiStrategy: 0
+  aiLevel: 1
+  arena: 0
+  arenaScene: 
+  battleMusic: {fileID: 0}
+  normalVictoryRewards:
+    entries: []
+  technicalVictoryRewards:
+    entries: []
+  perfectVictoryRewards:
+    entries: []

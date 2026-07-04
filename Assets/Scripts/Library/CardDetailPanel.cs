@@ -613,13 +613,26 @@ public class CardDetailPanel : MonoBehaviour
         var card = entry.card;
         if (nameText != null) nameText.text = card.cardName;
         if (idText != null) idText.text = $"ID: {card.cardId:000}";
-        if (atkText != null) atkText.text = $"ATK: {card.baseAtk}";
-        if (defText != null) defText.text = $"DEF: {card.baseDef}";
-        if (levelText != null) levelText.text = $"Nivel: {card.stars}";
-        if (typeText != null) typeText.text = $"Tipo: {card.monsterType}";
-        if (attributeText != null) attributeText.text = $"Atributo: {card.attribute}";
         if (copiesText != null) copiesText.text = $"Copias: {entry.Copies}";
         if (sourcesText != null) sourcesText.text = BuildSourcesText(card, entry.state);
+
+        if (card.IsMonster)
+        {
+            if (atkText != null) atkText.text = $"ATK: {card.baseAtk}";
+            if (defText != null) defText.text = $"DEF: {card.baseDef}";
+            if (levelText != null) levelText.text = $"Nivel: {card.stars}";
+            if (typeText != null) typeText.text = $"Tipo: {card.monsterType}";
+            if (attributeText != null) attributeText.text = $"Atributo: {card.attribute}";
+        }
+        else
+        {
+            // Magia/Equipo/Ritual/Especial: sin ATK/DEF/nivel; muestra la categoría.
+            if (atkText != null) atkText.text = "";
+            if (defText != null) defText.text = "";
+            if (levelText != null) levelText.text = "";
+            if (typeText != null) typeText.text = card.CategoryLabel;
+            if (attributeText != null) attributeText.text = "";
+        }
 
         // El botón sólo tiene sentido si esta carta ES un monstruo Y tiene un
         // modelo 3D asignado en su CardData. Magias/Equipos nunca lo muestran,

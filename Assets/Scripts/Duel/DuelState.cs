@@ -33,3 +33,16 @@ public enum DuelRank
     BPow, APow, SPow,
     BTec, ATec, STec
 }
+
+/// <summary>
+/// Tipo de victoria, usado para elegir la tabla de recompensas del oponente.
+///   • Normal    — victoria de fuerza bruta (rango Pow no-S).
+///   • Technical — victoria técnica (rango Tec no-S: fusiones, magias, eficiencia).
+///   • Perfect   — victoria impecable (rango S).
+/// </summary>
+public enum VictoryTier
+{
+    Normal,
+    Technical,
+    Perfect
+}

@@ -40,6 +40,12 @@ public static class SpellEffectResolver
                     ? $"{card.cardName}: destruye a {destroyedName} del lado de {target.Name}."
                     : $"{card.cardName}: {target.Name} no tiene monstruos que destruir.";
 
+            case SpellEffectType.DestroyAllEnemyMonsters:
+                int destroyed = DestroyAll(target);
+                return destroyed > 0
+                    ? $"{card.cardName}: destruye {destroyed} monstruo(s) de {target.Name}."
+                    : $"{card.cardName}: {target.Name} no tiene monstruos que destruir.";
+
             case SpellEffectType.None:
             default:
                 return $"{card.cardName} no tiene ningún efecto programado todavía.";
@@ -64,5 +70,18 @@ public static class SpellEffectResolver
         string name = target.MonsterZone[bestSlot].cardName;
         target.RemoveMonster(bestSlot);
         return name;
+    }
+
+    /// <summary>Destruye todos los monstruos del objetivo. Devuelve cuántos cayeron.</summary>
+    private static int DestroyAll(Duelist target)
+    {
+        int count = 0;
+        for (int i = 0; i < target.MonsterZone.Length; i++)
+        {
+            if (target.MonsterZone[i] == null) continue;
+            target.RemoveMonster(i);
+            count++;
+        }
+        return count;
     }
 }

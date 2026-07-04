@@ -34,6 +34,10 @@ public class DuelManager : MonoBehaviour
     private DuelAI _ai;
     private TerrainType _terrain;
 
+    // Rival resuelto para este duelo (de DuelLauncher o del DuelConfig de escena)
+    private OpponentData _opponent;
+    private DuelConfig _overrides;   // overrides del encuentro (puede ser null)
+
     // Guardian Star activa en la invocación actual
     private GuardianStar _pendingGuardianStar;
 
@@ -60,27 +64,55 @@ public class DuelManager : MonoBehaviour
     private void StartDuel()
     {
         Phase = DuelPhase.Setup;
-        _terrain = config.terrain;
+
+        // A QUIÉN enfrentar: primero la selección hecha en runtime (Duelo Libre /
+        // campaña, vía DuelLauncher); si no hay, el DuelConfig serializado de la
+        // escena (útil para probar la DuelScene directamente).
+        _opponent  = DuelLauncher.PendingOpponent != null
+                     ? DuelLauncher.PendingOpponent
+                     : (config != null ? config.opponent : null);
+        _overrides = DuelLauncher.PendingConfig != null ? DuelLauncher.PendingConfig : config;
+        DuelLauncher.Clear();
+
+        var opp = _opponent;
+        if (opp == null)
+            Debug.LogError("DuelManager: no hay oponente. Lánzalo con DuelLauncher.Launch(opponent) " +
+                           "o asigna 'opponent' en el DuelConfig de la escena.");
+
+        string oppName        = opp != null ? opp.opponentName : "Rival";
+        var oppDeck           = opp != null ? opp.deck : new List<CardData>();
+        TerrainType arena     = opp != null ? opp.arena : TerrainType.Neutral;
+        TerrainType tOverride = _overrides != null ? _overrides.terrainOverride : TerrainType.Neutral;
+        _terrain              = tOverride != TerrainType.Neutral ? tOverride : arena;
+        int aiLevel           = opp != null ? opp.aiLevel : 1;
+        AIStrategy strat      = opp != null ? opp.aiStrategy : AIStrategy.Balanced;
+
+        // Marca que el jugador se topó con este rival.
+        if (opp != null && PlayerCollection.Instance != null)
+            PlayerCollection.Instance.MarkOpponentFound(opp.opponentId);
 
         // Crear participantes
         Player = new Duelist("Jugador", isHuman: true);
-        Opponent = new Duelist(config.opponentName, isHuman: false);
+        Opponent = new Duelist(oppName, isHuman: false);
 
-        // Cargar mazos
-        Player.LoadDeck(new List<CardData>(playerDeck));
-        Opponent.LoadDeck(new List<CardData>(config.opponentDeck));
+        // Cargar mazos — el del jugador viene del Constructor de Deck (PlayerDeck);
+        // si aún no hay uno guardado, usa el 'playerDeck' serializado (para test).
+        Player.LoadDeck(ResolvePlayerDeck());
+        Opponent.LoadDeck(new List<CardData>(oppDeck));
 
         // Barajar
         Player.ShuffleDeck();
         Opponent.ShuffleDeck();
 
-        // IA
-        _ai = new DuelAI(config.aiLevel, fusionDb);
+        // IA (perfil de estrategia + nivel)
+        _ai = new DuelAI(aiLevel, strat, fusionDb);
+
+        PlayBattleMusic(opp);
 
         // UI inicial
         ui.SetTerrain(_terrain);
         ui.UpdateLP(Player.LP, Opponent.LP);
-        ui.Log($"Duelo contra {config.opponentName} — ¡Comienza!");
+        ui.Log($"Duelo contra {oppName} — ¡Comienza!");
 
         // Robo inicial (los dos jugadores roban 5)
         Player.DrawUpToFive();
@@ -224,7 +256,10 @@ public class DuelManager : MonoBehaviour
         Player.Hand.Remove(card);
         Player.PlaceSpell(card);
 
-        string message = SpellEffectResolver.Resolve(card, Player, Opponent);
+        // Las magias de terreno cambian el escenario; el resto pasan por el resolver.
+        string message = card.IsFieldSpell
+            ? SetTerrain(card.fieldTerrain)
+            : SpellEffectResolver.Resolve(card, Player, Opponent);
         ui.Log(message);
 
         ui.UpdateLP(Player.LP, Opponent.LP);
@@ -244,12 +279,12 @@ public class DuelManager : MonoBehaviour
             return;
         }
 
-        // Las cartas de tipo Spell no participan en fusión — se ignoran aquí
-        // para que el log y la remoción de mano queden alineados con lo que
-        // ResolveChain realmente proceso.
+        // Solo Monstruo o Equipo participan en fusión (Magia/Ritual/Especial/Trampa
+        // no). Se filtran aquí para que el log y la remoción de mano queden
+        // alineados con lo que ResolveChain realmente procesa.
         var usable = new List<CardData>();
         foreach (var m in materials)
-            if (m != null && !m.IsSpell) usable.Add(m);
+            if (m != null && (m.IsMonster || m.IsEquip)) usable.Add(m);
 
         if (usable.Count < 2)
         {
@@ -353,8 +388,21 @@ public class DuelManager : MonoBehaviour
                 Opponent.Hand.Remove(action.Card);
                 int atk = CombatCalculator.CalculateAtk(action.Card, star, GetPlayerBestStar(), _terrain);
                 int def = CombatCalculator.CalculateDef(action.Card);
-                Opponent.PlaceMonster(action.Card, CardPosition.FaceUpAttack, atk, def);
-                ui.Log($"Oponente invoca {action.Card.cardName} (ATK {atk} / DEF {def})");
+                Opponent.PlaceMonster(action.Card, action.SummonPosition, atk, def);
+                bool inDefense = action.SummonPosition == CardPosition.FaceUpDefense;
+                ui.Log($"Oponente invoca {action.Card.cardName} en {(inDefense ? "Defensa" : "Ataque")} " +
+                       $"(ATK {atk} / DEF {def})");
+                break;
+
+            case AIActionType.PlaySpell:
+                Opponent.Hand.Remove(action.Card);
+                Opponent.PlaceSpell(action.Card);
+                string spellMsg = action.Card.IsFieldSpell
+                    ? SetTerrain(action.Card.fieldTerrain)
+                    : SpellEffectResolver.Resolve(action.Card, Opponent, Player);
+                ui.Log($"Oponente: {spellMsg}");
+                ui.UpdateLP(Player.LP, Opponent.LP);
+                if (CheckDefeated()) yield break;
                 break;
 
             case AIActionType.Fuse:
@@ -569,7 +617,15 @@ public class DuelManager : MonoBehaviour
         ui.ShowResult(result, message);
 
         if (result == DuelResult.PlayerWin)
+        {
             StartCoroutine(RunRewardPhase());
+        }
+        else if (result == DuelResult.OpponentWin)
+        {
+            // Derrota: se registra la derrota pero el rival NO se desbloquea.
+            int oppId = _opponent != null ? _opponent.opponentId : 0;
+            PlayerCollection.Instance?.RecordDuelResult(oppId, won: false);
+        }
     }
 
     private IEnumerator RunRewardPhase()
@@ -588,16 +644,22 @@ public class DuelManager : MonoBehaviour
 
         ui.ShowRank(rank);
 
-        // Seleccionar recompensa
-        CardData reward = RankEvaluator.SelectReward(rank, config);
+        // Registrar la VICTORIA: desbloquea al rival en Duelo Libre + mejor puntuación.
+        int score = RankEvaluator.ComputeScore(
+            Player.LP, Opponent.LP, Player.DamageTaken,
+            Player.FusionsPerformed, Player.SpellsUsed, Player.TurnsPlayed);
+        int oppId = _opponent != null ? _opponent.opponentId : 0;
+        PlayerCollection.Instance?.RecordDuelResult(oppId, won: true, score: score);
+
+        // Seleccionar recompensa (override del duelo → tabla del rival por victoria)
+        CardData reward = RankEvaluator.SelectReward(rank, _opponent, _overrides);
 
         yield return new WaitForSeconds(1f);
 
         if (reward != null)
         {
             ui.ShowReward(reward);
-            PlayerCollection.Instance.AddCopy(reward.cardId);
-            PlayerCollection.Instance.UnlockOpponent(config.opponentId);
+            PlayerCollection.Instance?.AddCopy(reward.cardId);
         }
         else
         {
@@ -605,13 +667,55 @@ public class DuelManager : MonoBehaviour
         }
 
         Phase = DuelPhase.SavePhase;
-        PlayerCollection.Instance.Save();
+        PlayerCollection.Instance?.Save();
         ui.Log("Progreso guardado.");
     }
 
     // ────────────────────────────────────────────────────────────
     //  HELPERS
     // ────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Mazo del jugador: el guardado en el Constructor de Deck (PlayerDeck) o,
+    /// como respaldo para pruebas, el 'playerDeck' serializado en la escena.
+    /// </summary>
+    private List<CardData> ResolvePlayerDeck()
+    {
+        var saved = PlayerDeck.ResolveCards();
+        if (saved != null && saved.Count > 0) return saved;
+        return new List<CardData>(playerDeck);
+    }
+
+    // Fuente de audio para la música del duelo (se crea al vuelo si hace falta).
+    private AudioSource _musicSource;
+
+    /// <summary>Reproduce en bucle la música de batalla del oponente, si tiene.</summary>
+    private void PlayBattleMusic(OpponentData opp)
+    {
+        if (opp == null || opp.battleMusic == null) return;
+
+        if (_musicSource == null)
+        {
+            _musicSource = gameObject.AddComponent<AudioSource>();
+            _musicSource.loop = true;
+            _musicSource.playOnAwake = false;
+        }
+        _musicSource.clip = opp.battleMusic;
+        _musicSource.Play();
+    }
+
+    /// <summary>
+    /// Cambia el terreno activo del duelo (magia de terreno). Solo puede haber
+    /// un terreno a la vez. Devuelve el mensaje a loguear.
+    /// NOTA: los monstruos YA en campo conservan su ATK; el terreno nuevo aplica
+    /// a las próximas invocaciones. (Mejora futura: recalcular a los que ya están.)
+    /// </summary>
+    private string SetTerrain(TerrainType terrain)
+    {
+        _terrain = terrain;
+        ui.SetTerrain(terrain);
+        return $"El terreno cambia a {terrain}.";
+    }
 
     private GuardianStar GetOpponentBestStar()
     {

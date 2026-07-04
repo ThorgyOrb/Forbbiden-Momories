@@ -18,7 +18,18 @@ public class PlayerCollection : MonoBehaviour
     public static PlayerCollection Instance { get; private set; }
 
     private Dictionary<int, PlayerCardEntry> _entries = new();
-    private HashSet<int> _unlockedOpponents = new();
+    private Dictionary<int, OpponentProgress> _opponents = new();
+
+    /// <summary>Crea el singleton si aún no existe (auto-arranque). Idempotente.</summary>
+    public static PlayerCollection EnsureExists()
+    {
+        if (Instance == null)
+        {
+            var go = new GameObject("PlayerCollection");
+            go.AddComponent<PlayerCollection>(); // Awake fija Instance + DontDestroyOnLoad + Load
+        }
+        return Instance;
+    }
 
     void Awake()
     {
@@ -98,19 +109,72 @@ public class PlayerCollection : MonoBehaviour
 
     // ── Oponentes ────────────────────────────────────────────────────────
 
-    public bool IsOpponentUnlocked(int opponentId) => _unlockedOpponents.Contains(opponentId);
+    public OpponentProgress GetOpponentProgress(int opponentId) =>
+        _opponents.TryGetValue(opponentId, out var p) ? p : null;
 
+    /// <summary>Disponible en Duelo Libre = ya fue derrotado alguna vez.</summary>
+    public bool IsOpponentUnlocked(int opponentId) =>
+        _opponents.TryGetValue(opponentId, out var p) && p.defeated;
+
+    public bool IsOpponentFound(int opponentId) =>
+        _opponents.TryGetValue(opponentId, out var p) && p.found;
+
+    /// <summary>Marca que el jugador se topó con el oponente (sin derrotarlo aún).</summary>
+    public void MarkOpponentFound(int opponentId)
+    {
+        var p = GetOrCreateOpponent(opponentId);
+        if (!p.found) { p.found = true; Save(); }
+    }
+
+    /// <summary>
+    /// Registra el resultado de un duelo. Al GANAR marca al oponente como
+    /// derrotado (lo desbloquea en Duelo Libre) y actualiza la mejor puntuación.
+    /// Al perder solo suma una derrota — el oponente NO se desbloquea.
+    /// </summary>
+    public void RecordDuelResult(int opponentId, bool won, int score = 0)
+    {
+        var p = GetOrCreateOpponent(opponentId);
+        p.found = true;
+        if (won)
+        {
+            p.wins++;
+            p.defeated = true;
+            if (score > p.bestScore) p.bestScore = score;
+        }
+        else
+        {
+            p.losses++;
+        }
+        Save();
+    }
+
+    /// <summary>Desbloquea directamente (compat / debug).</summary>
     public void UnlockOpponent(int opponentId)
     {
-        _unlockedOpponents.Add(opponentId);
+        var p = GetOrCreateOpponent(opponentId);
+        p.found = true;
+        p.defeated = true;
         Save();
+    }
+
+    /// <summary>Todos los registros de oponentes conocidos (para el Duelo Libre).</summary>
+    public IEnumerable<OpponentProgress> AllOpponentProgress => _opponents.Values;
+
+    private OpponentProgress GetOrCreateOpponent(int opponentId)
+    {
+        if (!_opponents.TryGetValue(opponentId, out var p))
+        {
+            p = new OpponentProgress(opponentId);
+            _opponents[opponentId] = p;
+        }
+        return p;
     }
 
     /// <summary>Borra todo el progreso (memoria + archivo de save). Para pruebas / debug.</summary>
     public void ResetCollection()
     {
         _entries.Clear();
-        _unlockedOpponents.Clear();
+        _opponents.Clear();
 
         if (File.Exists(SavePath))
         {
@@ -133,6 +197,8 @@ public class PlayerCollection : MonoBehaviour
     private class SaveData
     {
         public List<PlayerCardEntry> entries = new();
+        public List<OpponentProgress> opponents = new();
+        // Legado: saves antiguos guardaban solo ids desbloqueados. Se migra al cargar.
         public List<int> unlockedOpponents = new();
     }
 
@@ -143,7 +209,7 @@ public class PlayerCollection : MonoBehaviour
         var data = new SaveData
         {
             entries = _entries.Values.ToList(),
-            unlockedOpponents = _unlockedOpponents.ToList()
+            opponents = _opponents.Values.ToList()
         };
         string json = JsonUtility.ToJson(data, prettyPrint: true);
 
@@ -160,7 +226,7 @@ public class PlayerCollection : MonoBehaviour
     public void Load()
     {
         _entries.Clear();
-        _unlockedOpponents.Clear();
+        _opponents.Clear();
 
         if (!File.Exists(SavePath))
         {
@@ -177,8 +243,13 @@ public class PlayerCollection : MonoBehaviour
             foreach (var e in data.entries)
                 _entries[e.cardId] = e;
 
+            foreach (var p in data.opponents)
+                if (p != null) _opponents[p.opponentId] = p;
+
+            // Migración de saves antiguos: ids desbloqueados → progreso derrotado.
             foreach (var id in data.unlockedOpponents)
-                _unlockedOpponents.Add(id);
+                if (!_opponents.ContainsKey(id))
+                    _opponents[id] = new OpponentProgress(id) { found = true, defeated = true };
         }
         catch (Exception e)
         {

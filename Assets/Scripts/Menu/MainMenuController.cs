@@ -6,42 +6,71 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// Cerebro del Menú Principal. Coloca este componente en un GameObject vacío de
-/// la escena "MainMenu" (el menú "YGO > Setup > Configurar Menú Principal" lo
-/// hace por ti). En Play construye la interfaz por código, conecta los nueve
-/// botones y gestiona la navegación entre pantallas.
+/// Cerebro del Menú Principal. NO crea la interfaz: usa referencias a objetos
+/// reales de la escena (asignadas en el Inspector), para que puedas mover,
+/// reestilizar y reorganizar todo desde el editor de Unity.
 ///
-/// Funciones:
-///   Nueva Partida · Continuar · Historia · Duelo Libre · Constructor de Deck
-///   Colección · Opciones · Créditos · Salir
+/// Para generar la UI ya cableada la primera vez, usa el menú
+/// **YGO > Setup > Configurar Menú Principal**. Después edita libremente los
+/// objetos en la Hierarchy; mientras conserves las referencias, todo sigue
+/// funcionando.
 ///
-/// Los destinos que todavía no tengan escena creada muestran un aviso
-/// ("Próximamente") en vez de fallar, para que puedas ir construyendo el juego
-/// pantalla a pantalla.
+/// Funciones: Nueva Partida · Continuar · Historia · Duelo Libre ·
+/// Constructor de Deck · Colección · Opciones · Créditos · Salir.
 /// </summary>
 public class MainMenuController : MonoBehaviour
 {
-    [Header("Presentación")]
-    [SerializeField] private string gameTitle = "MEMORIAS PROHIBIDAS";
-    [SerializeField] private string subtitle = "Un sucesor espiritual de Yu-Gi-Oh! Forbidden Memories";
+    [Header("Textos")]
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI subtitleText;
+    [SerializeField] private TextMeshProUGUI toastText;
+
+    [Header("Botones del menú")]
+    [SerializeField] private Button nuevaPartidaButton;
+    [SerializeField] private Button continuarButton;
+    [SerializeField] private Button historiaButton;
+    [SerializeField] private Button dueloLibreButton;
+    [SerializeField] private Button constructorDeckButton;
+    [SerializeField] private Button coleccionButton;
+    [SerializeField] private Button opcionesButton;
+    [SerializeField] private Button creditosButton;
+    [SerializeField] private Button salirButton;
+
+    [Header("Panel de Opciones")]
+    [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private Slider masterSlider;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Button languageButton;
+    [SerializeField] private Button fullscreenButton;
+    [SerializeField] private Button optionsBackButton;
+
+    [Header("Panel de Créditos")]
+    [SerializeField] private GameObject creditsPanel;
+    [SerializeField] private Button creditsBackButton;
 
     [Header("Música (opcional)")]
     [SerializeField] private AudioClip menuMusic;
 
     [Header("Destinos de escena (déjalos por defecto o repunta si renombras)")]
-    [SerializeField] private string storyScene = "StoryScene";
-    [SerializeField] private string freeDuelScene = GameScenes.Duel;         // por ahora lanza el duelo de prueba
-    [SerializeField] private string deckBuilderScene = "DeckBuilderScene";
+    [SerializeField] private string storyScene = GameScenes.Story;
+    [SerializeField] private string freeDuelScene = GameScenes.FreeDuel;   // pantalla de selección de rival
+    [SerializeField] private string deckBuilderScene = GameScenes.DeckBuilder;
     [SerializeField] private string collectionScene = GameScenes.Library;
 
     // ── Estado interno ───────────────────────────────────────────────────
-    private MainMenuUI _ui;
     private AudioSource _music;
     private SettingsManager _settings;
     private GameNavigator _nav;
 
     private bool _awaitingNewGameConfirm;
     private Coroutine _toastRoutine;
+
+    private Button[] MenuButtons => new[]
+    {
+        nuevaPartidaButton, continuarButton, historiaButton, dueloLibreButton,
+        constructorDeckButton, coleccionButton, opcionesButton, creditosButton, salirButton
+    };
 
     // ── Ciclo de vida ────────────────────────────────────────────────────
 
@@ -50,12 +79,21 @@ public class MainMenuController : MonoBehaviour
         _nav = GameNavigator.EnsureExists();
         _settings = SettingsManager.EnsureExists();
 
-        BuildMenu();
-        SetupMusic();
+        if (!ValidateReferences()) return;
 
+        WireButtons();
+        WireOptionsPanel();
+
+        continuarButton.interactable = GameProgress.HasSave();
+
+        optionsPanel.SetActive(false);
+        creditsPanel.SetActive(false);
+        if (toastText != null) toastText.alpha = 0f;
+
+        SetupMusic();
         _settings.OnSettingsChanged += RefreshMusicVolume;
 
-        StartCoroutine(PulseTitle());
+        if (titleText != null) StartCoroutine(PulseTitle());
         SelectFirstButton();
     }
 
@@ -69,52 +107,43 @@ public class MainMenuController : MonoBehaviour
         // Escape cierra el panel abierto (o no hace nada en el menú raíz).
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (_ui.optionsPanel.activeSelf) { CloseOptions(); return; }
-            if (_ui.creditsPanel.activeSelf) { CloseCredits(); return; }
+            if (optionsPanel != null && optionsPanel.activeSelf) { CloseOptions(); return; }
+            if (creditsPanel != null && creditsPanel.activeSelf) { CloseCredits(); return; }
         }
     }
 
-    // ── Construcción ─────────────────────────────────────────────────────
+    // ── Cableado ─────────────────────────────────────────────────────────
 
-    private void BuildMenu()
+    private void WireButtons()
     {
-        bool hasSave = GameProgress.HasSave();
-
-        var defs = new List<MenuButtonDef>
-        {
-            new MenuButtonDef("Nueva Partida",       NuevaPartida),
-            new MenuButtonDef("Continuar",           Continuar, interactable: hasSave),
-            new MenuButtonDef("Historia",            Historia),
-            new MenuButtonDef("Duelo Libre",         DueloLibre),
-            new MenuButtonDef("Constructor de Deck", ConstructorDeck),
-            new MenuButtonDef("Colección",           Coleccion),
-            new MenuButtonDef("Opciones",            OpenOptions),
-            new MenuButtonDef("Créditos",            OpenCredits),
-            new MenuButtonDef("Salir",               Salir),
-        };
-
-        _ui = MainMenuUIBuilder.Build(transform, gameTitle, subtitle, defs);
-
-        WireOptionsPanel();
-        _ui.creditsBackButton.onClick.AddListener(CloseCredits);
+        nuevaPartidaButton.onClick.AddListener(NuevaPartida);
+        continuarButton.onClick.AddListener(Continuar);
+        historiaButton.onClick.AddListener(Historia);
+        dueloLibreButton.onClick.AddListener(DueloLibre);
+        constructorDeckButton.onClick.AddListener(ConstructorDeck);
+        coleccionButton.onClick.AddListener(Coleccion);
+        opcionesButton.onClick.AddListener(OpenOptions);
+        creditosButton.onClick.AddListener(OpenCredits);
+        salirButton.onClick.AddListener(Salir);
     }
 
     private void WireOptionsPanel()
     {
-        _ui.masterSlider.value = _settings.MasterVolume;
-        _ui.musicSlider.value = _settings.MusicVolume;
-        _ui.sfxSlider.value = _settings.SfxVolume;
+        masterSlider.value = _settings.MasterVolume;
+        musicSlider.value = _settings.MusicVolume;
+        sfxSlider.value = _settings.SfxVolume;
 
-        _ui.masterSlider.onValueChanged.AddListener(_settings.SetMasterVolume);
-        _ui.musicSlider.onValueChanged.AddListener(_settings.SetMusicVolume);
-        _ui.sfxSlider.onValueChanged.AddListener(_settings.SetSfxVolume);
+        masterSlider.onValueChanged.AddListener(_settings.SetMasterVolume);
+        musicSlider.onValueChanged.AddListener(_settings.SetMusicVolume);
+        sfxSlider.onValueChanged.AddListener(_settings.SetSfxVolume);
 
         RefreshLanguageLabel();
         RefreshFullscreenLabel();
 
-        _ui.languageButton.onClick.AddListener(CycleLanguage);
-        _ui.fullscreenButton.onClick.AddListener(ToggleFullscreen);
-        _ui.optionsBackButton.onClick.AddListener(CloseOptions);
+        languageButton.onClick.AddListener(CycleLanguage);
+        fullscreenButton.onClick.AddListener(ToggleFullscreen);
+        optionsBackButton.onClick.AddListener(CloseOptions);
+        creditsBackButton.onClick.AddListener(CloseCredits);
     }
 
     // ── Acciones de los botones ──────────────────────────────────────────
@@ -174,13 +203,13 @@ public class MainMenuController : MonoBehaviour
 
     private void OpenOptions()
     {
-        _ui.optionsPanel.SetActive(true);
-        Select(_ui.optionsBackButton.gameObject);
+        optionsPanel.SetActive(true);
+        Select(optionsBackButton.gameObject);
     }
 
     private void CloseOptions()
     {
-        _ui.optionsPanel.SetActive(false);
+        optionsPanel.SetActive(false);
         SelectFirstButton();
     }
 
@@ -200,26 +229,26 @@ public class MainMenuController : MonoBehaviour
     private void RefreshLanguageLabel()
     {
         string lang = _settings.Language == 0 ? "Español" : "English";
-        SetButtonLabel(_ui.languageButton, $"Idioma:  {lang}");
+        SetButtonLabel(languageButton, $"Idioma:  {lang}");
     }
 
     private void RefreshFullscreenLabel()
     {
         string state = _settings.Fullscreen ? "Sí" : "No";
-        SetButtonLabel(_ui.fullscreenButton, $"Pantalla completa:  {state}");
+        SetButtonLabel(fullscreenButton, $"Pantalla completa:  {state}");
     }
 
     // ── Créditos ─────────────────────────────────────────────────────────
 
     private void OpenCredits()
     {
-        _ui.creditsPanel.SetActive(true);
-        Select(_ui.creditsBackButton.gameObject);
+        creditsPanel.SetActive(true);
+        Select(creditsBackButton.gameObject);
     }
 
     private void CloseCredits()
     {
-        _ui.creditsPanel.SetActive(false);
+        creditsPanel.SetActive(false);
         SelectFirstButton();
     }
 
@@ -246,7 +275,7 @@ public class MainMenuController : MonoBehaviour
 
     private IEnumerator PulseTitle()
     {
-        var rt = _ui.title.rectTransform;
+        var rt = titleText.rectTransform;
         while (true)
         {
             float s = 1f + Mathf.Sin(Time.unscaledTime * 1.6f) * 0.02f;
@@ -259,22 +288,21 @@ public class MainMenuController : MonoBehaviour
 
     private void ShowToast(string message)
     {
+        if (toastText == null) { Debug.Log($"[Menú] {message}"); return; }
         if (_toastRoutine != null) StopCoroutine(_toastRoutine);
         _toastRoutine = StartCoroutine(ToastRoutine(message));
     }
 
     private IEnumerator ToastRoutine(string message)
     {
-        var t = _ui.toast;
+        var t = toastText;
         t.text = message;
 
-        // Fade in
         for (float a = 0; a < 1; a += Time.unscaledDeltaTime * 5f) { t.alpha = a; yield return null; }
         t.alpha = 1f;
 
         yield return new WaitForSecondsRealtime(2.2f);
 
-        // Fade out
         for (float a = 1; a > 0; a -= Time.unscaledDeltaTime * 3f) { t.alpha = a; yield return null; }
         t.alpha = 0f;
         _toastRoutine = null;
@@ -295,8 +323,8 @@ public class MainMenuController : MonoBehaviour
 
     private void SelectFirstButton()
     {
-        foreach (var b in _ui.buttons)
-            if (b.interactable) { Select(b.gameObject); return; }
+        foreach (var b in MenuButtons)
+            if (b != null && b.interactable) { Select(b.gameObject); return; }
     }
 
     private void Select(GameObject go)
@@ -307,7 +335,46 @@ public class MainMenuController : MonoBehaviour
 
     private static void SetButtonLabel(Button button, string text)
     {
+        if (button == null) return;
         var label = button.GetComponentInChildren<TextMeshProUGUI>();
         if (label != null) label.text = text;
+    }
+
+    /// <summary>Comprueba que todas las referencias del Inspector estén asignadas.</summary>
+    private bool ValidateReferences()
+    {
+        var missing = new List<string>();
+        void Req(Object o, string n) { if (o == null) missing.Add(n); }
+
+        Req(titleText, "titleText");
+        Req(subtitleText, "subtitleText");
+        Req(toastText, "toastText");
+        Req(nuevaPartidaButton, "nuevaPartidaButton");
+        Req(continuarButton, "continuarButton");
+        Req(historiaButton, "historiaButton");
+        Req(dueloLibreButton, "dueloLibreButton");
+        Req(constructorDeckButton, "constructorDeckButton");
+        Req(coleccionButton, "coleccionButton");
+        Req(opcionesButton, "opcionesButton");
+        Req(creditosButton, "creditosButton");
+        Req(salirButton, "salirButton");
+        Req(optionsPanel, "optionsPanel");
+        Req(masterSlider, "masterSlider");
+        Req(musicSlider, "musicSlider");
+        Req(sfxSlider, "sfxSlider");
+        Req(languageButton, "languageButton");
+        Req(fullscreenButton, "fullscreenButton");
+        Req(optionsBackButton, "optionsBackButton");
+        Req(creditsPanel, "creditsPanel");
+        Req(creditsBackButton, "creditsBackButton");
+
+        if (missing.Count > 0)
+        {
+            Debug.LogError("MainMenuController: faltan referencias en el Inspector: " +
+                           string.Join(", ", missing) +
+                           ".\nEjecuta 'YGO > Setup > Configurar Menú Principal' para construir la UI ya cableada.");
+            return false;
+        }
+        return true;
     }
 }

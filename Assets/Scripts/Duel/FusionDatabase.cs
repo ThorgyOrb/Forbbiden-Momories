@@ -119,8 +119,10 @@ public class FusionDatabase : ScriptableObject
     {
         var steps = new List<FusionStepResult>();
         var usable = new List<CardData>();
+        // Solo Monstruo o Equipo participan en fusión. Magia/Ritual/Especial/Trampa
+        // se ignoran silenciosamente si aparecen en la lista por error.
         foreach (var m in materials)
-            if (m != null && !m.IsSpell) usable.Add(m);
+            if (m != null && (m.IsMonster || m.IsEquip)) usable.Add(m);
 
         if (usable.Count == 0)
             return new FusionChainResult(null, 0, 0, steps);

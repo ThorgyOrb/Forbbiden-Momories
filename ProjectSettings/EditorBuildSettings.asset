@@ -4,5 +4,32 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 2b00f7b93d440ca4fa5becc6d44bd6ab
+  - enabled: 1
+    path: Assets/Scenes/DeckBuilderScene.unity
+    guid: ed9b489d47e12cb4fbdcaebd9804a948
+  - enabled: 1
+    path: Assets/Scenes/DuelScene.unity
+    guid: d6c8fbd722f849f4ca4672f8e9f47700
+  - enabled: 1
+    path: Assets/Scenes/FreeDuelScene.unity
+    guid: 5ff8a85f2a8faa44ebd32929196de312
+  - enabled: 1
+    path: Assets/Scenes/LibraryCatalogScene.unity
+    guid: b2aa1af71788d17408091f1d2fa252db
+  - enabled: 1
+    path: Assets/Scenes/LibraryScene.unity
+    guid: ee9a162f53e251846a0f1fc623803051
+  - enabled: 1
+    path: Assets/Scenes/New Scene.unity
+    guid: dcace667fc1552a4480a0c261bdc4231
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/WireframeStage.unity
+    guid: 23b6878e318f80f4aaf107493a0b47a6
   m_configObjects: {}

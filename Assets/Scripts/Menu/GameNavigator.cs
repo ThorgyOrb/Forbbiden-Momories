@@ -42,8 +42,9 @@ public class GameNavigator : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Garantiza que la configuración global esté viva desde el arranque.
+        // Garantiza que los managers globales estén vivos desde el arranque.
         SettingsManager.EnsureExists();
+        PlayerCollection.EnsureExists();
     }
 
     // ── Navegación ───────────────────────────────────────────────────────

@@ -10,11 +10,17 @@ public static class LibraryCatalog
 {
     private static List<CardData> _all;
     private static Dictionary<int, CardData> _byId;
+    private static List<OpponentData> _allOpponents;
     private static Dictionary<int, OpponentData> _opponentsById;
 
     public static IReadOnlyList<CardData> AllCards
     {
         get { EnsureLoaded(); return _all; }
+    }
+
+    public static IReadOnlyList<OpponentData> AllOpponents
+    {
+        get { EnsureLoaded(); return _allOpponents; }
     }
 
     public static void EnsureLoaded()
@@ -26,8 +32,10 @@ public static class LibraryCatalog
                          .ToList();
         _byId = _all.ToDictionary(c => c.cardId, c => c);
 
-        var opponents = Resources.LoadAll<OpponentData>("Opponents/Data");
-        _opponentsById = opponents.ToDictionary(o => o.opponentId, o => o);
+        _allOpponents = Resources.LoadAll<OpponentData>("Opponents/Data")
+                                 .OrderBy(o => o.opponentId)
+                                 .ToList();
+        _opponentsById = _allOpponents.ToDictionary(o => o.opponentId, o => o);
 
         if (_all.Count == 0)
             Debug.LogWarning("LibraryCatalog: no se encontraron CardData en Resources/Cards/Data/");
