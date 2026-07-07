@@ -1,6 +1,6 @@
 /// <summary>
 /// Cada fase del turno como máquina de estados.
-/// El DuelManager avanza entre estos estados en orden.
+/// El DuelController avanza entre estos estados en orden.
 /// </summary>
 public enum DuelPhase
 {

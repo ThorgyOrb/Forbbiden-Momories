@@ -15,21 +15,35 @@ MonoBehaviour:
   cardId: 8
   cardName: Moonlight Witch
   artwork: {fileID: 21300000, guid: b028a677c403ff043b4d1c367686a41f, type: 3}
+  rarity: 3
   cardCategory: 0
+  attribute: 1
+  description: 
+  fusionGroup: 
   monsterType: 1
   baseAtk: 1800
   baseDef: 1200
   stars: 6
   starA: 1
   starB: 2
-  attribute: 1
-  rarity: 3
-  fusionGroup: 
-  equipAtkBonus: 500
-  equipDefBonus: 500
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
   spellEffect: 0
   spellValue: 0
+  fieldTerrain: 0
   spellDescription: 654654
+  equipAtkBonus: 500
+  equipDefBonus: 500
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
   sources:
   - sourceType: 0
     opponentId: 1

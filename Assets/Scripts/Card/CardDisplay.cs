@@ -247,7 +247,11 @@ public class CardDisplay : MonoBehaviour
             spellEquipNameText.text = _data.cardName;
 
         if (categoryBadge != null)
+        {
             categoryBadge.text = _data.CategoryLabel;
+            // Neo-Kemet: la categoría se lee por color, no por icono de tipo.
+            categoryBadge.color = CardStyleKemet.BadgeColor(_data.cardCategory);
+        }
 
         if (spellEquipDescriptionText == null) return;
 

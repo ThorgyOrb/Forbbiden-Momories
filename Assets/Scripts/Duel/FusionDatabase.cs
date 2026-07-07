@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// ScriptableObject que almacena todas las recetas de fusión del juego.
 /// Crea una sola instancia en: Assets > Create > YGO > Fusion Database
-/// Luego referénciala desde DuelManager.
+/// Luego referénciala desde DuelController.
 ///
 /// ── Cómo se resuelve cada PAR de cartas (en orden de prioridad) ──────────
 ///   1. Receta ESPECÍFICA    (materialA == X && materialB == Y, exacta)
@@ -112,7 +112,7 @@ public class FusionDatabase : ScriptableObject
     /// de cada paso (útil para loguear en la UI qué pasó con cada carta).
     ///
     /// Las cartas de tipo Spell no participan en fusión (se juegan aparte,
-    /// ver DuelManager.PlayerCastSpell) y se ignoran silenciosamente si
+    /// ver DuelController) y se ignoran silenciosamente si
     /// aparecen en la lista por error.
     /// </summary>
     public FusionChainResult ResolveChain(List<CardData> materials)

@@ -1,56 +1,73 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Aplica el estilo "Neo-Kemet" a una carta según su rareza:
+///   • Common    — marco pizarra, sin efectos.
+///   • Rare      — marco turquesa + aurora fría.
+///   • Epic      — marco violeta + aurora + foil de interferencia + barrido dorado.
+///   • Legendary — marco de circuito dorado (pulsos turquesa) + todo lo anterior
+///                 + relieve circuito-jeroglífico (pseudo normal map) + chispas.
+///
+/// Los colores/intensidades del estilo viven en <see cref="CardStyleKemet"/>
+/// (código, no prefab). Este componente solo decide QUÉ capas enciende.
+/// </summary>
 [RequireComponent(typeof(CardDisplay))]
 public class CardHoloEffect : MonoBehaviour
 {
     [Header("Material único (usa _RarityMode para diferenciar)")]
     [SerializeField] private Material matHolo;
 
-    [Header("Colores de marco por rareza")]
+    [Header("Marco de la carta")]
     [SerializeField] private Image frameBorder;
-    [SerializeField] private Color colorCommon = new Color(0.67f, 0.67f, 0.67f);
-    [SerializeField] private Color colorRare = new Color(0.23f, 0.55f, 0.88f);
-    [SerializeField] private Color colorEpic = new Color(0.61f, 0.36f, 0.94f);
-    [SerializeField] private Color colorLegendary = new Color(0.83f, 0.63f, 0.09f);
-
-    [Header("Colores de aurora por rareza (par A/B que se mezclan)")]
-    [SerializeField] private Color auroraARare = new Color(0.3f, 0.6f, 1.0f);
-    [SerializeField] private Color auroraBRare = new Color(0.6f, 0.85f, 1.0f);
-    [SerializeField] private Color auroraAEpic = new Color(0.6f, 0.3f, 1.0f);
-    [SerializeField] private Color auroraBEpic = new Color(1.0f, 0.4f, 0.8f);
-    [SerializeField] private Color auroraALegendary = new Color(1.0f, 0.75f, 0.2f);
-    [SerializeField] private Color auroraBLegendary = new Color(1.0f, 0.3f, 0.5f);
 
     [Header("Config")]
     [SerializeField] private float smoothSpeed = 6f;
 
-    [Header("Borde Legendary (serpiente arcoiris)")]
-    [SerializeField] private Material matRainbowBorder;       // usa el shader YGO/RainbowBorderShader
-    [SerializeField] private float rainbowBorderSpeed = 0.6f;       // velocidad con la que la serpiente recorre el borde
-    [SerializeField] private float rainbowBorderBandCount = 2f;     // veces que se repite el ciclo de color alrededor del marco
-    [SerializeField] private float rainbowBorderSaturation = 0.9f;
-    [SerializeField] private float rainbowBorderBrightness = 1f;
+    [Header("Borde Legendary (circuito Neo-Kemet)")]
+    [SerializeField] private Material matRainbowBorder;      // shader YGO/RainbowBorderShader en modo duotono
+    [SerializeField] private float borderPulseSpeed = 0.55f; // velocidad del pulso que recorre el marco
+    [SerializeField] private float borderPulseCount = 2f;    // pulsos simultáneos alrededor del marco
+    [SerializeField] private float borderBrightness = 1f;
 
     private Material _instanceMat;
     private Material _instanceBorderMat;
     private Image _targetImage;
     private CardRarity _currentRarity;
-    private Color _baseBorderColor;
 
-    private static readonly int PropRarityMode = Shader.PropertyToID("_RarityMode");
+    private static readonly int PropRarityMode     = Shader.PropertyToID("_RarityMode");
     private static readonly int PropAuroraStrength = Shader.PropertyToID("_AuroraStrength");
-    private static readonly int PropAuroraColorA = Shader.PropertyToID("_AuroraColorA");
-    private static readonly int PropAuroraColorB = Shader.PropertyToID("_AuroraColorB");
-    private static readonly int PropGlareStrength = Shader.PropertyToID("_GlareStrength");
+    private static readonly int PropAuroraColorA   = Shader.PropertyToID("_AuroraColorA");
+    private static readonly int PropAuroraColorB   = Shader.PropertyToID("_AuroraColorB");
+    private static readonly int PropAuroraTint     = Shader.PropertyToID("_AuroraTintAmount");
+    private static readonly int PropAuroraIntens   = Shader.PropertyToID("_AuroraIntensity");
+    private static readonly int PropGlareStrength  = Shader.PropertyToID("_GlareStrength");
+    private static readonly int PropGlareIntens    = Shader.PropertyToID("_GlareIntensity");
+    private static readonly int PropGlareTint      = Shader.PropertyToID("_GlareTint");
+    private static readonly int PropFoilStrength   = Shader.PropertyToID("_FoilStrength");
+    private static readonly int PropFoilIntens     = Shader.PropertyToID("_FoilIntensity");
+    private static readonly int PropFoilScale      = Shader.PropertyToID("_FoilStripeScale");
+    private static readonly int PropFoilDuoA       = Shader.PropertyToID("_FoilDuoA");
+    private static readonly int PropFoilDuoB       = Shader.PropertyToID("_FoilDuoB");
+    private static readonly int PropReliefStrength = Shader.PropertyToID("_ReliefStrength");
+    private static readonly int PropReliefIntens   = Shader.PropertyToID("_ReliefIntensity");
+    private static readonly int PropReliefScale    = Shader.PropertyToID("_ReliefScale");
     private static readonly int PropSparkleStrength = Shader.PropertyToID("_SparkleStrength");
-    private static readonly int PropTiltX = Shader.PropertyToID("_TiltX");
-    private static readonly int PropTiltY = Shader.PropertyToID("_TiltY");
+    private static readonly int PropSparkleColor    = Shader.PropertyToID("_SparkleColor");
+    private static readonly int PropParallax       = Shader.PropertyToID("_ParallaxStrength");
+    private static readonly int PropMetal          = Shader.PropertyToID("_MetalStrength");
+    private static readonly int PropScan           = Shader.PropertyToID("_ScanStrength");
+    private static readonly int PropRays           = Shader.PropertyToID("_RayStrength");
+    private static readonly int PropGlitch         = Shader.PropertyToID("_GlitchStrength");
+    private static readonly int PropTiltX          = Shader.PropertyToID("_TiltX");
+    private static readonly int PropTiltY          = Shader.PropertyToID("_TiltY");
 
-    private static readonly int PropBorderSpeed = Shader.PropertyToID("_Speed");
-    private static readonly int PropBorderBandCount = Shader.PropertyToID("_BandCount");
-    private static readonly int PropBorderSaturation = Shader.PropertyToID("_Saturation");
+    private static readonly int PropBorderSpeed      = Shader.PropertyToID("_Speed");
+    private static readonly int PropBorderBandCount  = Shader.PropertyToID("_BandCount");
     private static readonly int PropBorderBrightness = Shader.PropertyToID("_Brightness");
+    private static readonly int PropBorderDuotone    = Shader.PropertyToID("_Duotone");
+    private static readonly int PropBorderDuoA       = Shader.PropertyToID("_DuoColorA");
+    private static readonly int PropBorderDuoB       = Shader.PropertyToID("_DuoColorB");
 
     void Awake()
     {
@@ -68,40 +85,7 @@ public class CardHoloEffect : MonoBehaviour
 
         if (_targetImage == null) return;
 
-        // Color base del marco (rarezas que no son Legendary usan tinte plano)
-        _baseBorderColor = rarity switch
-        {
-            CardRarity.Common => colorCommon,
-            CardRarity.Rare => colorRare,
-            CardRarity.Epic => colorEpic,
-            CardRarity.Legendary => colorLegendary,
-            _ => colorCommon
-        };
-
-        if (rarity == CardRarity.Legendary && matRainbowBorder != null && frameBorder != null)
-        {
-            // Serpiente arcoiris: el color varía a lo largo del borde y avanza
-            // solo con el tiempo, todo calculado por pixel dentro del shader.
-            if (_instanceBorderMat != null) Destroy(_instanceBorderMat);
-            _instanceBorderMat = new Material(matRainbowBorder);
-            _instanceBorderMat.SetFloat(PropBorderSpeed, rainbowBorderSpeed);
-            _instanceBorderMat.SetFloat(PropBorderBandCount, rainbowBorderBandCount);
-            _instanceBorderMat.SetFloat(PropBorderSaturation, rainbowBorderSaturation);
-            _instanceBorderMat.SetFloat(PropBorderBrightness, rainbowBorderBrightness);
-
-            frameBorder.material = _instanceBorderMat;
-            frameBorder.color = Color.white; // el color final lo decide el shader, no el tinte
-        }
-        else
-        {
-            if (_instanceBorderMat != null) Destroy(_instanceBorderMat);
-            _instanceBorderMat = null;
-            if (frameBorder != null)
-            {
-                frameBorder.material = null;
-                frameBorder.color = _baseBorderColor;
-            }
-        }
+        ApplyFrame(rarity);
 
         // Common no usa material holo
         if (rarity == CardRarity.Common || matHolo == null)
@@ -124,18 +108,18 @@ public class CardHoloEffect : MonoBehaviour
         };
         _instanceMat.SetFloat(PropRarityMode, rarityMode);
 
-        // Colores de aurora segun rareza
+        // Colores de aurora según rareza (paleta Neo-Kemet)
         Color auroraA, auroraB;
         switch (rarity)
         {
             case CardRarity.Rare:
-                auroraA = auroraARare; auroraB = auroraBRare;
+                auroraA = CardStyleKemet.AuroraARare; auroraB = CardStyleKemet.AuroraBRare;
                 break;
             case CardRarity.Epic:
-                auroraA = auroraAEpic; auroraB = auroraBEpic;
+                auroraA = CardStyleKemet.AuroraAEpic; auroraB = CardStyleKemet.AuroraBEpic;
                 break;
             case CardRarity.Legendary:
-                auroraA = auroraALegendary; auroraB = auroraBLegendary;
+                auroraA = CardStyleKemet.AuroraALegendary; auroraB = CardStyleKemet.AuroraBLegendary;
                 break;
             default:
                 auroraA = Color.white; auroraB = Color.white;
@@ -144,16 +128,91 @@ public class CardHoloEffect : MonoBehaviour
         _instanceMat.SetColor(PropAuroraColorA, auroraA);
         _instanceMat.SetColor(PropAuroraColorB, auroraB);
 
-        // El glare ya no sigue al mouse: queda fijo en el centro de la carta.
+        // Tuning del estilo fijado por código: el material asset conserva
+        // valores serializados de la versión anterior del shader y no deben
+        // arrastrarse a las instancias.
+        _instanceMat.SetFloat(PropAuroraTint,   CardStyleKemet.AuroraTintAmount);
+        _instanceMat.SetFloat(PropAuroraIntens, CardStyleKemet.AuroraIntensity);
+        _instanceMat.SetFloat(PropGlareIntens,  CardStyleKemet.GlareIntensity);
+        _instanceMat.SetColor(PropGlareTint,    CardStyleKemet.GlareGold);
+        _instanceMat.SetFloat(PropFoilIntens,   CardStyleKemet.FoilIntensity);
+        _instanceMat.SetFloat(PropFoilScale,    CardStyleKemet.FoilStripeScale);
+        _instanceMat.SetColor(PropFoilDuoA,     CardStyleKemet.FoilGold);
+        _instanceMat.SetColor(PropFoilDuoB,     CardStyleKemet.FoilCyan);
+        _instanceMat.SetFloat(PropReliefIntens, CardStyleKemet.ReliefIntensity);
+        _instanceMat.SetFloat(PropReliefScale,  CardStyleKemet.ReliefScale);
+        _instanceMat.SetColor(PropSparkleColor, CardStyleKemet.Sparkle);
+
+        // Capas de "arte vivo": se fijan una vez según la rareza (no hacen
+        // fade — el parallax o las scanlines a medias se ven raros).
+        float parallax = 0f, metal = 0f, scan = 0f, rays = 0f, glitch = 0f;
+        switch (rarity)
+        {
+            case CardRarity.Rare:
+                parallax = 0.5f;
+                break;
+            case CardRarity.Epic:
+                parallax = 0.75f; metal = 1f; scan = 1f;
+                break;
+            case CardRarity.Legendary:
+                parallax = 1f; metal = 1f; scan = 1f; rays = 1f; glitch = 1f;
+                break;
+        }
+        _instanceMat.SetFloat(PropParallax, parallax);
+        _instanceMat.SetFloat(PropMetal, metal);
+        _instanceMat.SetFloat(PropScan, scan);
+        _instanceMat.SetFloat(PropRays, rays);
+        _instanceMat.SetFloat(PropGlitch, glitch);
+
         _instanceMat.SetFloat(PropTiltX, 0f);
         _instanceMat.SetFloat(PropTiltY, 0f);
 
-        // Arrancan en 0 y suben solos en Update(), pero ya no dependen del mouse.
+        // Las capas arrancan en 0 y suben solas en Update().
         _instanceMat.SetFloat(PropAuroraStrength, 0f);
         _instanceMat.SetFloat(PropGlareStrength, 0f);
+        _instanceMat.SetFloat(PropFoilStrength, 0f);
+        _instanceMat.SetFloat(PropReliefStrength, 0f);
         _instanceMat.SetFloat(PropSparkleStrength, 0f);
 
         _targetImage.material = _instanceMat;
+    }
+
+    /// <summary>
+    /// Marco por rareza. Legendary usa el shader de borde en modo circuito
+    /// (aro dorado con pulsos turquesa); el resto, tinte plano de la paleta.
+    /// </summary>
+    private void ApplyFrame(CardRarity rarity)
+    {
+        if (rarity == CardRarity.Legendary && matRainbowBorder != null && frameBorder != null)
+        {
+            if (_instanceBorderMat != null) Destroy(_instanceBorderMat);
+            _instanceBorderMat = new Material(matRainbowBorder);
+            _instanceBorderMat.SetFloat(PropBorderDuotone, 1f);
+            _instanceBorderMat.SetColor(PropBorderDuoA, CardStyleKemet.FrameLegendary);
+            _instanceBorderMat.SetColor(PropBorderDuoB, CardStyleKemet.FoilCyan);
+            _instanceBorderMat.SetFloat(PropBorderSpeed, borderPulseSpeed);
+            _instanceBorderMat.SetFloat(PropBorderBandCount, borderPulseCount);
+            _instanceBorderMat.SetFloat(PropBorderBrightness, borderBrightness);
+
+            frameBorder.material = _instanceBorderMat;
+            frameBorder.color = Color.white; // el color final lo decide el shader
+            return;
+        }
+
+        if (_instanceBorderMat != null) Destroy(_instanceBorderMat);
+        _instanceBorderMat = null;
+
+        if (frameBorder != null)
+        {
+            frameBorder.material = null;
+            frameBorder.color = rarity switch
+            {
+                CardRarity.Rare => CardStyleKemet.FrameRare,
+                CardRarity.Epic => CardStyleKemet.FrameEpic,
+                CardRarity.Legendary => CardStyleKemet.FrameLegendary,
+                _ => CardStyleKemet.FrameCommon
+            };
+        }
     }
 
     public void RefreshTexture()
@@ -166,9 +225,8 @@ public class CardHoloEffect : MonoBehaviour
     {
         if (_instanceMat == null) return;
 
-        // Los efectos ya no dependen del mouse ni de ningún tilt de la carta:
-        // siempre están activos y son estáticos en cuanto a su posición/disparo.
-        float tAurora = 0f, tGlare = 0f, tSparkle = 0f;
+        // Capas objetivo por rareza; suben suavemente desde 0 al aparecer.
+        float tAurora = 0f, tGlare = 0f, tFoil = 0f, tRelief = 0f, tSparkle = 0f;
 
         switch (_currentRarity)
         {
@@ -179,11 +237,14 @@ public class CardHoloEffect : MonoBehaviour
             case CardRarity.Epic:
                 tAurora = 1.0f;
                 tGlare = 1.0f;
+                tFoil = 1.0f;
                 break;
 
             case CardRarity.Legendary:
                 tAurora = 1.0f;
                 tGlare = 1.0f;
+                tFoil = 1.0f;
+                tRelief = 1.0f;
                 tSparkle = 1.0f;
                 break;
         }
@@ -193,6 +254,10 @@ public class CardHoloEffect : MonoBehaviour
             Mathf.Lerp(_instanceMat.GetFloat(PropAuroraStrength), tAurora, dt));
         _instanceMat.SetFloat(PropGlareStrength,
             Mathf.Lerp(_instanceMat.GetFloat(PropGlareStrength), tGlare, dt));
+        _instanceMat.SetFloat(PropFoilStrength,
+            Mathf.Lerp(_instanceMat.GetFloat(PropFoilStrength), tFoil, dt));
+        _instanceMat.SetFloat(PropReliefStrength,
+            Mathf.Lerp(_instanceMat.GetFloat(PropReliefStrength), tRelief, dt));
         _instanceMat.SetFloat(PropSparkleStrength,
             Mathf.Lerp(_instanceMat.GetFloat(PropSparkleStrength), tSparkle, dt));
     }

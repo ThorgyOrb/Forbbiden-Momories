@@ -42,8 +42,7 @@ public class CardDetailPanel : MonoBehaviour
     [Header("Sprite genérico de reverso (para el vuelo, antes de mostrar el frente)")]
     [SerializeField] private Sprite genericCardBack;
 
-    [Header("Contenido final (texto)")]
-    [SerializeField] private Image cardArt;
+    [Header("Contenido final (texto) — LEGADO, lo reemplaza CardDetailInfoPanel")]
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text idText;
     [SerializeField] private TMP_Text atkText;
@@ -90,13 +89,30 @@ public class CardDetailPanel : MonoBehaviour
     private Coroutine _slideRoutine;
     private RectTransform _modalRootRect;
     private Canvas _modalCanvas;
-    private CanvasGroup _statsAndArtCanvasGroup; // fade-in suave para cardArt y stats
+    private CanvasGroup _statsAndArtCanvasGroup; // fade-in del panel de info (ContentGroup)
     private Vector2 _infoPanelRestPos;
     private LibraryEntry _lastEntry;
     private RectTransform _lastSourceRect;
     private Vector2 _lastStartPos;
     private Vector2 _lastStartSize;
     private Vector2 _lastFinalPos;
+
+    // ── Visor de carta COMPLETA e inclinable (reemplaza al artwork suelto) ──
+    // Tamaño nativo del prefab Card (su layout interno SOLO se ve bien a este
+    // tamaño; por eso se AGRANDA con localScale en vez de estirar el rect).
+    private static readonly Vector2 CardNativeSize = new Vector2(200f, 280f);
+    private GameObject _cardPrefab;         // Resources/Prefabs/Card
+    private RectTransform _inspectWrapper;  // área estacionaria (hover), en el espacio de flyingCard
+    private RectTransform _inspectCardRT;   // la carta que rota/escala
+    private CardDisplay _inspectDisplay;    // la carta completa con todos los efectos
+    private InspectableCard _inspectComp;   // inclinación siguiendo el puntero
+
+    // Carta COMPLETA que vuela durante abrir/cerrar (reemplaza al artwork suelto):
+    // es hija de flyingCard, hereda su posición/giro y se escala a su tamaño.
+    private CardDisplay _flyingDisplay;
+
+    // Panel de info reconstruido por código (reemplaza el maquetado viejo).
+    private CardDetailInfoPanel _styledInfo;
 
     void Awake()
     {
@@ -105,14 +121,7 @@ public class CardDetailPanel : MonoBehaviour
         if (_modalCanvas != null) _modalCanvas = _modalCanvas.rootCanvas;
         _infoPanelRestPos = infoPanel.anchoredPosition; // posición diseñada en el editor = destino del slide
 
-        // statsAndArtGroup necesita un CanvasGroup para poder hacer fade-in
-        // en vez de aparecer de golpe con SetActive a mitad del giro.
-        if (statsAndArtGroup != null)
-        {
-            _statsAndArtCanvasGroup = statsAndArtGroup.GetComponent<CanvasGroup>();
-            if (_statsAndArtCanvasGroup == null)
-                _statsAndArtCanvasGroup = statsAndArtGroup.AddComponent<CanvasGroup>();
-        }
+        BuildStyledInfoPanel();
 
         // Arranca oculto vía CanvasGroup, NO vía SetActive(false) - así el
         // GameObject sigue activeInHierarchy y los coroutines pueden correr
@@ -195,13 +204,13 @@ public class CardDetailPanel : MonoBehaviour
         flyingCard.localScale = Vector3.one;
         flyingCard.sizeDelta = Vector2.zero;
 
+        // Los grupos legados están en null tras Awake (los reemplaza el panel
+        // nuevo); estas llamadas quedan como no-ops.
         if (typeAndGuardianGroup != null) typeAndGuardianGroup.SetActive(false);
-
-        // statsAndArtGroup se queda ACTIVO (para que su CanvasGroup pueda
-        // animar), pero con alpha 0 e ignorando clicks/raycasts hasta que
-        // se revele. Así evitamos el "pop" brusco y el frame con el sprite
-        // viejo visible.
         if (statsAndArtGroup != null) statsAndArtGroup.SetActive(true);
+
+        // El panel de info (ContentGroup) arranca invisible e inerte hasta que
+        // la secuencia de revelado lo funde a la vista.
         if (_statsAndArtCanvasGroup != null)
         {
             _statsAndArtCanvasGroup.alpha = 0f;
@@ -209,13 +218,11 @@ public class CardDetailPanel : MonoBehaviour
             _statsAndArtCanvasGroup.interactable = false;
         }
 
-        // Limpia el sprite final para que nunca quede colgado el de la carta
-        // anterior mientras statsAndArtGroup está oculto.
-        if (cardArt != null) cardArt.sprite = null;
-
         if (cardPlaceholder != null) cardPlaceholder.gameObject.SetActive(false);
 
-        infoPanel.anchoredPosition = _infoPanelRestPos + new Vector2(infoPanelOffscreenOffset, 0f);
+        HideInspectCard();
+
+        infoPanel.anchoredPosition = _infoPanelRestPos + new Vector2(OffscreenOffset(), 0f);
 
         backdropGroup.alpha = 0f;
         backdropGroup.blocksRaycasts = false;
@@ -267,7 +274,10 @@ public class CardDetailPanel : MonoBehaviour
         // mostrando el frente, y el giro (frente -> reverso) ocurre DURANTE
         // el trayecto hacia midPos - nunca se queda quieta para girar. ──
         flyingCard.gameObject.SetActive(true);
-        flyingCardImage.sprite = card.artwork;
+        // Setup DESPUÉS de activar flyingCard: la carta se instancia como hija de
+        // un objeto activo, así corre su Awake antes de Setup (si no, _holoEffect
+        // sería null). Deja la cara al frente.
+        SetupFlyingCard(card);
         flyingCard.localScale = Vector3.one;
         flyingCard.anchoredPosition = introPos;
         flyingCard.sizeDelta = new Vector2(startSize.x, 190f);
@@ -301,7 +311,7 @@ public class CardDetailPanel : MonoBehaviour
                     if (!swappedToBack)
                     {
                         swappedToBack = true;
-                        flyingCardImage.sprite = genericCardBack;
+                        SetFlyingFace(false);
                         flyingCard.localRotation = Quaternion.Euler(0, -90f, 0);
                     }
                     float re = EaseOutQuad((rp - 0.5f) / 0.5f);
@@ -316,7 +326,7 @@ public class CardDetailPanel : MonoBehaviour
         });
 
         // Seguridad: si la fase terminó antes del salto (duración muy corta)
-        if (!swappedToBack) flyingCardImage.sprite = genericCardBack;
+        if (!swappedToBack) SetFlyingFace(false);
         flyingCard.localRotation = Quaternion.Euler(0, 0, maxTilt);
 
         // ── Fase 3: acercamiento/"explosión" + empieza el giro Y, se endereza el tilt ──
@@ -338,32 +348,20 @@ public class CardDetailPanel : MonoBehaviour
         // se revela Tipo + Guardian Star (Fase 5-6), mientras sigue boca abajo.
         if (typeAndGuardianGroup != null) typeAndGuardianGroup.SetActive(true);
 
-        // ── Salto del truco de flip: -90° con el sprite ya cambiado a frente ──
-        flyingCardImage.sprite = card.artwork;
+        // ── Salto del truco de flip: -90° con la cara ya cambiada a frente ──
+        SetFlyingFace(true);
         flyingCard.localRotation = Quaternion.Euler(0, -90f, 0);
         flyingCard.sizeDelta = finalCardSize;
         flyingCard.anchoredPosition = finalPos;
 
-        bool spriteAssigned = false;
-
-        // ── Fase 7: -90° -> 0°, el frente se revela, se llenan ATK/DEF/Imagen ──
+        // ── Fase 7: -90° -> 0°, el frente se revela; el panel de info aparece ──
         yield return Animate(revealDuration, p =>
         {
             float e = EaseOutQuad(p);
             flyingCard.localRotation = Quaternion.Euler(0, Mathf.Lerp(-90f, 0f, e), 0);
 
-            // El sprite se asigna ANTES de que el grupo sea visible (alpha
-            // sigue en 0 en ese instante), así nunca hay un frame donde se
-            // vea el sprite de la carta anterior.
-            if (p > 0.4f && !spriteAssigned)
-            {
-                spriteAssigned = true;
-                if (cardArt != null) cardArt.sprite = card.artwork;
-            }
-
-            // Fade-in suave del grupo completo (cardArt + atk/def/copies/sources)
-            // en la segunda mitad de la animación, en vez de un SetActive
-            // instantáneo que se ve como un "pop" en medio del giro.
+            // Fade-in suave del panel de info (ContentGroup) en la segunda mitad
+            // de la animación, en vez de aparecer de golpe a mitad del giro.
             if (_statsAndArtCanvasGroup != null)
             {
                 float fadeT = Mathf.InverseLerp(0.4f, 1f, p);
@@ -378,14 +376,13 @@ public class CardDetailPanel : MonoBehaviour
             _statsAndArtCanvasGroup.interactable = true;
         }
 
-        // Respaldo por si revealDuration es 0 o el callback nunca llegó a p > 0.4f.
-        if (!spriteAssigned && cardArt != null) cardArt.sprite = card.artwork;
-
         flyingCard.localRotation = Quaternion.identity;
 
-        // El "flyingCard" ya terminó su trabajo - lo ocultamos y dejamos que
-        // cardArt (dentro del layout normal del panel) muestre la imagen final.
+        // El "flyingCard" ya terminó su trabajo - lo ocultamos y en su lugar
+        // aparece la carta COMPLETA e inclinable (con marco, stats y todos los
+        // efectos holo), que sustituye al artwork suelto de antes.
         flyingCard.gameObject.SetActive(false);
+        ShowInspectCard(card);
 
         _routine = null;
     }
@@ -408,18 +405,22 @@ public class CardDetailPanel : MonoBehaviour
     {
         if (_slideRoutine != null) StopCoroutine(_slideRoutine);
 
+        // La carta completa se retira de inmediato; el vuelo de regreso lo hace
+        // el flyingCard (imagen simple), igual que antes.
+        HideInspectCard();
+
         var card = _lastEntry?.card;
         bool hasFlightData = card != null && _lastSourceRect != null;
 
         float startAlpha = backdropGroup.alpha;
         Vector2 panelFrom = infoPanel.anchoredPosition;
-        Vector2 panelTo = _infoPanelRestPos + new Vector2(infoPanelOffscreenOffset, 0f);
+        Vector2 panelTo = _infoPanelRestPos + new Vector2(OffscreenOffset(), 0f);
 
         if (hasFlightData)
         {
             flyingCard.SetAsLastSibling();
             flyingCard.gameObject.SetActive(true);
-            flyingCardImage.sprite = card.artwork;
+            SetupFlyingCard(card);
             flyingCard.localRotation = Quaternion.identity;
             flyingCard.anchoredPosition = _lastFinalPos;
             flyingCard.sizeDelta = finalCardSize;
@@ -467,7 +468,7 @@ public class CardDetailPanel : MonoBehaviour
                         if (!swappedOnOut)
                         {
                             swappedOnOut = true;
-                            flyingCardImage.sprite = genericCardBack;
+                            SetFlyingFace(false);
                             flyingCard.localRotation = Quaternion.Euler(0, -90f, 0);
                         }
                         float re = EaseOutQuad((rp - 0.5f) / 0.5f);
@@ -484,7 +485,7 @@ public class CardDetailPanel : MonoBehaviour
                 }
             });
 
-            if (!swappedOnOut) flyingCardImage.sprite = genericCardBack;
+            if (!swappedOnOut) SetFlyingFace(false);
             flyingCard.localRotation = Quaternion.Euler(0, 0, maxTilt);
 
             // ── Fase B: arco de regreso con giro reverso→frente en el trayecto ──
@@ -522,7 +523,7 @@ public class CardDetailPanel : MonoBehaviour
                         if (!swappedToFront)
                         {
                             swappedToFront = true;
-                            flyingCardImage.sprite = card.artwork;
+                            SetFlyingFace(true);
                             flyingCard.localRotation = Quaternion.Euler(0, -90f, 0);
                         }
                         float re = EaseOutQuad((rp - 0.5f) / 0.5f);
@@ -539,7 +540,7 @@ public class CardDetailPanel : MonoBehaviour
                 }
             });
 
-            if (!swappedToFront) flyingCardImage.sprite = card.artwork;
+            if (!swappedToFront) SetFlyingFace(true);
 
             flyingCard.gameObject.SetActive(false);
         }
@@ -608,37 +609,188 @@ public class CardDetailPanel : MonoBehaviour
         return local;
     }
 
+    // ── Visor de carta completa e inclinable ─────────────────────────────
+
+    /// <summary>Ancho lógico actual del modal (para offsets responsivos).</summary>
+    private float OffscreenOffset()
+        => Mathf.Max(infoPanelOffscreenOffset, _modalRootRect != null ? _modalRootRect.rect.width : 0f);
+
+    /// <summary>Construye una sola vez la jerarquía del visor: un área
+    /// estacionaria que capta el puntero + la carta completa (que rota).</summary>
+    private void EnsureInspectCard()
+    {
+        if (_inspectWrapper != null) return;
+        if (_cardPrefab == null) _cardPrefab = Resources.Load<GameObject>("Prefabs/Card");
+        if (_cardPrefab == null)
+        {
+            Debug.LogWarning("CardDetailPanel: no se encontró Resources/Prefabs/Card para el visor.");
+            return;
+        }
+
+        // Wrapper estacionario, en el mismo espacio y anclas que flyingCard.
+        var wrapGO = new GameObject("InspectCard", typeof(RectTransform));
+        _inspectWrapper = (RectTransform)wrapGO.transform;
+        _inspectWrapper.SetParent(flyingCard.parent, false);
+        _inspectWrapper.anchorMin = flyingCard.anchorMin;
+        _inspectWrapper.anchorMax = flyingCard.anchorMax;
+        _inspectWrapper.pivot = new Vector2(0.5f, 0.5f);
+
+        // Carta completa (esta es la que se inclina). Se mantiene a su tamaño
+        // NATIVO y centrada; el agrandado se hace con localScale en ShowInspectCard
+        // para no romper el layout interno del prefab.
+        var cardGO = Instantiate(_cardPrefab, _inspectWrapper);
+        _inspectCardRT = (RectTransform)cardGO.transform;
+        _inspectCardRT.anchorMin = _inspectCardRT.anchorMax = new Vector2(0.5f, 0.5f);
+        _inspectCardRT.pivot = new Vector2(0.5f, 0.5f);
+        _inspectCardRT.sizeDelta = CardNativeSize;
+        _inspectCardRT.anchoredPosition3D = Vector3.zero; // resetea también z (el prefab trae z≠0)
+        _inspectCardRT.localRotation = Quaternion.identity;
+        _inspectDisplay = cardGO.GetComponent<CardDisplay>();
+
+        // Captador de arrastre transparente ENCIMA de la carta, con la interacción.
+        var catchGO = new GameObject("DragCatcher", typeof(RectTransform), typeof(Image), typeof(InspectableCard));
+        var catchRT = (RectTransform)catchGO.transform;
+        catchRT.SetParent(_inspectWrapper, false);
+        catchRT.anchorMin = Vector2.zero; catchRT.anchorMax = Vector2.one;
+        catchRT.offsetMin = Vector2.zero; catchRT.offsetMax = Vector2.zero;
+        catchRT.pivot = new Vector2(0.5f, 0.5f);
+        catchRT.SetAsLastSibling();
+
+        var img = catchGO.GetComponent<Image>();
+        img.color = new Color(0f, 0f, 0f, 0f); // invisible pero recibe el puntero
+        img.raycastTarget = true;
+
+        _inspectComp = catchGO.GetComponent<InspectableCard>();
+        _inspectComp.target = _inspectCardRT;
+
+        wrapGO.SetActive(false);
+    }
+
+    /// <summary>Muestra la carta completa e inclinable en la posición de reposo,
+    /// sustituyendo al artwork suelto anterior.</summary>
+    private void ShowInspectCard(CardData card)
+    {
+        EnsureInspectCard();
+        if (_inspectWrapper == null) return;
+
+        // Agranda la carta preservando su aspecto nativo (localScale, no estirar).
+        // El área de golpe (wrapper) coincide con el tamaño visible de la carta.
+        float scale = finalCardSize.y / CardNativeSize.y;
+        if (_inspectCardRT != null) _inspectCardRT.localScale = new Vector3(scale, scale, 1f);
+
+        _inspectWrapper.anchoredPosition = _lastFinalPos;
+        _inspectWrapper.sizeDelta = CardNativeSize * scale;
+        _inspectWrapper.SetSiblingIndex(flyingCard.GetSiblingIndex());
+
+        if (_inspectDisplay != null)
+        {
+            _inspectDisplay.Setup(card);
+            _inspectDisplay.SetPosition(CardPosition.FaceUpAttack);
+        }
+
+        _inspectWrapper.gameObject.SetActive(true);
+        if (_inspectComp != null) _inspectComp.ResetView();
+    }
+
+    private void HideInspectCard()
+    {
+        if (_inspectWrapper != null) _inspectWrapper.gameObject.SetActive(false);
+    }
+
+    /// <summary>Construye una vez la carta COMPLETA que vuela: hija de flyingCard,
+    /// a tamaño nativo y auto-escalada para llenarlo. Apaga el artwork suelto.</summary>
+    private void EnsureFlyingCard()
+    {
+        if (_flyingDisplay != null) return;
+        if (_cardPrefab == null) _cardPrefab = Resources.Load<GameObject>("Prefabs/Card");
+        if (_cardPrefab == null)
+        {
+            Debug.LogWarning("CardDetailPanel: no se encontró Resources/Prefabs/Card para el vuelo.");
+            return;
+        }
+
+        var cardGO = Instantiate(_cardPrefab, flyingCard);
+        var rt = (RectTransform)cardGO.transform;
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = CardNativeSize;
+        rt.anchoredPosition3D = Vector3.zero;
+        rt.localRotation = Quaternion.identity;
+
+        var fitter = cardGO.AddComponent<RectScaleFitter>();
+        fitter.source = flyingCard;
+        fitter.nativeHeight = CardNativeSize.y;
+
+        _flyingDisplay = cardGO.GetComponent<CardDisplay>();
+
+        // El artwork suelto que volaba antes deja de dibujarse; ahora vuela la
+        // carta completa (marco, stats y efectos).
+        if (flyingCardImage != null) flyingCardImage.enabled = false;
+    }
+
+    /// <summary>Prepara la carta voladora con los datos de la carta actual.</summary>
+    private void SetupFlyingCard(CardData card)
+    {
+        EnsureFlyingCard();
+        if (_flyingDisplay != null)
+        {
+            _flyingDisplay.Setup(card);
+            _flyingDisplay.SetPosition(CardPosition.FaceUpAttack);
+        }
+    }
+
+    /// <summary>Muestra el frente (carta completa) o el dorso durante el giro.</summary>
+    private void SetFlyingFace(bool front)
+    {
+        if (_flyingDisplay != null)
+            _flyingDisplay.SetPosition(front ? CardPosition.FaceUpAttack : CardPosition.FaceDownAttack);
+    }
+
+    /// <summary>
+    /// Reconstruye el contenido del panel de detalle con el diseño Neo-Kemet,
+    /// desactivando el maquetado antiguo (que se veía mal). No toca la carta ni
+    /// las animaciones: el panel nuevo vive dentro del mismo infoPanel que ya se
+    /// desliza, y su fade de aparición se hace sobre ContentGroup (que pasa a ser
+    /// el _statsAndArtCanvasGroup usado por la secuencia de revelado).
+    /// </summary>
+    private void BuildStyledInfoPanel()
+    {
+        if (infoPanel == null) return;
+
+        TMP_FontAsset font = nameText != null ? nameText.font : null;
+
+        // Apaga TODO el maquetado antiguo: recorre los hijos actuales del panel y
+        // los desactiva, dejando solo el botón de cerrar. Así desaparecen también
+        // las cajas/contenedores sueltos (stat boxes vacías, líneas, guardian
+        // stars, etc.) que no tenían referencia serializada. El fondo info_library
+        // es un COMPONENTE del panel, no un hijo, así que se conserva.
+        GameObject keepClose = closeButton != null ? closeButton.gameObject : null;
+        for (int i = infoPanel.childCount - 1; i >= 0; i--)
+        {
+            GameObject child = infoPanel.GetChild(i).gameObject;
+            if (child != keepClose) child.SetActive(false);
+        }
+
+        // Construye el panel nuevo dentro del infoPanel (nuevo hijo, queda activo).
+        _styledInfo = infoPanel.gameObject.AddComponent<CardDetailInfoPanel>();
+        _styledInfo.Build(infoPanel, font);
+
+        // El fade de revelado usa ContentGroup del panel nuevo.
+        _statsAndArtCanvasGroup = _styledInfo.ContentGroup;
+
+        // A partir de aquí los grupos legados no deben tocarse: al ponerlos en
+        // null, todos los `if (... != null) ...SetActive(...)` de la secuencia
+        // quedan como no-ops y no reactivan el maquetado viejo.
+        typeAndGuardianGroup = null;
+        statsAndArtGroup = null;
+    }
+
     private void FillStaticText(LibraryEntry entry)
     {
+        if (_styledInfo == null) return;
         var card = entry.card;
-        if (nameText != null) nameText.text = card.cardName;
-        if (idText != null) idText.text = $"ID: {card.cardId:000}";
-        if (copiesText != null) copiesText.text = $"Copias: {entry.Copies}";
-        if (sourcesText != null) sourcesText.text = BuildSourcesText(card, entry.state);
-
-        if (card.IsMonster)
-        {
-            if (atkText != null) atkText.text = $"ATK: {card.baseAtk}";
-            if (defText != null) defText.text = $"DEF: {card.baseDef}";
-            if (levelText != null) levelText.text = $"Nivel: {card.stars}";
-            if (typeText != null) typeText.text = $"Tipo: {card.monsterType}";
-            if (attributeText != null) attributeText.text = $"Atributo: {card.attribute}";
-        }
-        else
-        {
-            // Magia/Equipo/Ritual/Especial: sin ATK/DEF/nivel; muestra la categoría.
-            if (atkText != null) atkText.text = "";
-            if (defText != null) defText.text = "";
-            if (levelText != null) levelText.text = "";
-            if (typeText != null) typeText.text = card.CategoryLabel;
-            if (attributeText != null) attributeText.text = "";
-        }
-
-        // El botón sólo tiene sentido si esta carta ES un monstruo Y tiene un
-        // modelo 3D asignado en su CardData. Magias/Equipos nunca lo muestran,
-        // y monstruos aún sin modelar tampoco.
-        if (view3DButton != null)
-            view3DButton.gameObject.SetActive(card.IsMonster && card.monsterModelPrefab != null);
+        bool show3D = card.IsMonster && card.monsterModelPrefab != null;
+        _styledInfo.Fill(entry, BuildSourcesText(card, entry.state), show3D, OnView3DClicked);
     }
 
     private string BuildSourcesText(CardData card, CardState state)

@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Modelo en-runtime de uno de los dos participantes del duelo.
-/// No es MonoBehaviour; es un objeto de datos puro que DuelManager instancia.
+/// No es MonoBehaviour; es un objeto de datos puro que DuelController instancia.
 /// </summary>
 public class Duelist
 {
@@ -35,6 +35,17 @@ public class Duelist
     // juego solo bonifican ATK (igual que en Forbidden Memories), así que
     // DEF únicamente acumula equipBonus de fusión.
     public int[] MonsterCurrentDef { get; } = new int[5];
+
+    // Reglas de turno por monstruo (se resetean al inicio del turno del dueño):
+    //   HasAttacked        → cada monstruo solo declara UN ataque por turno.
+    //   HasChangedPosition → solo UN cambio de posición por turno, y nunca
+    //                        después de haber atacado ese mismo turno.
+    public bool[] MonsterHasAttacked { get; } = new bool[5];
+    public bool[] MonsterHasChangedPosition { get; } = new bool[5];
+
+    // Estrella Guardiana ELEGIDA al invocar cada monstruo. La ventaja cíclica
+    // entre estrellas se evalúa POR BATALLA (atacante vs defensor), no al invocar.
+    public GuardianStar[] MonsterStars { get; } = new GuardianStar[5];
 
     // Estadísticas para rango
     public int DamageTaken { get; private set; }
@@ -104,7 +115,8 @@ public class Duelist
     // ── Zona de monstruos ──────────────────────────────────────
 
     /// <summary>Coloca una carta en el primer slot libre. Devuelve el índice o -1.</summary>
-    public int PlaceMonster(CardData card, CardPosition pos, int atk, int def = 0)
+    public int PlaceMonster(CardData card, CardPosition pos, int atk, int def = 0,
+                            GuardianStar star = GuardianStar.Sun)
     {
         for (int i = 0; i < 5; i++)
         {
@@ -114,10 +126,24 @@ public class Duelist
                 MonsterPositions[i] = pos;
                 MonsterCurrentAtk[i] = atk;
                 MonsterCurrentDef[i] = def;
+                MonsterStars[i] = star;
                 return i;
             }
         }
         return -1;
+    }
+
+    /// <summary>Coloca una carta en un slot CONCRETO (elegido con el selector).</summary>
+    public bool PlaceMonsterAt(int slot, CardData card, CardPosition pos, int atk, int def = 0,
+                               GuardianStar star = GuardianStar.Sun)
+    {
+        if (slot < 0 || slot >= 5 || MonsterZone[slot] != null) return false;
+        MonsterZone[slot] = card;
+        MonsterPositions[slot] = pos;
+        MonsterCurrentAtk[slot] = atk;
+        MonsterCurrentDef[slot] = def;
+        MonsterStars[slot] = star;
+        return true;
     }
 
     public void RemoveMonster(int slot)
@@ -125,7 +151,38 @@ public class Duelist
         MonsterZone[slot] = null;
         MonsterCurrentAtk[slot] = 0;
         MonsterCurrentDef[slot] = 0;
+        MonsterHasAttacked[slot] = false;
+        MonsterHasChangedPosition[slot] = false;
         MonstersDestroyed++;
+    }
+
+    /// <summary>
+    /// Saca un monstruo del campo para usarlo como MATERIAL DE FUSIÓN.
+    /// A diferencia de RemoveMonster, NO cuenta como "monstruo destruido"
+    /// (no infla las estadísticas del rango).
+    /// </summary>
+    public CardData TakeMonsterForFusion(int slot)
+    {
+        var card = MonsterZone[slot];
+        MonsterZone[slot] = null;
+        MonsterCurrentAtk[slot] = 0;
+        MonsterCurrentDef[slot] = 0;
+        MonsterHasAttacked[slot] = false;
+        MonsterHasChangedPosition[slot] = false;
+        return card;
+    }
+
+    /// <summary>
+    /// Resetea los flags por-monstruo al INICIO del turno del dueño:
+    /// todos pueden volver a atacar y a cambiar de posición una vez.
+    /// </summary>
+    public void ResetTurnFlags()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            MonsterHasAttacked[i] = false;
+            MonsterHasChangedPosition[i] = false;
+        }
     }
 
     /// <summary>
@@ -174,8 +231,14 @@ public class Duelist
         return affected;
     }
 
-    // ── Zona de magias ─────────────────────────────────────────
+    // ── Zona de magias/trampas ─────────────────────────────────
 
+    /// <summary>
+    /// Coloca una carta en la zona de Magias/Trampas (la usan las TRAMPAS, que
+    /// esperan boca abajo). Las magias normales NO ocupan zona: se activan y
+    /// se consumen al instante (regla del juego). Devuelve el slot o -1 si
+    /// la zona está llena.
+    /// </summary>
     public int PlaceSpell(CardData card)
     {
         for (int i = 0; i < 5; i++)
@@ -183,12 +246,22 @@ public class Duelist
             if (SpellZone[i] == null)
             {
                 SpellZone[i] = card;
-                SpellsUsed++;
                 return i;
             }
         }
         return -1;
     }
+
+    /// <summary>Coloca una magia/trampa en un slot CONCRETO de la zona de magias.</summary>
+    public bool PlaceSpellAt(int slot, CardData card)
+    {
+        if (slot < 0 || slot >= 5 || SpellZone[slot] != null) return false;
+        SpellZone[slot] = card;
+        return true;
+    }
+
+    /// <summary>Cuenta una magia usada para las estadísticas del rango.</summary>
+    public void RegisterSpell() => SpellsUsed++;
 
     // ── Fusión ─────────────────────────────────────────────────
 

@@ -1,12 +1,12 @@
 /// <summary>
 /// Puente entre "elegir un rival" (menú, Duelo Libre, campaña) y la escena de
-/// duelo. Guarda a QUIÉN enfrentar y carga la DuelScene; el DuelManager lee esa
+/// duelo. Guarda a QUIÉN enfrentar y carga la DuelScene; el DuelController lee esa
 /// selección al arrancar en vez de tener un rival fijo en la escena.
 ///
 ///   • Duelo normal:  DuelLauncher.Launch(opponentData)
 ///   • Duelo especial: DuelLauncher.Launch(opponentData, duelConfigConOverrides)
 ///
-/// Es estático (la selección sobrevive al cambio de escena). El DuelManager
+/// Es estático (la selección sobrevive al cambio de escena). El DuelController
 /// consume y limpia la selección al iniciar el duelo.
 /// </summary>
 public static class DuelLauncher
@@ -25,7 +25,7 @@ public static class DuelLauncher
         GameNavigator.EnsureExists().GoTo(GameScenes.Duel);
     }
 
-    /// <summary>Limpia la selección (la consume el DuelManager al empezar).</summary>
+    /// <summary>Limpia la selección (la consume el DuelController al empezar).</summary>
     public static void Clear()
     {
         PendingOpponent = null;

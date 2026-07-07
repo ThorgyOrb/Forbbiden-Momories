@@ -34,6 +34,8 @@ public class LibraryManager : MonoBehaviour
     {
         LibraryCatalog.EnsureLoaded();
 
+        EnsureResponsive();
+
         if (searchInput != null)
             searchInput.onValueChanged.AddListener(OnSearchChanged);
 
@@ -42,6 +44,21 @@ public class LibraryManager : MonoBehaviour
 
         RefreshGrid();
         UpdateHeader();
+    }
+
+    /// <summary>
+    /// Garantiza que el canvas del catálogo mantenga el diseño de referencia
+    /// dentro de cuadro en cualquier resolución/relación de aspecto, añadiendo
+    /// <see cref="ResponsiveCanvasMatch"/> al CanvasScaler si aún no lo tiene.
+    /// </summary>
+    private void EnsureResponsive()
+    {
+        CanvasScaler scaler = null;
+        if (gridContainer != null) scaler = gridContainer.GetComponentInParent<CanvasScaler>();
+        if (scaler == null) scaler = FindObjectOfType<CanvasScaler>();
+
+        if (scaler != null && scaler.GetComponent<ResponsiveCanvasMatch>() == null)
+            scaler.gameObject.AddComponent<ResponsiveCanvasMatch>();
     }
 
     // ── Eventos de UI ────────────────────────────────────────────────────

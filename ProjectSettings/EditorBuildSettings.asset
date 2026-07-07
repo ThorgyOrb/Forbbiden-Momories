@@ -24,11 +24,11 @@ EditorBuildSettings:
     path: Assets/Scenes/LibraryScene.unity
     guid: ee9a162f53e251846a0f1fc623803051
   - enabled: 1
-    path: Assets/Scenes/New Scene.unity
-    guid: dcace667fc1552a4480a0c261bdc4231
-  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/StoryScene.unity
+    guid: 7ed74da4a54b064459352e0c4478fa0e
   - enabled: 1
     path: Assets/Scenes/WireframeStage.unity
     guid: 23b6878e318f80f4aaf107493a0b47a6

@@ -2,7 +2,7 @@ using System.Linq;
 
 /// <summary>
 /// Ejecuta el efecto de una carta mágica (Spell) normal al jugarla.
-/// No es MonoBehaviour — DuelManager lo llama directamente, igual que DuelAI.
+/// No es MonoBehaviour — DuelController lo llama directamente, igual que DuelAI.
 ///
 /// Las cartas de Equipo NO pasan por aquí — se resuelven dentro de la cadena
 /// de fusión (ver FusionDatabase.ResolveStep, caso FusionStepType.Equip),

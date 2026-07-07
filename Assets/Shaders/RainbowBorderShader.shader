@@ -14,6 +14,13 @@ Shader "YGO/RainbowBorderShader"
         _Saturation  ("Saturation",                 Range(0,1))   = 0.9
         _Brightness  ("Brightness",                 Range(0,2))   = 1.0
 
+        [Header(ModoCircuitoNeoKemet)]
+        // 0 = serpiente arcoíris clásica | 1 = circuito duotono: aro dorado con
+        // pulsos turquesa que recorren el marco como paquetes de datos.
+        [Toggle] _Duotone ("Duotone Circuit Mode",  Float)        = 0
+        _DuoColorA   ("Circuito (base oro)",        Color)        = (0.91, 0.72, 0.29, 1)
+        _DuoColorB   ("Pulso (turquesa)",           Color)        = (0.22, 0.95, 0.86, 1)
+
         _StencilComp     ("Stencil Comparison",Float) = 8
         _Stencil         ("Stencil ID",        Float) = 0
         _StencilOp       ("Stencil Operation", Float) = 0
@@ -80,6 +87,10 @@ Shader "YGO/RainbowBorderShader"
             float _Saturation;
             float _Brightness;
 
+            float  _Duotone;
+            fixed4 _DuoColorA;
+            fixed4 _DuoColorB;
+
             v2f vert(appdata v)
             {
                 v2f o;
@@ -106,6 +117,21 @@ Shader "YGO/RainbowBorderShader"
                 float2 d = i.uv - 0.5;
                 float angle = atan2(d.y, d.x) / (2.0 * UNITY_PI); // -0.5..0.5
                 angle = frac(angle + 0.5);                        // 0..1 alrededor del marco
+
+                if (_Duotone > 0.5)
+                {
+                    // Circuito Neo-Kemet: el marco es un aro de oro tenue y uno o
+                    // más pulsos turquesa lo recorren dejando una cola que se
+                    // apaga, como un paquete de datos viajando por la pista.
+                    float p = frac(angle * _BandCount - _Time.y * _Speed);
+                    float pulse = exp(-p * 6.0);
+
+                    float3 circuit = _DuoColorA.rgb * _Brightness * 0.55;
+                    circuit += _DuoColorB.rgb * pulse * _Brightness * 1.25;
+                    circuit += pow(pulse, 8.0) * 0.8; // chispa blanca en la cabeza
+
+                    return fixed4(circuit, mask.a);
+                }
 
                 // El matiz avanza con el tiempo: la franja de color recorre todo
                 // el contorno de forma continua, como una serpiente arcoiris.

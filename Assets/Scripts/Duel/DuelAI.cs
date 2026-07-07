@@ -3,7 +3,7 @@ using System.Linq;
 
 /// <summary>
 /// Cerebro de la IA. Recibe el estado del duelo y devuelve la acción a ejecutar.
-/// Sin MonoBehaviour — DuelManager la llama directamente.
+/// Sin MonoBehaviour — DuelController la llama directamente.
 ///
 /// El COMPORTAMIENTO depende del perfil <see cref="AIStrategy"/> del oponente:
 ///   • Aggressive — invoca el más fuerte en ataque y ataca siempre que puede.

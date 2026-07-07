@@ -15,22 +15,35 @@ MonoBehaviour:
   cardId: 5
   cardName: Monster Egg
   artwork: {fileID: 21300000, guid: 810ec50226121684d98b54fd58b4252d, type: 3}
+  rarity: 2
   cardCategory: 0
+  attribute: 0
+  description: 
+  fusionGroup: 
   monsterType: 1
   baseAtk: 1800
   baseDef: 1200
   stars: 6
   starA: 1
   starB: 2
-  attribute: 0
+  favoriteTerrain: 0
   monsterModelPrefab: {fileID: 7178784996046058431, guid: 12881647ef5169641a90e4721f7705a3, type: 3}
-  rarity: 0
-  fusionGroup: 
-  equipAtkBonus: 0
-  equipDefBonus: 0
+  spellKind: 0
   spellEffect: 0
   spellValue: 0
+  fieldTerrain: 0
   spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
   sources:
   - sourceType: 0
     opponentId: 1
