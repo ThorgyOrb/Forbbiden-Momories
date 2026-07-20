@@ -34,6 +34,10 @@ public class Duel3DCardView : MonoBehaviour
         }
     }
 
+    // Atenúa MUCHO los efectos holo en la mesa: a pleno saturan a blanco (aditivos)
+    // y cubren demasiada área. El grid de la biblioteca queda en 1.
+    private const float DuelHoloScale = 0.25f;
+
     /// <summary>Pinta la carta con su posición (boca abajo ⇒ se ve el dorso).</summary>
     public void Show(CardData card, CardPosition pos)
     {
@@ -42,6 +46,7 @@ public class Duel3DCardView : MonoBehaviour
         {
             Display.Setup(card);
             Display.SetPosition(pos);
+            Display.SetHoloIntensityScale(DuelHoloScale);
         }
         ApplyOrientation(pos);
     }

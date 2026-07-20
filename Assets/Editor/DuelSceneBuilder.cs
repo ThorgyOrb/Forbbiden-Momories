@@ -54,7 +54,7 @@ public static class DuelSceneBuilder
     static readonly Color StoneEngraved = new Color(0.44f, 0.33f, 0.18f); // rieles laterales grabados
     static readonly Color CenterGold    = new Color(0.80f, 0.66f, 0.34f); // franja central del altar
 
-    const string CardPrefabPath = "Assets/Resources/Prefabs/Card.prefab";
+    const string CardPrefabPath = "Assets/Resources/Prefabs/CardMonsterV2.prefab";
 
     public static void BuildInScene(DuelController controller)
     {

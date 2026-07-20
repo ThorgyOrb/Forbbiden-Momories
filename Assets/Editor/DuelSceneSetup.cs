@@ -69,6 +69,11 @@ public static class DuelSceneSetup
         if (!ok) return;
 
         DuelSceneBuilder.BuildInScene(controller);
-        EditorSceneManager.MarkSceneDirty(controller.gameObject.scene);
+        // Guardar aquí mismo: BuildInScene solo marca la escena como sucia, y si el
+        // usuario cierra sin Ctrl+S se pierde la reconstrucción (y con ella el swap
+        // al prefab de carta nuevo). Guardar evita esa trampa.
+        var scene = controller.gameObject.scene;
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
     }
 }

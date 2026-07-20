@@ -45,15 +45,15 @@ public class CardDetailInfoPanel : MonoBehaviour
         // ya es oscura y el texto se lee directamente sobre ella, integrándose con
         // el marco. Anclas normalizadas → aguanta cualquier tamaño.
         _content = MakeRect("InfoContent", parent);
-        _content.anchorMin = new Vector2(0.485f, 0.12f);
-        _content.anchorMax = new Vector2(0.865f, 0.88f);
+        _content.anchorMin = new Vector2(0.485f, 0.10f);
+        _content.anchorMax = new Vector2(0.865f, 0.80f);
         _content.offsetMin = Vector2.zero;
         _content.offsetMax = Vector2.zero;
         ContentGroup = _content.gameObject.AddComponent<CanvasGroup>();
 
         var vlg = _content.gameObject.AddComponent<VerticalLayoutGroup>();
         vlg.padding = new RectOffset(6, 6, 6, 6);
-        vlg.spacing = 11f;
+        vlg.spacing = 14f;
         vlg.childAlignment = TextAnchor.UpperLeft;
         vlg.childControlWidth = true;
         vlg.childControlHeight = true;
@@ -108,20 +108,20 @@ public class CardDetailInfoPanel : MonoBehaviour
 
     private void Eyebrow(string text, Color color)
     {
-        var t = MakeText(_content, "Eyebrow", 16f, color, FontStyles.UpperCase, TextAlignmentOptions.Left);
+        var t = MakeText(_content, "Eyebrow", 20f, color, FontStyles.UpperCase, TextAlignmentOptions.Left);
         t.characterSpacing = 8f;
         t.text = text;
     }
 
     private void Title(string text)
     {
-        var t = MakeText(_content, "Title", 40f, Bright, FontStyles.Bold, TextAlignmentOptions.Left);
+        var t = MakeText(_content, "Title", 52f, Bright, FontStyles.Bold, TextAlignmentOptions.Left);
         t.text = text;
     }
 
     private void Section(string text)
     {
-        var t = MakeText(_content, "Section", 15f, Gold, FontStyles.UpperCase, TextAlignmentOptions.Left);
+        var t = MakeText(_content, "Section", 18f, Gold, FontStyles.UpperCase, TextAlignmentOptions.Left);
         t.characterSpacing = 6f;
         t.text = text;
         Spacer(2f);
@@ -129,7 +129,7 @@ public class CardDetailInfoPanel : MonoBehaviour
 
     private void Body(string text)
     {
-        var t = MakeText(_content, "Body", 16f, Muted, FontStyles.Normal, TextAlignmentOptions.TopLeft);
+        var t = MakeText(_content, "Body", 20f, Muted, FontStyles.Normal, TextAlignmentOptions.TopLeft);
         t.text = text;
     }
 
@@ -147,13 +147,13 @@ public class CardDetailInfoPanel : MonoBehaviour
         h.childForceExpandHeight = false;
         h.childAlignment = TextAnchor.MiddleLeft;
 
-        var lbl = MakeText(rt, "Label", 16f, Muted, FontStyles.UpperCase, TextAlignmentOptions.Left);
+        var lbl = MakeText(rt, "Label", 19f, Muted, FontStyles.UpperCase, TextAlignmentOptions.Left);
         lbl.characterSpacing = 3f;
         lbl.text = label;
         var lblLE = lbl.gameObject.AddComponent<LayoutElement>();
-        lblLE.minWidth = 130f; lblLE.preferredWidth = 130f; lblLE.flexibleWidth = 0f;
+        lblLE.minWidth = 155f; lblLE.preferredWidth = 155f; lblLE.flexibleWidth = 0f;
 
-        var val = MakeText(rt, "Value", 19f, Bright, FontStyles.Bold, TextAlignmentOptions.Left);
+        var val = MakeText(rt, "Value", 24f, Bright, FontStyles.Bold, TextAlignmentOptions.Left);
         val.text = value;
         val.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
     }
@@ -191,13 +191,13 @@ public class CardDetailInfoPanel : MonoBehaviour
         v.childAlignment = TextAnchor.MiddleCenter;
 
         var le = go.AddComponent<LayoutElement>();
-        le.minHeight = 70f; le.flexibleWidth = 1f;
+        le.minHeight = 84f; le.flexibleWidth = 1f;
 
-        var lbl = MakeText(go.transform, "Label", 14f, Muted, FontStyles.UpperCase, TextAlignmentOptions.Center);
+        var lbl = MakeText(go.transform, "Label", 17f, Muted, FontStyles.UpperCase, TextAlignmentOptions.Center);
         lbl.characterSpacing = 6f;
         lbl.text = label;
 
-        var val = MakeText(go.transform, "Value", 34f, accent, FontStyles.Bold, TextAlignmentOptions.Center);
+        var val = MakeText(go.transform, "Value", 46f, accent, FontStyles.Bold, TextAlignmentOptions.Center);
         val.text = value;
 
         // Acento neón inferior (oro/turquesa) para integrarlo con el marco.

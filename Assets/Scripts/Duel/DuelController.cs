@@ -330,8 +330,10 @@ public class DuelController : MonoBehaviour
         _raisedIndex = index;
         _raisedFaceDown = false;
         screen.HideHandCursor();
-        // Se alza a Y=-50 (para no tapar la mano) conservando el tamaño de la mano.
-        yield return screen.RaiseHandCard(index, new Vector2(0f, -50f), 1f);
+        // La carta 3D se LEVANTA desde su posición en la mano (mismo tamaño que la fusión).
+        Vector3 raiseStart = board.HandStartWorld(screen.HandCardScreenPos(index));
+        screen.SetHandCardVisible(index, false);   // desaparece de la mano al levantarse
+        yield return board.ShowcaseRaise(card, _raisedFaceDown, raiseStart);
         screen.ShowFlipArrows(true, 100f);   // flechas al centro de la carta
         screen.ShowCardInfo(card);   // el InfoBar de la mano sigue visible
         _busy = false;
@@ -352,18 +354,31 @@ public class DuelController : MonoBehaviour
     {
         _busy = true;
         _raisedFaceDown = !_raisedFaceDown;
-        yield return screen.FlipRaised(_raisedFaceDown);
+        yield return board.ShowcaseFlip(_raisedFaceDown);
         _busy = false;
     }
 
     /// <summary>Baja la carta alzada (o el selector de casilla) y vuelve a la mano.</summary>
-    private void CancelToHand()
+    private void CancelToHand() => StartCoroutine(CancelToHandRoutine());
+
+    private IEnumerator CancelToHandRoutine()
     {
+        _busy = true;
         screen.ShowFlipArrows(false);
         board.HideSlotCursor();
+
+        // Si hay una carta 3D alzada, BAJA de vuelta a su hueco en la mano (animado);
+        // si no (p. ej. cancelando desde el selector de casilla), retiro directo.
+        if (board.HasShowcase && _raisedIndex >= 0)
+            yield return board.ShowcaseLowerToHand(
+                board.HandStartWorld(screen.HandCardScreenPos(_raisedIndex)));
+        else
+            board.ClearShowcase();   // por si quedó la carta 3D del showcase
+
         _raisedIndex = -1;
-        screen.RefreshHand(Player.Hand);
+        screen.RefreshHand(Player.Hand);   // restaura la carta 2D en su hueco
         RefreshFusionBadges();
+        _busy = false;
         EnterHandContext();
     }
 
@@ -387,16 +402,15 @@ public class DuelController : MonoBehaviour
         }
     }
 
-    /// <summary>La carta alzada baja de vuelta a la mano (para no tapar el campo)
-    /// y se pasa a elegir la casilla; la cara/índice elegidos se conservan.</summary>
+    /// <summary>Retira la carta 3D del showcase y pasa a elegir la casilla;
+    /// la cara/índice elegidos se conservan.</summary>
     private IEnumerator LowerThenSlotSelect(bool monsterRow)
     {
-        _busy = true;
         screen.ShowFlipArrows(false);
-        yield return screen.LowerRaisedToHand(_raisedIndex, Player.Hand.Count);
-        screen.RefreshHand(Player.Hand);          // deja la mano exacta otra vez
-        _busy = false;
+        board.ClearShowcase();   // retira la carta 3D del showcase mientras se elige casilla
+        screen.RefreshHand(Player.Hand);   // restaura la carta que se había levantado de la mano
         EnterSlotSelect(monsterRow);
+        yield break;
     }
 
     // ── Contexto SELECTOR DE CASILLA ──────────────────────────────────────
@@ -505,10 +519,13 @@ public class DuelController : MonoBehaviour
         _busy = true;
         screen.HideFieldBar();
         screen.HideCardInfo();
+        // La cámara vuelve a la vista de juego y luego la carta se LEVANTA desde la mano
+        // (mientras el resto de la mano se retira).
+        yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
+        Vector3 summonStart = board.HandStartWorld(screen.HandCardScreenPos(handIndex));
         yield return DuelTween.Parallel(this,
-            screen.RaiseHandCard(handIndex, new Vector2(0f, 40f), 1f),
-            screen.SlideHandDown(0.3f),
-            board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f));
+            board.ShowcaseRaise(card, faceDown, summonStart),
+            screen.SlideHandDown(0.3f));
 
         _ctx = KeyCtx.Star;
         yield return WaitForStarChoice(card);
@@ -529,14 +546,12 @@ public class DuelController : MonoBehaviour
         _hasSummonedThisTurn = true;
 
         screen.ShowFlipArrows(false);
-        Vector3 slotWorld = board.GetPlayerMonsterSlotWorld(slot);
 
-        // 1) La MISMA carta SUBE y CAE (con gravedad) hasta su casilla, y en el
-        //    último tramo se ACUESTA en la mesa como la carta 3D — un solo
-        //    movimiento continuo con la cámara QUIETA (en la vista de juego).
-        yield return screen.FlyRaisedAndLand(board.Camera, slotWorld, 0.72f);
+        // 1) La carta 3D del showcase vuela a su casilla (mismo tamaño de siempre) y
+        //    queda registrada como el monstruo 3D del tablero.
+        yield return board.ShowcaseToSlot(slot, Player);
 
-        // 2) La carta queda 100% colocada como monstruo 3D en su casilla.
+        // 2) Normaliza el campo (la carta ya está colocada).
         board.SyncField(Player, Opponent);
         screen.RefreshHand(Player.Hand);
 
@@ -581,6 +596,7 @@ public class DuelController : MonoBehaviour
         _busy = true;
         var card = Player.Hand[_raisedIndex];
         screen.ShowFlipArrows(false);
+        board.ClearShowcase();   // retira la carta 3D del showcase
 
         Player.Hand.RemoveAt(_raisedIndex);
         _raisedIndex = -1;
@@ -607,6 +623,7 @@ public class DuelController : MonoBehaviour
         _busy = true;
         var card = Player.Hand[handIndex];
         screen.ShowFlipArrows(false);
+        board.ClearShowcase();   // por si quedó la carta 3D del showcase
 
         Player.Hand.RemoveAt(handIndex);
         _raisedIndex = -1;
@@ -675,6 +692,14 @@ public class DuelController : MonoBehaviour
 
         _busy = true;
         screen.ShowFlipArrows(false);
+        screen.HideHandCursor();
+
+        // Captura la posición EN PANTALLA de cada material que está en la mano (antes de
+        // consumirlas), para que las cartas 3D se LEVANTEN desde ahí. handIdx está en
+        // orden de fusión, igual que `materials` (el monstruo del campo, si la casilla
+        // estaba ocupada, va PRIMERO en materials y sube desde su propia casilla).
+        var handScreens = new List<Vector3>();
+        foreach (var i in handIdx) handScreens.Add(screen.HandCardScreenPos(i));
 
         // Consumir materiales: monstruo del campo (sin contar como destruido)
         // y cartas de la mano (índices descendentes).
@@ -685,19 +710,28 @@ public class DuelController : MonoBehaviour
         _fusionOrder.Clear();
         _raisedIndex = -1;
 
-        screen.RefreshHand(Player.Hand);
+        screen.RefreshHand(Player.Hand);   // las cartas consumidas desaparecen de la mano
         board.SyncField(Player, Opponent);
-
-        // La mano se retira y la cámara vuelve a la vista original para la
-        // secuencia de fusión + estrella.
         screen.HideFieldBar();
         screen.HideCardInfo();
-        yield return DuelTween.Parallel(this,
-            screen.SlideHandDown(0.3f),
-            board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f));
 
-        // ── Cola de fusión: reunir materiales y resolver por pareja ──────
-        yield return board.AnimateFusionGather(materials);
+        // Cámara a la vista de juego; luego las cartas 3D se levantan desde la mano.
+        yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
+
+        // Punto de arranque (mundo) por material, alineado con `materials`.
+        var worldStarts = new List<Vector3>();
+        int handStart = 0;
+        for (int i = 0; i < materials.Count; i++)
+        {
+            if (tookFieldMonster && i == 0)
+                worldStarts.Add(board.GetPlayerMonsterSlotWorld(slot)); // el del campo sube desde su casilla
+            else
+                worldStarts.Add(board.HandStartWorld(handScreens[handStart++]));
+        }
+
+        // ── Cola de fusión: reunir materiales (levantándose de la mano) y resolver ──
+        yield return board.AnimateFusionGather(materials, worldStarts);
+        yield return screen.SlideHandDown(0.3f);   // el resto de la mano se retira
 
         CardData stepCurrent = materials[0];
         for (int i = 0; i < chain.Steps.Count; i++)

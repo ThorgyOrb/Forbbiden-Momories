@@ -32,6 +32,25 @@ public class CardDisplay : MonoBehaviour
     [SerializeField] private Image typeIcon;
     [SerializeField] private CardIconConfig iconConfig;
 
+    [Header("Layout V2 (opcional — prefab nuevo CardMonsterV2)")]
+    // Estos campos SOLO existen en el prefab nuevo (propuesta de carta). En el
+    // prefab clásico quedan nulos y se ignoran, así que su comportamiento no
+    // cambia. Añadirlos a un MonoBehaviour es seguro: las instancias serializadas
+    // que no los referencian los dejan en su default (null).
+    [Tooltip("Fila donde se instancian las estrellas de nivel (nivel 8 ⇒ 8 estrellas).")]
+    [SerializeField] private RectTransform levelStarsContainer;
+    [SerializeField] private Sprite levelStarSprite;
+    [SerializeField] private Color levelStarColor = new Color(1f, 0.84f, 0.2f);
+    [Tooltip("Número de nivel en la esquina (redundante con las estrellas).")]
+    [SerializeField] private TMP_Text levelNumberText;
+    [Tooltip("Línea de subtipo: \"BESTIA / EFECTO\".")]
+    [SerializeField] private TMP_Text subtypeText;
+    [Tooltip("Caja de descripción/efecto del monstruo.")]
+    [SerializeField] private TMP_Text effectText;
+    [Tooltip("Superposición sobre el arte (insignia de tipo, estrellas y nivel). Vive DENTRO " +
+             "del arte, que sigue visible en no-monstruos, así que hay que apagarla aparte.")]
+    [SerializeField] private GameObject monsterOverlay;
+
     [Header("Spell / Equip")]
     // Panel y texto que se muestran SOLO cuando la carta es Spell o Equip,
     // en el mismo espacio donde Monster muestra StatsPanel/Guardian Stars/Iconos.
@@ -45,6 +64,7 @@ public class CardDisplay : MonoBehaviour
     private GuardianStar _activeGuardian;
     private CardPosition _position = CardPosition.FaceUpAttack;
     private CardHoloEffect _holoEffect;
+    private CardV2Effects _v2Effects; // solo presente en el prefab nuevo; null en el clásico
 
     // ── Colores Guardian Star ────────────────────────────────────
     private readonly Color _starActiveColor = new Color(1f, 0.85f, 0.2f);
@@ -56,6 +76,7 @@ public class CardDisplay : MonoBehaviour
     void Awake()
     {
         _holoEffect = GetComponent<CardHoloEffect>();
+        _v2Effects = GetComponent<CardV2Effects>();
     }
 
     /// <summary>
@@ -77,6 +98,20 @@ public class CardDisplay : MonoBehaviour
         // nunca queda desincronizado con un Image distinto.
         if (artImage != null)
             _holoEffect.Apply(data.rarity, artImage);
+
+        // Efectos propios del prefab V2 (null en el clásico → no-op).
+        if (_v2Effects != null)
+            _v2Effects.Apply(data.rarity);
+    }
+
+    /// <summary>
+    /// Atenúa (o intensifica) los efectos holo de esta carta. 1 = pleno (grid);
+    /// se baja en cartas grandes (visor del modal, mesa de duelo). Llamar tras Setup.
+    /// </summary>
+    public void SetHoloIntensityScale(float scale)
+    {
+        if (_holoEffect == null) _holoEffect = GetComponent<CardHoloEffect>();
+        if (_holoEffect != null) _holoEffect.SetIntensityScale(scale);
     }
 
     private void RefreshIcons()
@@ -89,6 +124,95 @@ public class CardDisplay : MonoBehaviour
 
         if (typeIcon != null)
             typeIcon.sprite = iconConfig.GetTypeIcon(_data.monsterType);
+    }
+
+    // Nombre en español (singular, mayúsculas) por tipo de monstruo, para la
+    // línea de subtipo del prefab nuevo ("BESTIA / EFECTO"). Los tipos no
+    // listados usan el nombre del enum en mayúsculas — así crece solo.
+    private static readonly System.Collections.Generic.Dictionary<MonsterType, string> TypeNamesEs = new()
+    {
+        { MonsterType.Dragon, "DRAGÓN" },
+        { MonsterType.Spellcaster, "HECHICERO" },
+        { MonsterType.Fiend, "DEMONIO" },
+        { MonsterType.Beast, "BESTIA" },
+        { MonsterType.Insect, "INSECTO" },
+        { MonsterType.Plant, "PLANTA" },
+        { MonsterType.Fish, "PEZ" },
+        { MonsterType.Aqua, "ACUÁTICO" },
+        { MonsterType.SeaSerpent, "SERPIENTE MARINA" },
+        { MonsterType.Zombie, "ZOMBI" },
+        { MonsterType.Dinosaur, "DINOSAURIO" },
+        { MonsterType.WingedBeast, "BESTIA ALADA" },
+        { MonsterType.Warrior, "GUERRERO" },
+        { MonsterType.Machine, "MÁQUINA" },
+        { MonsterType.Thunder, "TRUENO" },
+        { MonsterType.Fairy, "HADA" },
+        { MonsterType.Reptile, "REPTIL" },
+        { MonsterType.Rock, "ROCA" },
+        { MonsterType.Pyro, "PIRO" },
+    };
+
+    /// <summary>
+    /// Rellena los elementos EXCLUSIVOS del prefab nuevo (estrellas de nivel,
+    /// número de nivel, línea de subtipo y caja de efecto). Todos los campos son
+    /// opcionales: si son nulos (prefab clásico) esto no hace nada.
+    /// </summary>
+    private void RefreshMonsterExtras()
+    {
+        if (_data == null || !_data.IsMonster) return;
+
+        if (levelNumberText != null)
+            levelNumberText.text = _data.stars.ToString();
+
+        if (subtypeText != null)
+        {
+            string typeName = TypeNamesEs.TryGetValue(_data.monsterType, out var n)
+                ? n : _data.monsterType.ToString().ToUpperInvariant();
+            bool hasEffect = !string.IsNullOrWhiteSpace(_data.DisplayDescription);
+            subtypeText.text = hasEffect ? $"{typeName} / EFECTO" : typeName;
+        }
+
+        if (effectText != null)
+            effectText.text = _data.DisplayDescription;
+
+        RebuildLevelStars(_data.stars);
+    }
+
+    /// <summary>
+    /// Instancia una estrella por cada nivel (8 ⇒ 8), a TAMAÑO FIJO y CENTRADAS en el
+    /// contenedor. Posición manual (sin LayoutGroup): con un HorizontalLayoutGroup las
+    /// estrellas heredaban un tamaño por defecto enorme y se solapaban.
+    /// </summary>
+    private void RebuildLevelStars(int level)
+    {
+        if (levelStarsContainer == null) return;
+
+        for (int i = levelStarsContainer.childCount - 1; i >= 0; i--)
+            Destroy(levelStarsContainer.GetChild(i).gameObject);
+
+        level = Mathf.Clamp(level, 0, 12);
+        if (level == 0) return;
+
+        const float size = 11f, gap = 1.5f;
+        float step = size + gap;
+        float mid = (level - 1) / 2f; // índice central, para centrar la fila
+
+        for (int i = 0; i < level; i++)
+        {
+            var go = new GameObject("Star", typeof(RectTransform), typeof(Image));
+            var rt = (RectTransform)go.transform;
+            rt.SetParent(levelStarsContainer, false);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = new Vector2((i - mid) * step, 0f);
+
+            var img = go.GetComponent<Image>();
+            img.sprite = levelStarSprite;
+            img.color = levelStarColor;
+            img.raycastTarget = false;
+            img.preserveAspect = true;
+        }
     }
 
     /// <summary>
@@ -173,6 +297,7 @@ public class CardDisplay : MonoBehaviour
 
         if (sp != null) sp.gameObject.SetActive(showMonsterBlock);
         if (statsPanel != null) statsPanel.SetActive(showMonsterBlock);
+        if (monsterOverlay != null) monsterOverlay.SetActive(showMonsterBlock);
 
         if (attributeIcon != null)
             attributeIcon.transform.parent.gameObject.SetActive(showMonsterBlock);
@@ -208,6 +333,7 @@ public class CardDisplay : MonoBehaviour
                 if (defText != null) defText.text = _data.baseDef.ToString();
                 RefreshGuardianStars();
                 RefreshIcons();
+                RefreshMonsterExtras(); // Layout V2 (no-op si los campos son nulos)
             }
             else
             {

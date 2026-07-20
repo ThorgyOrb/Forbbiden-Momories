@@ -252,6 +252,28 @@ public class DuelScreen : MonoBehaviour
     }
 
     /// <summary>
+    /// Posición EN PANTALLA (píxeles) de la carta de mano indicada. El canvas es
+    /// ScreenSpaceOverlay, así que su RectTransform.position ya está en píxeles. Se usa
+    /// para que la carta 3D "se levante" justo desde donde está en la mano. Si el índice
+    /// no es válido, devuelve un punto abajo-centro como respaldo.
+    /// </summary>
+    public Vector3 HandCardScreenPos(int index)
+    {
+        if (index >= 0 && index < _handViews.Count && _handViews[index] != null)
+            return ((RectTransform)_handViews[index].transform).position;
+        return new Vector3(Screen.width * 0.5f, Screen.height * 0.12f, 0f);
+    }
+
+    /// <summary>Muestra/oculta UNA carta de la mano (para que "salga" al levantarse en 3D).</summary>
+    public void SetHandCardVisible(int index, bool visible)
+    {
+        if (index < 0 || index >= _handViews.Count || _handViews[index] == null) return;
+        var cg = _handViews[index].GetComponent<CanvasGroup>();
+        if (cg == null) cg = _handViews[index].gameObject.AddComponent<CanvasGroup>();
+        cg.alpha = visible ? 1f : 0f;
+    }
+
+    /// <summary>
     /// Roba una carta a la mano: entra deslizándose desde el borde derecho y SE
     /// QUEDA en su sitio (no desaparece). Las cartas ya presentes se recolocan al
     /// nuevo centro a la vez. La carta es real (clicable), no un clon temporal.
@@ -403,6 +425,86 @@ public class DuelScreen : MonoBehaviour
         rt.anchoredPosition = to;
         rt.localScale = s1;
         _raisedView = view;
+    }
+
+    /// <summary>
+    /// Alza TODAS las cartas marcadas para fusión con el MISMO tamaño y zona que la
+    /// carta única (2D, escala 1, en fila centrada a Y=-50), aguanta un beat y las
+    /// disuelve hacia arriba como transición al vórtice 3D. Así seleccionar fusión se
+    /// ve igual que seleccionar una sola carta. Las vistas se destruyen luego con
+    /// RefreshHand (siguen en _handViews).
+    /// </summary>
+    public IEnumerator RaiseFusionCards(List<int> indices)
+    {
+        var rts = new List<RectTransform>();
+        var cgs = new List<CanvasGroup>();
+        foreach (int index in indices)
+        {
+            if (index < 0 || index >= _handViews.Count || _handViews[index] == null) continue;
+            var view = _handViews[index];
+            var rt = (RectTransform)view.transform;
+
+            // Mismo re-anclado que RaiseHandCard: al centro del canvas conservando la
+            // posición visual, para que el alzado arranque idéntico al de la carta única.
+            Vector3 world = rt.position;
+            rt.SetParent(transform, false);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.position = world;
+            rt.SetAsLastSibling();
+
+            var cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+
+            rts.Add(rt);
+            cgs.Add(cg);
+        }
+        if (rts.Count == 0) yield break;
+
+        // Destino: fila centrada a Y=-50, escala 1 (misma zona/tamaño que la carta única).
+        const float spacing = 230f, raiseY = -50f;
+        float x0 = -(rts.Count - 1) * spacing * 0.5f;
+        var from = new List<Vector2>();
+        var s0 = new List<Vector3>();
+        var to = new List<Vector2>();
+        for (int i = 0; i < rts.Count; i++)
+        {
+            from.Add(rts[i].anchoredPosition);
+            s0.Add(rts[i].localScale);
+            to.Add(new Vector2(x0 + i * spacing, raiseY));
+        }
+
+        // 1) Alzar (mismo timing y easing que RaiseHandCard).
+        const float rise = 0.3f;
+        for (float e = 0f; e < rise; e += Time.deltaTime)
+        {
+            float k = e / rise; k = k * k * (3f - 2f * k);
+            for (int i = 0; i < rts.Count; i++)
+            {
+                rts[i].anchoredPosition = Vector2.LerpUnclamped(from[i], to[i], k);
+                rts[i].localScale = Vector3.LerpUnclamped(s0[i], Vector3.one, k);
+            }
+            yield return null;
+        }
+        for (int i = 0; i < rts.Count; i++) { rts[i].anchoredPosition = to[i]; rts[i].localScale = Vector3.one; }
+
+        // 2) Beat para leer las cartas seleccionadas.
+        yield return new WaitForSeconds(0.3f);
+
+        // 3) Ascienden y se disuelven → el relevo lo toma el vórtice 3D sobre la mesa.
+        const float outDur = 0.28f;
+        for (float e = 0f; e < outDur; e += Time.deltaTime)
+        {
+            float k = e / outDur;
+            for (int i = 0; i < rts.Count; i++)
+            {
+                if (rts[i] == null) continue;
+                rts[i].anchoredPosition = Vector2.LerpUnclamped(to[i], to[i] + new Vector2(0f, 300f), k);
+                rts[i].localScale = Vector3.one * Mathf.Lerp(1f, 1.15f, k);
+                cgs[i].alpha = 1f - k;
+            }
+            yield return null;
+        }
     }
 
     /// <summary>Proyecta un punto de mundo a coordenadas locales del canvas.</summary>

@@ -3,21 +3,40 @@ using System.Text;
 
 /// <summary>
 /// Calcula y formatea las estadísticas de un mazo (total, monstruos/magias/
-/// trampas, promedios de ATK/DEF, conteo por tipo y fusiones posibles).
+/// trampas, promedios de ATK/DEF, coste medio, conteo por tipo, distribución por
+/// nivel y fusiones posibles).
 /// </summary>
 public static class DeckStats
 {
     /// <summary>
-    /// Texto de estadísticas listo para mostrar. "deck" mapea cardId → nº de copias.
-    /// "fusionDb" es opcional: si se pasa, cuenta las fusiones posibles.
+    /// Resumen numérico de un mazo, listo para pintar en la UI (contadores,
+    /// promedios, distribución por categoría/nivel y fusiones).
     /// </summary>
-    public static string BuildSummary(Dictionary<int, int> deck, FusionDatabase fusionDb = null)
+    public struct Summary
     {
-        int total = 0, monsters = 0, spells = 0, traps = 0, equips = 0, rituals = 0, specials = 0;
-        long atkSum = 0, defSum = 0;
-        int monsterCount = 0;
+        public int total;
+        public int monsters, spells, traps, equips, rituals, specials;
+        public int avgAtk, avgDef;
+        public float avgCost;             // nivel medio de los monstruos (≈ "coste")
+        public int fusions;               // pares distintos con receta de fusión
+        public int[] levelHistogram;      // índice = nivel (0..12); [0] no se usa
+        public Dictionary<MonsterType, int> typeCounts;
 
-        var typeCounts = new Dictionary<MonsterType, int>();
+        /// <summary>Magias + Equipos, agrupados como "magia" para la distribución.</summary>
+        public int SpellLike => spells + equips + rituals + specials;
+    }
+
+    /// <summary>Calcula el <see cref="Summary"/> del mazo. "deck" mapea cardId → nº de copias.</summary>
+    public static Summary Compute(Dictionary<int, int> deck, FusionDatabase fusionDb = null)
+    {
+        var s = new Summary
+        {
+            levelHistogram = new int[13],
+            typeCounts = new Dictionary<MonsterType, int>()
+        };
+
+        long atkSum = 0, defSum = 0;
+        long levelSum = 0;
         var distinct = new List<CardData>();
 
         foreach (var kv in deck)
@@ -28,43 +47,64 @@ public static class DeckStats
 
             distinct.Add(card);
             int n = kv.Value;
-            total += n;
+            s.total += n;
 
             if (card.IsMonster)
             {
-                monsters += n;
-                monsterCount += n;
+                s.monsters += n;
                 atkSum += (long)card.baseAtk * n;
                 defSum += (long)card.baseDef * n;
-                typeCounts.TryGetValue(card.monsterType, out int c);
-                typeCounts[card.monsterType] = c + n;
+                levelSum += (long)card.stars * n;
+
+                int lvl = card.stars;
+                if (lvl >= 0 && lvl < s.levelHistogram.Length) s.levelHistogram[lvl] += n;
+
+                s.typeCounts.TryGetValue(card.monsterType, out int c);
+                s.typeCounts[card.monsterType] = c + n;
             }
-            else if (card.IsSpell) spells += n;
-            else if (card.IsEquip) equips += n;
-            else if (card.IsTrap) traps += n;
-            else if (card.IsRitual) rituals += n;
-            else if (card.IsSpecial) specials += n;
+            else if (card.IsSpell)   s.spells += n;
+            else if (card.IsEquip)   s.equips += n;
+            else if (card.IsTrap)    s.traps += n;
+            else if (card.IsRitual)  s.rituals += n;
+            else if (card.IsSpecial) s.specials += n;
         }
 
-        int avgAtk = monsterCount > 0 ? (int)(atkSum / monsterCount) : 0;
-        int avgDef = monsterCount > 0 ? (int)(defSum / monsterCount) : 0;
+        if (s.monsters > 0)
+        {
+            s.avgAtk = (int)(atkSum / s.monsters);
+            s.avgDef = (int)(defSum / s.monsters);
+            s.avgCost = (float)levelSum / s.monsters;
+        }
+
+        if (fusionDb != null) s.fusions = CountFusions(distinct, fusionDb);
+
+        return s;
+    }
+
+    /// <summary>
+    /// Texto de estadísticas listo para mostrar (compatibilidad con el resumen de
+    /// texto plano). "deck" mapea cardId → nº de copias.
+    /// </summary>
+    public static string BuildSummary(Dictionary<int, int> deck, FusionDatabase fusionDb = null)
+    {
+        var s = Compute(deck, fusionDb);
 
         var sb = new StringBuilder();
-        sb.AppendLine($"Total de cartas: {total}");
-        sb.AppendLine($"Monstruos: {monsters}");
-        sb.AppendLine($"Magias: {spells}");
-        sb.AppendLine($"Trampas: {traps}");
-        sb.AppendLine($"Equipos: {equips}");
-        if (rituals > 0) sb.AppendLine($"Rituales: {rituals}");
-        if (specials > 0) sb.AppendLine($"Especiales: {specials}");
-        sb.AppendLine($"Promedio ATK: {avgAtk}");
-        sb.AppendLine($"Promedio DEF: {avgDef}");
+        sb.AppendLine($"Total de cartas: {s.total}");
+        sb.AppendLine($"Monstruos: {s.monsters}");
+        sb.AppendLine($"Magias: {s.spells}");
+        sb.AppendLine($"Trampas: {s.traps}");
+        sb.AppendLine($"Equipos: {s.equips}");
+        if (s.rituals > 0) sb.AppendLine($"Rituales: {s.rituals}");
+        if (s.specials > 0) sb.AppendLine($"Especiales: {s.specials}");
+        sb.AppendLine($"Promedio ATK: {s.avgAtk}");
+        sb.AppendLine($"Promedio DEF: {s.avgDef}");
 
-        foreach (var t in TopTypes(typeCounts, 4))
+        foreach (var t in TopTypes(s.typeCounts, 4))
             sb.AppendLine($"{TypeName(t.Key)}: {t.Value}");
 
         if (fusionDb != null)
-            sb.AppendLine($"Fusiones posibles: {CountFusions(distinct, fusionDb)}");
+            sb.AppendLine($"Fusiones posibles: {s.fusions}");
 
         return sb.ToString();
     }
@@ -88,7 +128,7 @@ public static class DeckStats
         return count;
     }
 
-    private static string TypeName(MonsterType t) => t switch
+    public static string TypeName(MonsterType t) => t switch
     {
         MonsterType.Dragon => "Dragones",
         MonsterType.Spellcaster => "Lanzadores de Conjuros",

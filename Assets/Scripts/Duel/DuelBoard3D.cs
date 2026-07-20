@@ -49,6 +49,9 @@ public class DuelBoard3D : MonoBehaviour
     [Header("Piezas")]
     [SerializeField] private Duel3DCardView cardTemplate;   // plantilla inactiva
     [SerializeField] private Renderer groundRenderer;       // suelo (se tiñe por terreno)
+    [Tooltip("Escala de las cartas 3D durante la FUSIÓN (reunión y remolino). Súbelo si se " +
+             "ven más chicas que la carta 2D alzada en una invocación normal.")]
+    [SerializeField] private float fusionCardScale = 1.15f;
 
     // ── Registro de vistas por slot ──────────────────────────────────────
     private readonly Duel3DCardView[] _playerMonsters = new Duel3DCardView[5];
@@ -521,26 +524,100 @@ public class DuelBoard3D : MonoBehaviour
     /// Los materiales elegidos se reúnen flotando en fila frente a la cámara
     /// (la "cola de fusión"), mirando al jugador para que se vean completos.
     /// </summary>
-    public IEnumerator AnimateFusionGather(List<CardData> materials)
+    // Posición fija de las cartas ANTES de invocar (showcase) y durante la FUSIÓN.
+    // Centrada en X (la del fusionPoint), con Y/Z fijas para que queden bien encuadradas.
+    private const float FusionAnchorY = 1.586f;
+    private const float FusionAnchorZ = -7.53f;
+
+    /// <summary>Punto base del showcase/fusión: X centrada, Y/Z fijas (FusionAnchorY/Z).</summary>
+    private Vector3 FusionAnchor()
+    {
+        float x = fusionPoint != null ? fusionPoint.position.x : 0f;
+        return new Vector3(x, FusionAnchorY, FusionAnchorZ);
+    }
+
+    // Escenografía de la fusión en coordenadas de PANTALLA (fracción horizontal 0..1).
+    // Con 3+ materiales, el "escenario" de fusión va a la IZQUIERDA y los materiales
+    // pendientes se APILAN a la derecha, dando protagonismo y espacio a la animación.
+    private const float FusionStageSx = 0.30f;      // dónde ocurre la fusión (mitad izq.)
+    private const float FusionStackBaseSx = 0.66f;  // primera carta pendiente (derecha)
+    private const float FusionStackStepSx = 0.05f;  // separación al apilar (se solapan)
+    private const float FusionStackScaleMul = 0.8f; // las pendientes, algo más pequeñas
+    private bool _fusionStacked;                     // modo apilado (3+ materiales)
+
+    /// <summary>
+    /// Punto en mundo a la ANCHURA de pantalla <paramref name="sx"/> (0=izq, 1=der), a la
+    /// misma altura y profundidad de cámara que el FusionAnchor. Permite escenificar la
+    /// fusión en coordenadas de pantalla (mitad izquierda, apilado a la derecha…).
+    /// </summary>
+    private Vector3 FusionScreenX(float sx)
+    {
+        if (mainCamera == null)
+            return FusionAnchor() + Vector3.right * ((sx - 0.5f) * 9f);
+        Vector3 a = mainCamera.WorldToScreenPoint(FusionAnchor());
+        return mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * sx, a.y, a.z));
+    }
+
+    /// <summary>Posición apilada de la carta pendiente n.º <paramref name="pendingIdx"/> (0-based).</summary>
+    private Vector3 FusionStackPos(int pendingIdx)
+        => FusionScreenX(FusionStackBaseSx + pendingIdx * FusionStackStepSx);
+
+    /// <summary>
+    /// Convierte un punto de PANTALLA (píxeles) a mundo, a la distancia del FusionAnchor,
+    /// para que una carta 3D "se levante" desde su posición en la mano (UI 2D) hacia el
+    /// punto de fusión/showcase. Llamar con la cámara ya en su vista final.
+    /// </summary>
+    public Vector3 HandStartWorld(Vector3 screenPos)
+    {
+        if (mainCamera == null)
+            return playerSpawnPoint != null ? playerSpawnPoint.position : FusionAnchor();
+        float dist = Vector3.Distance(mainCamera.transform.position, FusionAnchor());
+        return mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, dist));
+    }
+
+    /// <summary>
+    /// Reúne los materiales en fila frente a la cámara. Si se pasan <paramref name="worldStarts"/>
+    /// (uno por material), cada carta ARRANCA ahí (p. ej. desde su carta de la mano) y sube
+    /// en arco; si no, salen del punto de aparición del jugador.
+    /// </summary>
+    public IEnumerator AnimateFusionGather(List<CardData> materials, List<Vector3> worldStarts = null)
     {
         ClearFusionQueue();
 
+        // Con 3 o más materiales, apilamos: el primero va al escenario (izquierda) y el
+        // resto se apila a la derecha (más pequeñas), dejando la mitad izquierda libre
+        // para lucir la fusión. Con 2, la fila clásica centrada.
+        _fusionStacked = materials.Count >= 3;
         float spacing = 1.9f;
         float x0 = -(materials.Count - 1) * spacing * 0.5f;
 
         var routines = new List<IEnumerator>();
         for (int i = 0; i < materials.Count; i++)
         {
-            Vector3 target = fusionPoint.position + new Vector3(x0 + i * spacing, 0f, 0f);
-            var view = SpawnView(playerSpawnPoint.position);
+            Vector3 target; float targetScale;
+            if (_fusionStacked)
+            {
+                target = (i == 0) ? FusionScreenX(FusionStageSx) : FusionStackPos(i - 1);
+                targetScale = (i == 0) ? fusionCardScale : fusionCardScale * FusionStackScaleMul;
+            }
+            else
+            {
+                target = FusionAnchor() + new Vector3(x0 + i * spacing, 0f, 0f);
+                targetScale = fusionCardScale;
+            }
+
+            Vector3 start = (worldStarts != null && i < worldStarts.Count)
+                ? worldStarts[i]
+                : playerSpawnPoint.position;
+            var view = SpawnView(start);
             view.Show(materials[i], CardPosition.FaceUpAttack);
             view.SetStats("");
             FaceCamera(view, target);
             view.transform.localScale = Vector3.one * 0.3f;
             _fusionQueue.Add(view);
 
-            routines.Add(DuelTween.MoveTo(view.transform, target, 0.45f));
-            routines.Add(DuelTween.ScaleTo(view.transform, Vector3.one * 0.85f, 0.45f));
+            routines.Add(DuelTween.Arc(view.transform, start, target, 1.0f, 0.5f));
+            routines.Add(DuelTween.ScaleTo(view.transform, Vector3.one * targetScale, 0.5f));
         }
         yield return DuelTween.Parallel(this, routines.ToArray());
         yield return new WaitForSeconds(0.15f);
@@ -548,9 +625,9 @@ public class DuelBoard3D : MonoBehaviour
 
     /// <summary>
     /// Resuelve UN paso de la cadena entre las dos primeras cartas de la cola:
-    ///   • Fusión (específica/categoría): chocan, destello, aparece la nueva.
+    ///   • Fusión (específica/categoría): remolino de luces → nace la fusionada.
     ///   • Equipo: la segunda es ABSORBIDA por la primera (se encoge dentro).
-    ///   • Incompatible (absorción): la perdedora sale girando de la mesa.
+    ///   • Incompatible (absorción): la perdedora embiste y sale despedida a la derecha.
     /// </summary>
     public IEnumerator AnimateFusionStep(FusionStepType type, CardData stepResult, bool firstSurvives)
     {
@@ -558,36 +635,32 @@ public class DuelBoard3D : MonoBehaviour
 
         var a = _fusionQueue[0];
         var b = _fusionQueue[1];
-        Vector3 center = (a.transform.position + b.transform.position) * 0.5f;
+
+        Vector3 center;
+        if (_fusionStacked)
+        {
+            // Escenario fijo a la izquierda; la siguiente pendiente ENTRA desde la pila
+            // de la derecha hacia el escenario, a tamaño completo, para fusionarse.
+            center = FusionScreenX(FusionStageSx);
+            Vector3 bIn = center + Vector3.right * 1.6f;
+            FaceCamera(b, bIn);
+            yield return DuelTween.Parallel(this,
+                DuelTween.MoveTo(b.transform, bIn, 0.28f),
+                DuelTween.ScaleTo(b.transform, Vector3.one * fusionCardScale, 0.28f));
+        }
+        else
+        {
+            center = (a.transform.position + b.transform.position) * 0.5f;
+        }
 
         switch (type)
         {
             case FusionStepType.Specific:
             case FusionStepType.Category:
-            {
-                // Chocan en el centro…
-                yield return DuelTween.Parallel(this,
-                    DuelTween.MoveTo(a.transform, center, 0.3f),
-                    DuelTween.MoveTo(b.transform, center, 0.3f),
-                    DuelTween.ScaleTo(a.transform, Vector3.one * 0.55f, 0.3f),
-                    DuelTween.ScaleTo(b.transform, Vector3.one * 0.55f, 0.3f));
-
-                Destroy(a.gameObject);
-                Destroy(b.gameObject);
-                _fusionQueue.RemoveRange(0, 2);
-
-                // …y nace la carta fusionada con un "pop".
-                var result = SpawnView(center);
-                result.Show(stepResult, CardPosition.FaceUpAttack);
-                result.SetStats("");
-                FaceCamera(result, center);
-                result.transform.localScale = Vector3.one * 0.1f;
-                _fusionQueue.Insert(0, result);
-
-                yield return DuelTween.ScaleTo(result.transform, Vector3.one * 1.1f, 0.25f);
-                yield return DuelTween.ScaleTo(result.transform, Vector3.one * 0.85f, 0.15f);
+                // Compatibles: remolino de luces. Las dos cartas orbitan en espiral
+                // hacia el centro entre destellos y de ahí nace la carta fusionada.
+                yield return FusionVortex(a, b, center, stepResult);
                 break;
-            }
 
             case FusionStepType.Equip:
             {
@@ -600,36 +673,60 @@ public class DuelBoard3D : MonoBehaviour
                 _fusionQueue.RemoveAt(1);
 
                 // El monstruo "late" al recibir el bonus.
-                yield return DuelTween.ScaleTo(a.transform, Vector3.one * 1.05f, 0.12f);
-                yield return DuelTween.ScaleTo(a.transform, Vector3.one * 0.85f, 0.12f);
+                yield return DuelTween.ScaleTo(a.transform, Vector3.one * (fusionCardScale * 1.18f), 0.12f);
+                yield return DuelTween.ScaleTo(a.transform, Vector3.one * fusionCardScale, 0.12f);
                 break;
             }
 
             case FusionStepType.Absorption:
             {
-                // Materiales incompatibles: la perdedora se descarta girando.
-                var loser = firstSurvives ? b : a;
-                var winner = firstSurvives ? a : b;
+                // Incompatibles: la carta de la DERECHA (b) embiste a la de la
+                // IZQUIERDA (a) y la saca despedida hacia la izquierda (descarte).
+                // La superviviente se queda y muestra la carta resultante del paso.
+                var aggressor = b;  // derecha (queue[1])
+                var victim = a;     // izquierda (queue[0])
 
-                var fade = loser.CanvasGroup != null
-                    ? DuelTween.FadeCanvas(loser.CanvasGroup, 1f, 0f, 0.5f)
-                    : DuelTween.ScaleTo(loser.transform, Vector3.zero, 0.5f);
+                // 1) Embestida: la derecha se lanza sobre la izquierda.
+                Vector3 impact = victim.transform.position;
+                yield return DuelTween.MoveTo(aggressor.transform,
+                    Vector3.Lerp(aggressor.transform.position, impact, 0.55f), 0.16f);
 
+                // 2) Impacto: chispa de luz + onda de choque + chispas radiales +
+                //    sacudida de la víctima y de la cámara (golpe con peso).
+                var spark = SpawnFusionLight(impact, FusionGold);
+                StartCoroutine(Shockwave(impact, 0f));
+                StartCoroutine(CameraKick(0.12f, 0.20f));
                 yield return DuelTween.Parallel(this,
-                    DuelTween.MoveTo(loser.transform, discardPoint.position, 0.5f),
-                    DuelTween.Spin(loser.transform, Vector3.forward, 720f, 0.5f),
+                    DuelTween.Shake(victim.transform, 0.16f, 0.26f),
+                    FlashLight(spark, 3.6f, 0.26f),
+                    ImpactSparks(impact, FusionGold, 12));
+                if (spark != null) Destroy(spark.gameObject);
+
+                // 3) La víctima sale despedida hacia la IZQUIERDA (descarte), girando
+                //    y desvaneciéndose. Reusa altura/profundidad del discardPoint.
+                Vector3 outPos = impact + Vector3.left * 11f;
+                if (discardPoint != null)
+                {
+                    outPos.y = discardPoint.position.y;
+                    outPos.z = discardPoint.position.z;
+                }
+                outPos.x = Mathf.Min(outPos.x, impact.x - 7f); // asegura que sea a la izquierda
+                var fade = victim.CanvasGroup != null
+                    ? DuelTween.FadeCanvas(victim.CanvasGroup, 1f, 0f, 0.45f)
+                    : DuelTween.ScaleTo(victim.transform, Vector3.zero, 0.45f);
+                yield return DuelTween.Parallel(this,
+                    DuelTween.Arc(victim.transform, victim.transform.position, outPos, 1.4f, 0.45f),
+                    DuelTween.Spin(victim.transform, Vector3.forward, 900f, 0.45f),
                     fade);
 
-                Destroy(loser.gameObject);
-                _fusionQueue.Remove(loser);
+                Destroy(victim.gameObject);
+                _fusionQueue.Remove(victim);
 
-                // La superviviente pasa al frente de la cola.
-                _fusionQueue.Remove(winner);
-                _fusionQueue.Insert(0, winner);
-
-                // Si sobrevivió la segunda, muestra la carta del paso (por claridad).
-                winner.Show(stepResult, CardPosition.FaceUpAttack);
-                FaceCamera(winner, winner.transform.position);
+                // La superviviente (la derecha) pasa al frente y muestra el resultado.
+                _fusionQueue.Remove(aggressor);
+                _fusionQueue.Insert(0, aggressor);
+                aggressor.Show(stepResult, CardPosition.FaceUpAttack);
+                FaceCamera(aggressor, aggressor.transform.position);
                 break;
             }
         }
@@ -641,14 +738,30 @@ public class DuelBoard3D : MonoBehaviour
     private IEnumerator RealignFusionQueue()
     {
         if (_fusionQueue.Count == 0) yield break;
-        float spacing = 1.9f;
-        float x0 = -(_fusionQueue.Count - 1) * spacing * 0.5f;
 
         var routines = new List<IEnumerator>();
-        for (int i = 0; i < _fusionQueue.Count; i++)
+        if (_fusionStacked)
         {
-            Vector3 target = fusionPoint.position + new Vector3(x0 + i * spacing, 0f, 0f);
-            routines.Add(DuelTween.MoveTo(_fusionQueue[i].transform, target, 0.25f));
+            // Índice 0 = resultado/acumulador en el escenario (izq.); el resto, apilado
+            // a la derecha (más pequeñas). Se recolocan al consumirse una pendiente.
+            for (int i = 0; i < _fusionQueue.Count; i++)
+            {
+                Vector3 target = (i == 0) ? FusionScreenX(FusionStageSx) : FusionStackPos(i - 1);
+                float sc = (i == 0) ? fusionCardScale : fusionCardScale * FusionStackScaleMul;
+                FaceCamera(_fusionQueue[i], target);
+                routines.Add(DuelTween.MoveTo(_fusionQueue[i].transform, target, 0.25f));
+                routines.Add(DuelTween.ScaleTo(_fusionQueue[i].transform, Vector3.one * sc, 0.25f));
+            }
+        }
+        else
+        {
+            float spacing = 1.9f;
+            float x0 = -(_fusionQueue.Count - 1) * spacing * 0.5f;
+            for (int i = 0; i < _fusionQueue.Count; i++)
+            {
+                Vector3 target = FusionAnchor() + new Vector3(x0 + i * spacing, 0f, 0f);
+                routines.Add(DuelTween.MoveTo(_fusionQueue[i].transform, target, 0.25f));
+            }
         }
         yield return DuelTween.Parallel(this, routines.ToArray());
     }
@@ -671,7 +784,7 @@ public class DuelBoard3D : MonoBehaviour
         }
         else
         {
-            view = SpawnView(fusionPoint.position);
+            view = SpawnView(FusionAnchor());
         }
 
         views[slot] = view;
@@ -685,12 +798,664 @@ public class DuelBoard3D : MonoBehaviour
         view.SetStats(StatsFor(owner, slot));
     }
 
+    // ── Showcase 3D de UNA carta (invocación simple) ─────────────────────
+    // Para que la carta invocada tenga SIEMPRE el mismo tamaño que en la fusión,
+    // la invocación de una sola carta también usa una carta 3D del tablero (no la
+    // 2D de la mano). Misma altura (FusionAnchor) y escala (fusionCardScale).
+
+    private Duel3DCardView _showcaseView;
+
+    public bool HasShowcase => _showcaseView != null;
+
+    /// <summary>Alza UNA carta como pieza 3D al showcase, ARRANCANDO desde
+    /// <paramref name="worldStart"/> (p. ej. su carta de la mano) y subiendo en arco.</summary>
+    public IEnumerator ShowcaseRaise(CardData card, bool faceDown, Vector3 worldStart)
+    {
+        Vector3 anchor = FusionAnchor();
+        if (_showcaseView == null)
+            _showcaseView = SpawnView(worldStart);
+        else
+            _showcaseView.transform.position = worldStart;
+        var v = _showcaseView;
+        v.Show(card, faceDown ? CardPosition.FaceDownAttack : CardPosition.FaceUpAttack);
+        v.SetStats("");
+        v.transform.localScale = Vector3.one * 0.3f;
+        FaceCamera(v, anchor);
+        yield return DuelTween.Parallel(this,
+            DuelTween.Arc(v.transform, worldStart, anchor, 1.0f, 0.4f),
+            DuelTween.ScaleTo(v.transform, Vector3.one * fusionCardScale, 0.4f));
+        FaceCamera(v, anchor);
+    }
+
+    /// <summary>Voltea la carta de showcase (encoge en X, cambia cara, expande).</summary>
+    public IEnumerator ShowcaseFlip(bool faceDown)
+    {
+        if (_showcaseView == null) yield break;
+        var v = _showcaseView;
+        Vector3 s = v.transform.localScale;
+        yield return DuelTween.ScaleTo(v.transform, new Vector3(0.02f, s.y, s.z), 0.1f);
+        v.SetPosition(faceDown ? CardPosition.FaceDownAttack : CardPosition.FaceUpAttack);
+        yield return DuelTween.ScaleTo(v.transform, s, 0.12f);
+        FaceCamera(v, v.transform.position);
+    }
+
+    /// <summary>Vuela la carta de showcase a su casilla y la deja como carta 3D del tablero.</summary>
+    public IEnumerator ShowcaseToSlot(int slot, Duelist owner)
+    {
+        if (_showcaseView == null) yield break;
+        var v = _showcaseView;
+        _showcaseView = null;
+        _playerMonsters[slot] = v;   // pasa a ser la carta 3D del tablero
+        v.Show(owner.MonsterZone[slot], owner.MonsterPositions[slot]);
+        v.SetStats("");
+        yield return DuelTween.Parallel(this,
+            DuelTween.Arc(v.transform, v.transform.position, playerMonsterAnchors[slot].position, 1.0f, 0.5f),
+            DuelTween.ScaleTo(v.transform, Vector3.one, 0.5f));
+        v.SetStats(StatsFor(owner, slot));
+    }
+
+    /// <summary>
+    /// Baja la carta de showcase de vuelta a su hueco en la mano: arco descendente
+    /// hacia <paramref name="worldTarget"/> mientras encoge, y se retira. Se usa al
+    /// CANCELAR una invocación para que la carta "regrese a la mano" en vez de esfumarse.
+    /// </summary>
+    public IEnumerator ShowcaseLowerToHand(Vector3 worldTarget)
+    {
+        if (_showcaseView == null) yield break;
+        var v = _showcaseView;
+        _showcaseView = null;
+        Vector3 from = v.transform.position;
+        yield return DuelTween.Parallel(this,
+            DuelTween.Arc(v.transform, from, worldTarget, 0.55f, 0.30f),
+            DuelTween.ScaleTo(v.transform, Vector3.one * 0.3f, 0.30f));
+        Destroy(v.gameObject);
+    }
+
+    /// <summary>Retira la carta de showcase (cancelar / tras activarla).</summary>
+    public void ClearShowcase()
+    {
+        if (_showcaseView != null) { Destroy(_showcaseView.gameObject); _showcaseView = null; }
+    }
+
     /// <summary>Limpia cualquier carta flotante que quede en la cola de fusión.</summary>
     public void ClearFusionQueue()
     {
         foreach (var v in _fusionQueue)
             if (v != null) Destroy(v.gameObject);
         _fusionQueue.Clear();
+    }
+
+    // ── Efectos de fusión: remolino de luces (materiales compatibles) ─────
+    // Todo procedural (paleta Neo-Kemet): una luz puntual real que fulgura y unas
+    // "motas" de brillo (sprite radial generado en runtime) que espiralan al centro.
+
+    private static readonly Color FusionGold = new Color(1f, 0.82f, 0.36f);
+    private static readonly Color[] MotePalette =
+    {
+        new Color(1f, 0.85f, 0.40f),   // oro
+        new Color(0.40f, 0.95f, 0.90f),// cian
+        new Color(0.70f, 0.50f, 1f),   // violeta
+        Color.white,
+    };
+    private static Sprite _glowSprite;
+
+    /// <summary>
+    /// Las dos primeras cartas orbitan en espiral hacia el centro entre destellos;
+    /// al fundirse, un flash de luz y nace la carta fusionada con un "pop".
+    /// </summary>
+    private IEnumerator FusionVortex(Duel3DCardView a, Duel3DCardView b, Vector3 center, CardData stepResult)
+    {
+        // Antes del remolino, las dos cartas se JUNTAN cerca del centro (como en la
+        // referencia): se acercan y se aprietan un poco, y de ahí arranca el vórtice.
+        Vector3 gatherA = center + Vector3.left * 0.5f;
+        Vector3 gatherB = center + Vector3.right * 0.5f;
+        FaceCamera(a, gatherA);
+        FaceCamera(b, gatherB);
+        yield return DuelTween.Parallel(this,
+            DuelTween.MoveTo(a.transform, gatherA, 0.3f),
+            DuelTween.MoveTo(b.transform, gatherB, 0.3f),
+            DuelTween.ScaleTo(a.transform, Vector3.one * fusionCardScale, 0.3f),
+            DuelTween.ScaleTo(b.transform, Vector3.one * fusionCardScale, 0.3f));
+        yield return new WaitForSeconds(0.05f);
+
+        // Carga: chispas convergen al centro y un núcleo pulsa (implosión inminente),
+        // telegrafiando el remolino y dándole peso al momento.
+        yield return FusionChargeUp(center, a, b);
+
+        // Luz central que crece durante el remolino.
+        var light = SpawnFusionLight(center, FusionGold);
+
+        // Núcleo + halo de brillo ADITIVO en el centro (bloom en pantalla): crecen y
+        // palpitan con fuerza para que la luz del vórtice se vea intensa, no solo la
+        // luz 3D (que apenas afecta a las cartas del canvas de mundo).
+        var core = SpawnMote(center, out var coreSr);
+        coreSr.color = new Color(0.6f, 0.85f, 1f, 0f);
+        var halo = SpawnMote(center, out var haloSr);
+        haloSr.color = new Color(0.5f, 0.8f, 1f, 0f);
+
+        // Rayos radiantes (starburst) que giran y crecen tras el núcleo → haces de luz.
+        var rays = SpawnFx(RaysSprite(), center, out var raysSr);
+        raysSr.color = new Color(1f, 0.95f, 0.7f, 0f);
+        float raysSpin = 0f;
+
+        // Motas de brillo repartidas alrededor del centro (en el plano XY, de cara
+        // a la cámara). Cada una guarda su radio/ángulo/z inicial para espiralar.
+        const int MoteCount = 26;
+        var motes = new List<Transform>();
+        var moteSr = new List<SpriteRenderer>();
+        var moteR0 = new List<float>();
+        var moteA0 = new List<float>();
+        var moteZ0 = new List<float>();
+        var moteDir = new List<float>();   // sentido de giro (±1) → doble banda turbulenta
+        for (int i = 0; i < MoteCount; i++)
+        {
+            float radius = UnityEngine.Random.Range(1.6f, 3.4f);
+            float ang = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+            float z = UnityEngine.Random.Range(-0.5f, 0.5f);
+            var m = SpawnMote(MotePos(center, radius, ang, z), out var sr);
+            m.localScale = Vector3.one * UnityEngine.Random.Range(0.18f, 0.34f);
+            sr.color = MotePalette[UnityEngine.Random.Range(0, MotePalette.Length)];
+            motes.Add(m); moteSr.Add(sr); moteR0.Add(radius); moteA0.Add(ang); moteZ0.Add(z);
+            moteDir.Add(i % 3 == 0 ? -1f : 1f);   // ~1/3 contragira
+        }
+
+        // Datos iniciales de las cartas respecto al centro (radio/ángulo en XY).
+        Vector3 offA = a.transform.position - center, offB = b.transform.position - center;
+        float rA = new Vector2(offA.x, offA.y).magnitude, angA = Mathf.Atan2(offA.y, offA.x);
+        float rB = new Vector2(offB.x, offB.y).magnitude, angB = Mathf.Atan2(offB.y, offB.x);
+        Vector3 sA = a.transform.localScale, sB = b.transform.localScale;
+
+        const float SpinDur = 1.5f;     // más largo: da tiempo a MUCHAS vueltas
+        const float CardRevs = 5f;      // vueltas de las cartas (giran mucho antes de fundirse)
+        const float MoteRevs = 10f;     // las motas giran aún más → swirl frenético
+        for (float e = 0f; e < SpinDur; e += Time.deltaTime)
+        {
+            float t = e / SpinDur;
+            float k = Mathf.SmoothStep(0f, 1f, t);   // contracción de radio/escala (suave)
+            float spin = t * t;                      // giro ACELERANTE (arranca lento, se embala)
+
+            if (a != null)
+            {
+                float r = Mathf.Lerp(rA, 0.12f, k), th = angA + CardRevs * 2f * Mathf.PI * spin;
+                a.transform.position = MotePos(center, r, th, Mathf.Lerp(offA.z, 0f, k));
+                a.transform.localScale = Vector3.Lerp(sA, Vector3.one * (fusionCardScale * 0.3f), k);
+                FaceCamera(a, a.transform.position);
+            }
+            if (b != null)
+            {
+                float r = Mathf.Lerp(rB, 0.12f, k), th = angB + CardRevs * 2f * Mathf.PI * spin;
+                b.transform.position = MotePos(center, r, th, Mathf.Lerp(offB.z, 0f, k));
+                b.transform.localScale = Vector3.Lerp(sB, Vector3.one * (fusionCardScale * 0.3f), k);
+                FaceCamera(b, b.transform.position);
+            }
+            for (int i = 0; i < motes.Count; i++)
+            {
+                float r = Mathf.Lerp(moteR0[i], 0.05f, k);
+                float th = moteA0[i] + moteDir[i] * MoteRevs * 2f * Mathf.PI * spin;
+                Vector3 mp = MotePos(center, r, th, Mathf.Lerp(moteZ0[i], 0f, k));
+                motes[i].position = mp;
+                // Cometa: orienta el brillo hacia el centro y lo estira a lo largo del
+                // radio (se alarga al acelerar hacia dentro) → estelas de convergencia.
+                Vector2 dir = new Vector2(center.x - mp.x, center.y - mp.y);
+                float deg = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+                motes[i].rotation = Quaternion.Euler(0f, 0f, deg);
+                motes[i].localScale = new Vector3(Mathf.Lerp(0.26f, 0.04f, k), Mathf.Lerp(0.5f, 1.5f, k), 1f);
+                var c = moteSr[i].color; c.a = Mathf.Lerp(0.9f, 0f, k); moteSr[i].color = c;
+            }
+            // Un DESTELLO que se va formando: estrobo cada vez más rápido e intenso
+            // conforme el remolino se cierra, culminando en el fogonazo de la fusión.
+            float strobeFreq = Mathf.Lerp(10f, 55f, k);
+            float strobe = Mathf.Abs(Mathf.Sin(e * strobeFreq));   // 0..1
+            Color glowTint = Color.Lerp(new Color(0.55f, 0.8f, 1f), FusionGold, k); // frío → dorado
+
+            // El brillo NO deja de amplificarse: crece con fuerza hacia el final
+            // (curva acelerada) hasta fundirse con el fogonazo de la fusión.
+            float bright = k * k;   // ease-in: arranca suave y se dispara al cerrarse
+
+            if (light != null)
+            {
+                light.intensity = Mathf.Lerp(0.5f, 9f, bright) * (1f + strobe * Mathf.Lerp(0.2f, 2.2f, k));
+                light.range = Mathf.Lerp(6f, 15f, k);
+                light.color = glowTint;
+            }
+            // Núcleo incandescente (crece y destella) + halo amplio + rayos radiantes.
+            if (core != null)
+            {
+                core.position = center;
+                core.localScale = Vector3.one * Mathf.Lerp(0.5f, 4.5f, bright) * (0.8f + 0.5f * strobe);
+                Color cc = Color.Lerp(glowTint, Color.white, Mathf.Lerp(0.4f, 1f, k)); // → blanco al final
+                cc.a = Mathf.Lerp(0.2f, 1f, bright) * (0.7f + 0.3f * strobe);
+                coreSr.color = cc;
+                BillboardFull(core);
+            }
+            if (halo != null)
+            {
+                halo.position = center;
+                halo.localScale = Vector3.one * Mathf.Lerp(1.6f, 11f, bright);
+                Color hc = glowTint; hc.a = Mathf.Lerp(0.05f, 0.75f, bright) * (0.75f + 0.25f * strobe);
+                haloSr.color = hc;
+                BillboardFull(halo);
+            }
+            // Rayos radiantes: giran más rápido y crecen/brillan al cerrarse el remolino.
+            if (rays != null)
+            {
+                rays.position = center;
+                raysSpin += Mathf.Lerp(60f, 320f, k) * Time.deltaTime;
+                rays.localScale = Vector3.one * Mathf.Lerp(1.5f, 9f, bright) * (0.9f + 0.25f * strobe);
+                Color rc = glowTint; rc.a = Mathf.Lerp(0f, 0.8f, bright) * (0.6f + 0.4f * strobe);
+                raysSr.color = rc;
+                BillboardFull(rays);
+                rays.Rotate(0f, 0f, raysSpin, Space.Self);
+            }
+            yield return null;
+        }
+
+        // El núcleo/halo/rayos del remolino se retiran (el clímax lo toma FusionBurst).
+        if (core != null) Destroy(core.gameObject);
+        if (halo != null) Destroy(halo.gameObject);
+        if (rays != null) Destroy(rays.gameObject);
+
+        // Fundido: desaparecen los materiales.
+        if (a != null) Destroy(a.gameObject);
+        if (b != null) Destroy(b.gameObject);
+        _fusionQueue.RemoveRange(0, 2);
+
+        // Nace la carta (diminuta): el estallido la REVELA emergiendo del fogonazo.
+        var result = SpawnView(center);
+        result.Show(stepResult, CardPosition.FaceUpAttack);
+        result.SetStats("");
+        FaceCamera(result, center);
+        result.transform.localScale = Vector3.one * 0.05f;
+        _fusionQueue.Insert(0, result);
+
+        // Clímax: pilar de luz + fogonazo; la carta emerge (pop) DESDE el fogonazo, al
+        // mismo tiempo que se apaga el brillo.
+        yield return FusionBurst(center, light, result);
+
+        // Limpieza de los efectos.
+        foreach (var m in motes) if (m != null) Destroy(m.gameObject);
+        if (light != null) Destroy(light.gameObject);
+    }
+
+    /// <summary>
+    /// Beat de "carga" previo al remolino: un núcleo de luz late creciendo entre las
+    /// dos cartas mientras chispas convergen volando hacia el centro, telegrafiando la
+    /// implosión. Las cartas se aprietan un pelín hacia dentro por la tensión.
+    /// </summary>
+    private IEnumerator FusionChargeUp(Vector3 center, Duel3DCardView a, Duel3DCardView b)
+    {
+        const float dur = 0.4f;
+
+        // Núcleo que pulsa creciendo (de cara a la cámara).
+        var core = SpawnMote(center, out var coreSr);
+        coreSr.color = new Color(0.7f, 0.9f, 1f, 0f);
+
+        // Chispas que entran desde un anillo amplio, cada una con su retardo.
+        const int Sparks = 14;
+        var sp = new List<Transform>();
+        var spSr = new List<SpriteRenderer>();
+        var spR0 = new List<float>();
+        var spA = new List<float>();
+        var spDelay = new List<float>();
+        for (int i = 0; i < Sparks; i++)
+        {
+            float ang = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+            float r0 = UnityEngine.Random.Range(2.4f, 4.0f);
+            var m = SpawnMote(MotePos(center, r0, ang, UnityEngine.Random.Range(-0.5f, 0.5f)), out var sr);
+            sr.color = MotePalette[UnityEngine.Random.Range(0, MotePalette.Length)];
+            m.gameObject.SetActive(false);
+            sp.Add(m); spSr.Add(sr); spR0.Add(r0); spA.Add(ang);
+            spDelay.Add(UnityEngine.Random.Range(0f, dur * 0.5f));
+        }
+
+        Vector3 pullA = center + Vector3.left * 0.36f;
+        Vector3 pullB = center + Vector3.right * 0.36f;
+        Vector3 a0 = a != null ? a.transform.position : pullA;
+        Vector3 b0 = b != null ? b.transform.position : pullB;
+
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+
+            // Núcleo: latido acelerado que crece.
+            float pulse = 0.7f + 0.3f * (0.5f + 0.5f * Mathf.Sin(k * Mathf.PI * 6f));
+            core.localScale = Vector3.one * Mathf.Lerp(0.2f, 1.1f, k) * pulse;
+            coreSr.color = new Color(0.7f, 0.9f, 1f, Mathf.Lerp(0f, 0.9f, k));
+            BillboardFull(core);
+
+            for (int i = 0; i < sp.Count; i++)
+            {
+                if (e < spDelay[i]) continue;
+                if (!sp[i].gameObject.activeSelf) sp[i].gameObject.SetActive(true);
+                float kk = Mathf.Clamp01((e - spDelay[i]) / (dur - spDelay[i]));
+                float r = Mathf.Lerp(spR0[i], 0.05f, kk * kk);   // acelera hacia dentro
+                Vector3 mp = MotePos(center, r, spA[i], 0f);
+                sp[i].position = mp;
+                Vector2 dir = new Vector2(center.x - mp.x, center.y - mp.y);
+                float deg = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+                sp[i].rotation = Quaternion.Euler(0f, 0f, deg);
+                sp[i].localScale = new Vector3(Mathf.Lerp(0.22f, 0.05f, kk), Mathf.Lerp(0.4f, 1.3f, kk), 1f);
+                var c = spSr[i].color; c.a = Mathf.Lerp(0.95f, 0f, kk); spSr[i].color = c;
+            }
+
+            // Las cartas se aprietan un poco hacia el centro (tensión).
+            if (a != null) { a.transform.position = Vector3.Lerp(a0, pullA, k); FaceCamera(a, a.transform.position); }
+            if (b != null) { b.transform.position = Vector3.Lerp(b0, pullB, k); FaceCamera(b, b.transform.position); }
+            yield return null;
+        }
+
+        foreach (var m in sp) if (m != null) Destroy(m.gameObject);
+        if (core != null) Destroy(core.gameObject);
+    }
+
+    /// <summary>
+    /// Estallido radial breve de chispas que salen disparadas desde un punto de impacto
+    /// y se apagan enseguida (para golpes). No caen: es un fogonazo hacia afuera.
+    /// </summary>
+    private IEnumerator ImpactSparks(Vector3 center, Color color, int count = 10)
+    {
+        var sp = new List<Transform>();
+        var srs = new List<SpriteRenderer>();
+        var dirs = new List<Vector3>();
+        var dist = new List<float>();
+        for (int i = 0; i < count; i++)
+        {
+            float ang = (i / (float)count) * Mathf.PI * 2f + UnityEngine.Random.Range(-0.2f, 0.2f);
+            var m = SpawnMote(center, out var sr);
+            sr.color = color;
+            sp.Add(m); srs.Add(sr);
+            dirs.Add(new Vector3(Mathf.Cos(ang), Mathf.Sin(ang), 0f));
+            dist.Add(UnityEngine.Random.Range(1.2f, 2.6f));
+        }
+        const float dur = 0.32f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            float ease = 1f - (1f - k) * (1f - k);   // out-quad: sale rápido y frena
+            for (int i = 0; i < sp.Count; i++)
+            {
+                if (sp[i] == null) continue;
+                sp[i].position = center + dirs[i] * dist[i] * ease;
+                sp[i].localScale = Vector3.one * Mathf.Lerp(0.28f, 0.05f, k);
+                var c = srs[i].color; c.a = Mathf.Lerp(1f, 0f, k); srs[i].color = c;
+                BillboardFull(sp[i]);
+            }
+            yield return null;
+        }
+        foreach (var m in sp) if (m != null) Destroy(m.gameObject);
+    }
+
+    /// <summary>Luz puntual temporal en un punto (para fulgor/flash de fusión).</summary>
+    private Light SpawnFusionLight(Vector3 pos, Color color)
+    {
+        var go = new GameObject("FusionLight");
+        go.transform.SetParent(transform, false);
+        go.transform.position = pos;
+        var l = go.AddComponent<Light>();
+        l.type = LightType.Point;
+        l.range = 7f;
+        l.color = color;
+        l.intensity = 0f;
+        return l;
+    }
+
+    /// <summary>Sube la intensidad hasta un pico y la baja a 0 (flash).</summary>
+    private IEnumerator FlashLight(Light l, float peak, float duration)
+    {
+        if (l == null) yield break;
+        float up = duration * 0.35f, down = duration - up;
+        float start = l.intensity;
+        for (float e = 0f; e < up; e += Time.deltaTime)
+        {
+            if (l == null) yield break;
+            l.intensity = Mathf.Lerp(start, peak, e / up);
+            yield return null;
+        }
+        for (float e = 0f; e < down; e += Time.deltaTime)
+        {
+            if (l == null) yield break;
+            l.intensity = Mathf.Lerp(peak, 0f, e / down);
+            yield return null;
+        }
+        if (l != null) l.intensity = 0f;
+    }
+
+    /// <summary>Crea una mota de brillo (SpriteRenderer con el glow radial runtime).</summary>
+    private Transform SpawnMote(Vector3 pos, out SpriteRenderer sr) => SpawnFx(GlowSprite(), pos, out sr);
+
+    /// <summary>Crea un SpriteRenderer temporal con el sprite dado, por encima de las cartas.</summary>
+    private Transform SpawnFx(Sprite sprite, Vector3 pos, out SpriteRenderer sr)
+    {
+        var go = new GameObject("FusionFx");
+        go.transform.SetParent(transform, false);
+        go.transform.position = pos;
+        sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite;
+        sr.sortingOrder = 3000; // por encima de las cartas del canvas de mundo
+        return go.transform;
+    }
+
+    /// <summary>Posición en un círculo del plano XY alrededor de un centro.</summary>
+    private static Vector3 MotePos(Vector3 center, float radius, float angleRad, float zOff)
+        => center + new Vector3(Mathf.Cos(angleRad) * radius, Mathf.Sin(angleRad) * radius, zOff);
+
+    /// <summary>Sprite radial (núcleo blanco → halo transparente) generado una vez en runtime.</summary>
+    private static Sprite GlowSprite()
+    {
+        if (_glowSprite != null) return _glowSprite;
+        const int S = 64;
+        var tex = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        {
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear,
+        };
+        var px = new Color32[S * S];
+        for (int y = 0; y < S; y++)
+            for (int x = 0; x < S; x++)
+            {
+                float dx = (x - 31.5f) / 31.5f, dy = (y - 31.5f) / 31.5f;
+                float d = Mathf.Sqrt(dx * dx + dy * dy);
+                float a = Mathf.Clamp01(1f - d);
+                a = a * a * a; // núcleo brillante con halo suave
+                px[y * S + x] = new Color32(255, 255, 255, (byte)(a * 255));
+            }
+        tex.SetPixels32(px);
+        tex.Apply();
+        _glowSprite = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 64f);
+        return _glowSprite;
+    }
+
+    private static Sprite _ringSprite;
+    /// <summary>Anillo (annulus) para las ondas de choque; generado una vez en runtime.</summary>
+    private static Sprite RingSprite()
+    {
+        if (_ringSprite != null) return _ringSprite;
+        const int S = 128;
+        var tex = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+        var px = new Color32[S * S];
+        for (int y = 0; y < S; y++)
+            for (int x = 0; x < S; x++)
+            {
+                float dx = (x - 63.5f) / 63.5f, dy = (y - 63.5f) / 63.5f;
+                float d = Mathf.Sqrt(dx * dx + dy * dy);
+                float band = Mathf.Exp(-Mathf.Pow((d - 0.80f) / 0.12f, 2f)); // banda anular
+                px[y * S + x] = new Color32(255, 255, 255, (byte)(Mathf.Clamp01(band) * 255));
+            }
+        tex.SetPixels32(px); tex.Apply();
+        _ringSprite = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 64f);
+        return _ringSprite;
+    }
+
+    private static Sprite _raysSprite;
+    /// <summary>Estrella de rayos (starburst) para el fogonazo; generada una vez en runtime.</summary>
+    private static Sprite RaysSprite()
+    {
+        if (_raysSprite != null) return _raysSprite;
+        const int S = 128; const float Spokes = 12f;
+        var tex = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+        var px = new Color32[S * S];
+        for (int y = 0; y < S; y++)
+            for (int x = 0; x < S; x++)
+            {
+                float dx = (x - 63.5f) / 63.5f, dy = (y - 63.5f) / 63.5f;
+                float d = Mathf.Sqrt(dx * dx + dy * dy);
+                float ang = Mathf.Atan2(dy, dx);
+                float ray = Mathf.Pow(Mathf.Max(0f, Mathf.Cos(ang * Spokes)), 8f); // picos afilados
+                float radial = Mathf.Clamp01(1f - d);
+                float a = Mathf.Max(ray * radial * radial, radial * radial * radial * 0.5f); // + núcleo
+                px[y * S + x] = new Color32(255, 255, 255, (byte)(Mathf.Clamp01(a) * 255));
+            }
+        tex.SetPixels32(px); tex.Apply();
+        _raysSprite = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 64f);
+        return _raysSprite;
+    }
+
+    /// <summary>
+    /// Clímax de invocación: un PILAR de luz sube desde el punto de fusión y estalla en
+    /// un FOGONAZO blanco (con rayos giratorios y ondas de choque). Al apagarse el
+    /// fogonazo, la carta <paramref name="result"/> emerge del brillo con un pop, al
+    /// mismo tiempo. La luz puntual (la del vórtice) se reaprovecha para el destello.
+    /// </summary>
+    private IEnumerator FusionBurst(Vector3 center, Light light, Duel3DCardView result)
+    {
+        Vector3 hi = center + Vector3.up * 1.5f;
+
+        // Ondas de choque (anillos cian) que se expanden — el sello "moderno".
+        StartCoroutine(Shockwave(center + Vector3.up * 1.0f, 0f));
+        StartCoroutine(Shockwave(center + Vector3.up * 1.0f, 0.10f));
+
+        // Rayos giratorios (starburst) detrás del fogonazo.
+        var rays = SpawnFx(RaysSprite(), hi, out var raysSr);
+        raysSr.color = new Color(1f, 0.97f, 0.8f, 0f);
+        float raysAngle = 0f;
+
+        // 1) Pilar de luz que asciende + rayos que crecen y giran.
+        var pillar = SpawnMote(center, out var pillarSr);
+        pillarSr.color = new Color(1f, 0.96f, 0.75f, 0.95f);
+        for (float e = 0f; e < 0.22f; e += Time.deltaTime)
+        {
+            float k = Mathf.SmoothStep(0f, 1f, e / 0.22f);
+            pillar.localScale = new Vector3(Mathf.Lerp(0.5f, 1.6f, k), Mathf.Lerp(0.6f, 10f, k), 1f);
+            pillar.position = center + Vector3.up * Mathf.Lerp(0f, 4f, k);
+            BillboardUpright(pillar);
+
+            raysAngle += 200f * Time.deltaTime;
+            rays.localScale = Vector3.one * Mathf.Lerp(2f, 9f, k);
+            raysSr.color = new Color(1f, 0.97f, 0.8f, k * 0.85f);
+            BillboardFull(rays); rays.Rotate(0f, 0f, raysAngle, Space.Self);
+
+            if (light != null) { light.intensity = Mathf.Lerp(3.5f, 8f, k); light.color = Color.Lerp(FusionGold, Color.white, k); }
+            yield return null;
+        }
+
+        // 2) Fogonazo blanco que cubre la vista + sacudida de cámara (impacto).
+        var flash = SpawnMote(hi, out var flashSr);
+        flashSr.color = Color.white;
+        BillboardFull(flash);
+        StartCoroutine(CameraKick(0.22f, 0.30f));
+        for (float e = 0f; e < 0.12f; e += Time.deltaTime)
+        {
+            float k = e / 0.12f;
+            flash.localScale = Vector3.one * Mathf.Lerp(1f, 18f, k);
+            var pc = pillarSr.color; pc.a = Mathf.Lerp(0.95f, 0f, k); pillarSr.color = pc;
+            raysAngle += 220f * Time.deltaTime;
+            rays.localScale = Vector3.one * Mathf.Lerp(9f, 13f, k);
+            BillboardFull(rays); rays.Rotate(0f, 0f, raysAngle, Space.Self);
+            yield return null;
+        }
+        if (light != null) light.intensity = 9f;
+
+        // 3) REVELADO: el fogonazo se apaga y, AL MISMO TIEMPO, la carta emerge del
+        //    brillo con un pop elástico (overshoot). Luz a resplandor frío; rayos se disipan.
+        const float reveal = 0.45f;
+        Vector3 rs0 = result != null ? result.transform.localScale : Vector3.one * 0.05f;
+        Vector3 rs1 = Vector3.one * fusionCardScale;
+        for (float e = 0f; e < reveal; e += Time.deltaTime)
+        {
+            float k = e / reveal;
+            float fk = Mathf.Clamp01(k / 0.6f); // el fogonazo se apaga en la primera parte
+            var c = flashSr.color; c.a = Mathf.Lerp(1f, 0f, fk); flashSr.color = c;
+            flash.localScale = Vector3.one * Mathf.Lerp(18f, 22f, fk);
+            BillboardFull(flash);
+            raysAngle += 150f * Time.deltaTime;
+            var rc = raysSr.color; rc.a = Mathf.Lerp(0.85f, 0f, fk); raysSr.color = rc;
+            rays.localScale = Vector3.one * Mathf.Lerp(13f, 16f, fk);
+            BillboardFull(rays); rays.Rotate(0f, 0f, raysAngle, Space.Self);
+            if (result != null)
+            {
+                result.transform.localScale = Vector3.LerpUnclamped(rs0, rs1, BackOut(k)); // emerge del brillo
+                FaceCamera(result, result.transform.position);
+            }
+            if (light != null) { light.intensity = Mathf.Lerp(9f, 1.8f, k); light.color = Color.Lerp(Color.white, new Color(0.5f, 0.9f, 1f), k); }
+            yield return null;
+        }
+        if (result != null) result.transform.localScale = rs1;
+
+        if (pillar != null) Destroy(pillar.gameObject);
+        if (flash != null) Destroy(flash.gameObject);
+        if (rays != null) Destroy(rays.gameObject);
+    }
+
+    /// <summary>Onda de choque: un anillo que se expande y se desvanece (de cara a la cámara).</summary>
+    private IEnumerator Shockwave(Vector3 pos, float delay, Color? color = null)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        var ring = SpawnFx(RingSprite(), pos, out var sr);
+        Color baseC = color ?? new Color(0.7f, 0.95f, 1f);
+        sr.color = new Color(baseC.r, baseC.g, baseC.b, 0.9f);
+        const float dur = 0.5f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            BillboardFull(ring);
+            float s = Mathf.Lerp(0.5f, 13f, Mathf.SmoothStep(0f, 1f, k));
+            ring.localScale = new Vector3(s, s, 1f);
+            var c = sr.color; c.a = Mathf.Lerp(0.9f, 0f, k); sr.color = c;
+            yield return null;
+        }
+        if (ring != null) Destroy(ring.gameObject);
+    }
+
+    /// <summary>Sacudida breve de la cámara (impacto del fogonazo); restaura la posición al acabar.</summary>
+    private IEnumerator CameraKick(float amplitude, float duration)
+    {
+        if (mainCamera == null) yield break;
+        Vector3 origin = mainCamera.transform.position;
+        for (float e = 0f; e < duration; e += Time.deltaTime)
+        {
+            if (mainCamera == null) yield break;
+            float damp = 1f - e / duration;
+            mainCamera.transform.position = origin + UnityEngine.Random.insideUnitSphere * amplitude * damp;
+            yield return null;
+        }
+        if (mainCamera != null) mainCamera.transform.position = origin;
+    }
+
+    private static float BackOut(float x)
+    {
+        const float c1 = 1.70158f, c3 = c1 + 1f;
+        float xm = x - 1f;
+        return 1f + c3 * xm * xm * xm + c1 * xm * xm;
+    }
+
+    /// <summary>Orienta un sprite hacia la cámara MANTENIÉNDOLO vertical (para el pilar).</summary>
+    private void BillboardUpright(Transform t)
+    {
+        if (mainCamera == null) return;
+        Vector3 dir = t.position - mainCamera.transform.position; dir.y = 0f;
+        if (dir.sqrMagnitude < 0.0001f) dir = Vector3.forward;
+        t.rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
+    }
+
+    /// <summary>Orienta un sprite de cara plana a la cámara (para el fogonazo).</summary>
+    private void BillboardFull(Transform t)
+    {
+        if (mainCamera == null) return;
+        Vector3 dir = t.position - mainCamera.transform.position;
+        if (dir.sqrMagnitude < 0.0001f) dir = Vector3.forward;
+        t.rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
     }
 
     // ── Batalla ──────────────────────────────────────────────────────────

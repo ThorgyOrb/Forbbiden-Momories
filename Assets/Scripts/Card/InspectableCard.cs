@@ -21,6 +21,9 @@ public class InspectableCard : MonoBehaviour,
     public float easeSpeed = 12f;        // suavizado hacia la inclinación objetivo
     public float idleSwayAmp = 4f;       // grados de vaivén en reposo
     public float idleSwaySpeed = 0.7f;
+    public Vector2 restEuler = Vector2.zero; // (pitch, yaw) base en reposo: deja la carta
+                                             // ya inclinada en 3D aunque nadie interactúe.
+                                             // 0 = comportamiento original (vuelve al frente).
 
     private RectTransform _hit;
     private Camera _cam;
@@ -36,14 +39,16 @@ public class InspectableCard : MonoBehaviour,
         if (canvas != null) canvas = canvas.rootCanvas;
         _cam = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
              ? canvas.worldCamera : null;
+
+        _curEuler = restEuler; // arranca ya en la pose de reposo (sin lerp desde el frente)
     }
 
-    /// <summary>Devuelve la carta al centro sin inclinación (al abrir/cerrar).</summary>
+    /// <summary>Devuelve la carta a su inclinación de reposo (al abrir/cerrar).</summary>
     public void ResetView()
     {
         _hovering = _dragging = false;
-        _curEuler = Vector2.zero;
-        if (target != null) target.localRotation = Quaternion.identity;
+        _curEuler = restEuler;
+        if (target != null) target.localRotation = Quaternion.Euler(restEuler.x, restEuler.y, 0f);
     }
 
     public void OnPointerEnter(PointerEventData e) => _hovering = true;
@@ -59,14 +64,17 @@ public class InspectableCard : MonoBehaviour,
         Vector2 aim;
         if (_dragging || _hovering)
         {
+            // Seguimiento del puntero CENTRADO en 0 (no en restEuler): así izquierda y
+            // derecha giran de forma simétrica. La carta "se endereza" hacia ti al tocarla.
             Vector2 sp = _dragging ? _dragScreen : (Vector2)Input.mousePosition;
             aim = AimFrom(sp);
         }
         else
         {
-            // Vaivén de reposo: mantiene vivos los reflejos aunque nadie toque.
+            // En reposo vuelve a la leve inclinación 3D + un vaivén que mantiene vivos
+            // los reflejos aunque nadie toque.
             float t = Time.unscaledTime;
-            aim = new Vector2(
+            aim = restEuler + new Vector2(
                 Mathf.Sin(t * idleSwaySpeed) * idleSwayAmp,
                 Mathf.Cos(t * idleSwaySpeed * 0.8f) * idleSwayAmp);
         }

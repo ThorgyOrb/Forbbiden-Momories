@@ -35,6 +35,11 @@ public class CardHoloEffect : MonoBehaviour
     private Image _targetImage;
     private CardRarity _currentRarity;
 
+    // Escala global de la intensidad de los efectos para ESTA carta (1 = pleno).
+    // Se baja en cartas grandes (visor del modal, mesa de duelo) para que el
+    // efecto no se sienta excesivo por cubrir tanta área; el grid queda en 1.
+    private float _intensityScale = 1f;
+
     private static readonly int PropRarityMode     = Shader.PropertyToID("_RarityMode");
     private static readonly int PropAuroraStrength = Shader.PropertyToID("_AuroraStrength");
     private static readonly int PropAuroraColorA   = Shader.PropertyToID("_AuroraColorA");
@@ -221,35 +226,53 @@ public class CardHoloEffect : MonoBehaviour
         _instanceMat.SetTexture("_MainTex", _targetImage.sprite.texture);
     }
 
+    /// <summary>
+    /// Escala la intensidad de los efectos de esta carta (1 = pleno, como el grid).
+    /// Se usa para atenuar cartas grandes (visor del modal, mesa de duelo). La
+    /// rampa de Update converge suavemente al nuevo valor, así que puede llamarse
+    /// tras Setup sin cortes.
+    /// </summary>
+    public void SetIntensityScale(float scale)
+    {
+        _intensityScale = Mathf.Clamp(scale, 0f, 1.5f);
+    }
+
     void Update()
     {
         if (_instanceMat == null) return;
 
         // Capas objetivo por rareza; suben suavemente desde 0 al aparecer.
+        // El valor "encendido" es _intensityScale (1 = pleno), para atenuar
+        // cartas grandes sin tocar el grid.
+        float on = _intensityScale;
         float tAurora = 0f, tGlare = 0f, tFoil = 0f, tRelief = 0f, tSparkle = 0f;
 
         switch (_currentRarity)
         {
             case CardRarity.Rare:
-                tAurora = 1.0f;
+                tAurora = on;
                 break;
 
             case CardRarity.Epic:
-                tAurora = 1.0f;
-                tGlare = 1.0f;
-                tFoil = 1.0f;
+                tAurora = on;
+                tGlare = on;
+                tFoil = on;
                 break;
 
             case CardRarity.Legendary:
-                tAurora = 1.0f;
-                tGlare = 1.0f;
-                tFoil = 1.0f;
-                tRelief = 1.0f;
-                tSparkle = 1.0f;
+                tAurora = on;
+                tGlare = on;
+                tFoil = on;
+                tRelief = on;
+                tSparkle = on;
                 break;
         }
 
-        float dt = Time.deltaTime * smoothSpeed;
+        // Se acota Time.deltaTime: al instanciar/mostrar una carta (modal, duelo)
+        // hay un tirón de frame, y un delta grande haría que el lerp saltara al
+        // máximo de golpe (el "flash" de efectos al abrir). Con el tope, la rampa
+        // siempre sube suave en ~1s aunque el frame de aparición se congele.
+        float dt = Mathf.Min(Time.deltaTime, 0.033f) * smoothSpeed;
         _instanceMat.SetFloat(PropAuroraStrength,
             Mathf.Lerp(_instanceMat.GetFloat(PropAuroraStrength), tAurora, dt));
         _instanceMat.SetFloat(PropGlareStrength,

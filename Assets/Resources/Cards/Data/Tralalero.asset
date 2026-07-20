@@ -15,21 +15,35 @@ MonoBehaviour:
   cardId: 2
   cardName: Tralalero
   artwork: {fileID: 21300000, guid: f39367c037a77e4459837fad70e8cba1, type: 3}
-  cardCategory: 0
+  rarity: 0
+  cardCategory: 5
+  attribute: 1
+  description: Gana 500
+  fusionGroup: 
   monsterType: 0
   baseAtk: 3000
   baseDef: 2500
   stars: 8
   starA: 0
   starB: 0
-  attribute: 1
-  rarity: 0
-  fusionGroup: 
-  equipAtkBonus: 0
-  equipDefBonus: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
   spellEffect: 0
   spellValue: 0
+  fieldTerrain: 0
   spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
   sources:
   - sourceType: 0
     opponentId: 1

@@ -12,11 +12,15 @@ public class RectScaleFitter : MonoBehaviour
 {
     public RectTransform source;
     public float nativeHeight = 280f;
+    [Tooltip("Opcional: si > 0, también limita por ancho (encaja DENTRO del contenedor).")]
+    public float nativeWidth = 0f;
 
     void LateUpdate()
     {
         if (source == null || nativeHeight <= 0f) return;
         float s = source.rect.height / nativeHeight;
+        if (nativeWidth > 0f)
+            s = Mathf.Min(s, source.rect.width / nativeWidth);
         transform.localScale = new Vector3(s, s, 1f);
     }
 }

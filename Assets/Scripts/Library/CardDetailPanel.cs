@@ -39,30 +39,14 @@ public class CardDetailPanel : MonoBehaviour
     [Header("Placeholder sobre el slot original")]
     [SerializeField] private RectTransform cardPlaceholder; // Image negra, mismo tamaño que el slot
 
-    [Header("Sprite genérico de reverso (para el vuelo, antes de mostrar el frente)")]
-    [SerializeField] private Sprite genericCardBack;
-
-    [Header("Contenido final (texto) — LEGADO, lo reemplaza CardDetailInfoPanel")]
+    [Header("Fuente del panel (se toma su tipografía; su texto ya no se usa)")]
     [SerializeField] private TMP_Text nameText;
-    [SerializeField] private TMP_Text idText;
-    [SerializeField] private TMP_Text atkText;
-    [SerializeField] private TMP_Text defText;
-    [SerializeField] private TMP_Text levelText;
-    [SerializeField] private TMP_Text typeText;
-    [SerializeField] private TMP_Text attributeText;
-    [SerializeField] private TMP_Text copiesText;
-    [SerializeField] private TMP_Text sourcesText;
-
-    [Header("Grupos que se revelan progresivamente")]
-    [SerializeField] private GameObject typeAndGuardianGroup; // typeText + guardian stars
-    [SerializeField] private GameObject statsAndArtGroup;     // cardArt + atk/def/copies/sources
 
     [Header("Cierre")]
     [SerializeField] private Button closeButton;
     [SerializeField] private Button backdropButton;
 
     [Header("Visor 3D")]
-    [SerializeField] private Button view3DButton;
     [SerializeField] private Model3DViewer model3DViewer;
 
     [Header("Timings (segundos)")]
@@ -101,7 +85,13 @@ public class CardDetailPanel : MonoBehaviour
     // Tamaño nativo del prefab Card (su layout interno SOLO se ve bien a este
     // tamaño; por eso se AGRANDA con localScale en vez de estirar el rect).
     private static readonly Vector2 CardNativeSize = new Vector2(200f, 280f);
-    private GameObject _cardPrefab;         // Resources/Prefabs/Card
+    // Los efectos holo se atenúan MUCHO en la carta grande del modal: a pleno,
+    // por ser aditivos, saturan a blanco y cubren demasiada área. Bien por debajo
+    // de 1 para caer bajo el punto de saturación. El grid queda intacto en 1.
+    private const float BigCardHoloScale = 0.2f;
+    // Carta V2 (layout TCG): la misma que usan la grilla, el deck builder y el duelo.
+    private const string CardPrefabResource = "Prefabs/CardMonsterV2";
+    private GameObject _cardPrefab;
     private RectTransform _inspectWrapper;  // área estacionaria (hover), en el espacio de flyingCard
     private RectTransform _inspectCardRT;   // la carta que rota/escala
     private CardDisplay _inspectDisplay;    // la carta completa con todos los efectos
@@ -134,8 +124,6 @@ public class CardDetailPanel : MonoBehaviour
 
         if (closeButton != null) closeButton.onClick.AddListener(Hide);
         if (backdropButton != null) backdropButton.onClick.AddListener(Hide);
-
-        if (view3DButton != null) view3DButton.onClick.AddListener(OnView3DClicked);
     }
 
     /// <summary>
@@ -203,11 +191,6 @@ public class CardDetailPanel : MonoBehaviour
         flyingCard.localRotation = Quaternion.identity;
         flyingCard.localScale = Vector3.one;
         flyingCard.sizeDelta = Vector2.zero;
-
-        // Los grupos legados están en null tras Awake (los reemplaza el panel
-        // nuevo); estas llamadas quedan como no-ops.
-        if (typeAndGuardianGroup != null) typeAndGuardianGroup.SetActive(false);
-        if (statsAndArtGroup != null) statsAndArtGroup.SetActive(true);
 
         // El panel de info (ContentGroup) arranca invisible e inerte hasta que
         // la secuencia de revelado lo funde a la vista.
@@ -344,10 +327,6 @@ public class CardDetailPanel : MonoBehaviour
             flyingCard.localRotation = Quaternion.Euler(0, yRot, tilt);
         });
 
-        // En este punto la carta está "de canto" (90°) con el reverso. Aquí
-        // se revela Tipo + Guardian Star (Fase 5-6), mientras sigue boca abajo.
-        if (typeAndGuardianGroup != null) typeAndGuardianGroup.SetActive(true);
-
         // ── Salto del truco de flip: -90° con la cara ya cambiada a frente ──
         SetFlyingFace(true);
         flyingCard.localRotation = Quaternion.Euler(0, -90f, 0);
@@ -425,14 +404,13 @@ public class CardDetailPanel : MonoBehaviour
             flyingCard.anchoredPosition = _lastFinalPos;
             flyingCard.sizeDelta = finalCardSize;
 
-            // Ocultar stats inmediatamente
+            // Ocultar el panel de info inmediatamente
             if (_statsAndArtCanvasGroup != null)
             {
                 _statsAndArtCanvasGroup.alpha = 0f;
                 _statsAndArtCanvasGroup.blocksRaycasts = false;
                 _statsAndArtCanvasGroup.interactable = false;
             }
-            if (typeAndGuardianGroup != null) typeAndGuardianGroup.SetActive(false);
 
             // ── Fase A: salida explosiva ──
             // La carta se lanza desde su posición final mientras gira
@@ -620,10 +598,10 @@ public class CardDetailPanel : MonoBehaviour
     private void EnsureInspectCard()
     {
         if (_inspectWrapper != null) return;
-        if (_cardPrefab == null) _cardPrefab = Resources.Load<GameObject>("Prefabs/Card");
+        if (_cardPrefab == null) _cardPrefab = Resources.Load<GameObject>(CardPrefabResource);
         if (_cardPrefab == null)
         {
-            Debug.LogWarning("CardDetailPanel: no se encontró Resources/Prefabs/Card para el visor.");
+            Debug.LogWarning($"CardDetailPanel: no se encontró Resources/{CardPrefabResource} para el visor.");
             return;
         }
 
@@ -686,6 +664,7 @@ public class CardDetailPanel : MonoBehaviour
         {
             _inspectDisplay.Setup(card);
             _inspectDisplay.SetPosition(CardPosition.FaceUpAttack);
+            _inspectDisplay.SetHoloIntensityScale(BigCardHoloScale);
         }
 
         _inspectWrapper.gameObject.SetActive(true);
@@ -702,10 +681,10 @@ public class CardDetailPanel : MonoBehaviour
     private void EnsureFlyingCard()
     {
         if (_flyingDisplay != null) return;
-        if (_cardPrefab == null) _cardPrefab = Resources.Load<GameObject>("Prefabs/Card");
+        if (_cardPrefab == null) _cardPrefab = Resources.Load<GameObject>(CardPrefabResource);
         if (_cardPrefab == null)
         {
-            Debug.LogWarning("CardDetailPanel: no se encontró Resources/Prefabs/Card para el vuelo.");
+            Debug.LogWarning($"CardDetailPanel: no se encontró Resources/{CardPrefabResource} para el vuelo.");
             return;
         }
 
@@ -736,6 +715,7 @@ public class CardDetailPanel : MonoBehaviour
         {
             _flyingDisplay.Setup(card);
             _flyingDisplay.SetPosition(CardPosition.FaceUpAttack);
+            _flyingDisplay.SetHoloIntensityScale(BigCardHoloScale);
         }
     }
 
@@ -777,12 +757,6 @@ public class CardDetailPanel : MonoBehaviour
 
         // El fade de revelado usa ContentGroup del panel nuevo.
         _statsAndArtCanvasGroup = _styledInfo.ContentGroup;
-
-        // A partir de aquí los grupos legados no deben tocarse: al ponerlos en
-        // null, todos los `if (... != null) ...SetActive(...)` de la secuencia
-        // quedan como no-ops y no reactivan el maquetado viejo.
-        typeAndGuardianGroup = null;
-        statsAndArtGroup = null;
     }
 
     private void FillStaticText(LibraryEntry entry)

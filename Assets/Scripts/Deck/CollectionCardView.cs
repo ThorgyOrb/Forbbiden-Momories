@@ -4,41 +4,53 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Tarjeta de la lista de COLECCIÓN en el constructor de mazos: muestra una carta
-/// que el jugador posee, cuántas copias tiene y cuántas ya están en el mazo, con
-/// un botón para añadir una copia (deshabilitado si ya metió todas las suyas).
+/// Baldosa de la COLECCIÓN en el Constructor de Deck: muestra la carta completa
+/// (usando el prefab Card / <see cref="CardDisplay"/>) con una insignia de copias
+/// poseídas y otra de copias ya metidas en el mazo. Al hacer clic la selecciona
+/// para inspeccionarla en el panel central (donde se añade/quita).
 /// </summary>
 public class CollectionCardView : MonoBehaviour
 {
-    [SerializeField] private Image art;
-    [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private TextMeshProUGUI infoText;    // tipo · ATK/DEF, o categoría
-    [SerializeField] private TextMeshProUGUI countText;   // "Copias: 3   En mazo: 1"
-    [SerializeField] private Button addButton;
+    [SerializeField] private CardDisplay cardDisplay;
+    [SerializeField] private TextMeshProUGUI copiesBadge;    // "x3" copias poseídas
+    [SerializeField] private TextMeshProUGUI inDeckBadge;    // "EN MAZO 2"
+    [SerializeField] private Button selectButton;
+    [SerializeField] private GameObject selectionHighlight;  // marco al estar seleccionada
+    [SerializeField] private GameObject maxedOverlay;        // velo al alcanzar el tope en el mazo
 
-    public void Setup(CardData card, int ownedCopies, int inDeck, Action onAdd)
+    private int _cardId;
+    public int CardId => _cardId;
+
+    public void Setup(CardData card, int owned, int inDeck, int cap, bool selected, Action onClick)
     {
-        if (art != null)
-        {
-            art.sprite = card.artwork;
-            art.enabled = card.artwork != null;
-        }
-        if (nameText != null) nameText.text = card.cardName;
-        if (infoText != null) infoText.text = Info(card);
-        if (countText != null) countText.text = $"Copias: {ownedCopies}    En mazo: {inDeck}";
+        _cardId = card.cardId;
 
-        if (addButton != null)
+        if (cardDisplay != null)
+            cardDisplay.Setup(card);
+
+        if (copiesBadge != null) copiesBadge.text = $"x{owned}";
+
+        if (inDeckBadge != null)
         {
-            addButton.onClick.RemoveAllListeners();
-            addButton.onClick.AddListener(() => onAdd?.Invoke());
-            addButton.interactable = inDeck < ownedCopies;
+            bool show = inDeck > 0;
+            inDeckBadge.gameObject.SetActive(show);
+            if (show) inDeckBadge.text = $"EN MAZO {inDeck}";
+        }
+
+        if (maxedOverlay != null)
+            maxedOverlay.SetActive(inDeck >= cap && cap > 0);
+
+        SetSelected(selected);
+
+        if (selectButton != null)
+        {
+            selectButton.onClick.RemoveAllListeners();
+            selectButton.onClick.AddListener(() => onClick?.Invoke());
         }
     }
 
-    private static string Info(CardData card)
+    public void SetSelected(bool selected)
     {
-        if (card.IsMonster)
-            return $"{card.monsterType} · ATK {card.baseAtk} / DEF {card.baseDef}";
-        return card.CategoryLabel;
+        if (selectionHighlight != null) selectionHighlight.SetActive(selected);
     }
 }

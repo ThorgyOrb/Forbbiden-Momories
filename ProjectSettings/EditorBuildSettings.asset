@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/LibraryCatalogScene.unity
     guid: b2aa1af71788d17408091f1d2fa252db
   - enabled: 1
+    path: Assets/Scenes/LibraryGodsScene.unity
+    guid: f0d118c32655d6047b70dd689bd48e94
+  - enabled: 1
     path: Assets/Scenes/LibraryScene.unity
     guid: ee9a162f53e251846a0f1fc623803051
   - enabled: 1
