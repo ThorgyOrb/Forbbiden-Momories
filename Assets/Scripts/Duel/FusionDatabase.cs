@@ -82,22 +82,30 @@ public class FusionDatabase : ScriptableObject
         if (byCategory != null)
             return new FusionStepResult(byCategory, FusionStepType.Category);
 
-        // 3. Compatibilidad de equipo — solo si "next" es una carta de Equipo
-        //    aplicable a "current". Cualquier Equip Card es aplicable a cualquier
-        //    monstruo por ahora; si luego quieres restringir por monsterType o
-        //    attribute, agrega esa validación aquí.
-        if (next.IsEquip)
-        {
-            return new FusionStepResult(
-                current, FusionStepType.Equip,
-                equipAtkBonusApplied: next.equipAtkBonus,
-                equipDefBonusApplied: next.equipDefBonus);
-        }
+        // 3. Compatibilidad de EQUIPO en CUALQUIER orden: el MONSTRUO sobrevive y recibe
+        //    el bonus, sin importar si el equipo va DESPUÉS (next) o ANTES (current) en la
+        //    lista. (ver CardData.EquipAppliesTo: sin restricción aplica a cualquier
+        //    monstruo; con restricción, solo a su monsterType). Un equipo incompatible no
+        //    entra aquí y cae a absorción (se descarta sin efecto, como en FM).
+        //    ANTES solo se contemplaba el equipo como "next", así que un equipo colocado
+        //    ANTES del monstruo se descartaba por absorción en vez de equiparse.
+        if (current.IsMonster && next.IsEquip && next.EquipAppliesTo(current))
+            return new FusionStepResult(current, FusionStepType.Equip,
+                equipAtkBonusApplied: next.equipAtkBonus, equipDefBonusApplied: next.equipDefBonus);
+        if (next.IsMonster && current.IsEquip && current.EquipAppliesTo(next))
+            return new FusionStepResult(next, FusionStepType.Equip,
+                equipAtkBonusApplied: current.equipAtkBonus, equipDefBonusApplied: current.equipDefBonus);
 
-        // 4. Absorción — no hay ninguna regla. Sobrevive la carta de mayor ATK.
-        //    "current" es casi siempre el resultado acumulado (normalmente más fuerte),
-        //    pero comparamos por ATK real para respetar el caso Kuriboh + Blue-Eyes.
-        CardData survivor = (current.baseAtk >= next.baseAtk) ? current : next;
+        // 4. Absorción — no hay receta. PRIORIDAD para que el resultado sea siempre un
+        //    MONSTRUO invocable: un monstruo NUNCA es descartado por un no-monstruo
+        //    (equipo/magia/trampa incompatible), así una carta de equipo colocada al final
+        //    de la lista no acaba "invocada" como monstruo (rompería el juego). Entre dos
+        //    cartas del MISMO rango (dos monstruos, o dos no-monstruos) se resuelve por
+        //    ORDEN: gana la ENTRANTE (next).
+        CardData survivor;
+        if (current.IsMonster && !next.IsMonster) survivor = current;
+        else if (next.IsMonster && !current.IsMonster) survivor = next;
+        else survivor = next;
         return new FusionStepResult(survivor, FusionStepType.Absorption);
     }
 
@@ -119,10 +127,13 @@ public class FusionDatabase : ScriptableObject
     {
         var steps = new List<FusionStepResult>();
         var usable = new List<CardData>();
-        // Solo Monstruo o Equipo participan en fusión. Magia/Ritual/Especial/Trampa
-        // se ignoran silenciosamente si aparecen en la lista por error.
+        // Participan en fusión: Monstruo, Equipo, Magia y Trampa (estas dos para recetas
+        // específicas/categoría que las combinen entre sí o con monstruos → cartas nuevas).
+        // Ritual/Especial se ignoran. El RESULTADO final debe ser un monstruo (lo valida
+        // quien invoca la fusión); una carta sin receta cae a absorción y se descarta,
+        // y un no-monstruo nunca sobrevive frente a un monstruo (ver ResolveStep).
         foreach (var m in materials)
-            if (m != null && (m.IsMonster || m.IsEquip)) usable.Add(m);
+            if (m != null && (m.IsMonster || m.IsEquip || m.IsSpell || m.IsTrap)) usable.Add(m);
 
         if (usable.Count == 0)
             return new FusionChainResult(null, 0, 0, steps);

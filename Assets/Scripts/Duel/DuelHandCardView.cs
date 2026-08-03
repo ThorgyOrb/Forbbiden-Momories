@@ -27,6 +27,16 @@ public class DuelHandCardView : MonoBehaviour, IPointerEnterHandler
 
     public Button Button => button;
 
+    /// <summary>CardDisplay interno (prefab Card).</summary>
+    public CardDisplay Display
+    {
+        get
+        {
+            if (_display == null) _display = GetComponentInChildren<CardDisplay>(true);
+            return _display;
+        }
+    }
+
     public void Setup(CardData card)
     {
         Card = card;
@@ -36,6 +46,12 @@ public class DuelHandCardView : MonoBehaviour, IPointerEnterHandler
             _display.Setup(card);
             _display.SetPosition(CardPosition.FaceUpAttack); // en mano siempre visible
         }
+    }
+
+    /// <summary>Fija el ATK/DEF ACTUALES a mostrar EN la carta (con terreno/equipos/buffs).</summary>
+    public void SetCurrentStats(int atk, int def)
+    {
+        if (Display != null) Display.SetCurrentStats(atk, def);
     }
 
     public void SetHighlight(bool on)

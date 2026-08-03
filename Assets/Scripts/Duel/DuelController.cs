@@ -64,6 +64,7 @@ public class DuelController : MonoBehaviour
     private int _fieldSlot = -1;            // magia/trampa del campo alzada
     private bool _fieldRaisedFaceDown;
     private int _playerTurnCount;           // sin ataque directo en el turno 1
+    private bool _opponentOpeningDealt;     // ¿ya se animó el robo inicial del rival?
 
     // Selección de Estrella Guardiana (↑/↓ resalta, A confirma).
     private bool _awaitingStar;
@@ -189,6 +190,7 @@ public class DuelController : MonoBehaviour
         foreach (var c in Player.Hand)
             yield return screen.AnimateDrawToHand(c);
         screen.RefreshHand(Player.Hand);
+        // La mano del rival NO se renderiza aún: aparece cuando la cámara gira a su lado.
         RefreshCounts();
         screen.Log($"¡Comienza el duelo contra {Opponent.Name}!");
 
@@ -203,6 +205,7 @@ public class DuelController : MonoBehaviour
     {
         var current = IsPlayerTurn ? Player : Opponent;
 
+        _busy = true;   // bloquea input durante el robo hasta la Fase Principal
         Phase = DuelPhase.Setup;
         current.ResetTurnFlags();
         _hasSummonedThisTurn = false;
@@ -213,6 +216,10 @@ public class DuelController : MonoBehaviour
 
         if (IsPlayerTurn)
         {
+            // La cámara VUELVE (girando el tablero) a tu lado; la mano del rival se retira
+            // y aparece la tuya. (En el turno 1 la cámara ya está aquí: no gira.)
+            yield return board.OrbitCameraTo(DuelBoard3D.CameraView.Play, 1.2f, boardYaw: 0f);
+            screen.ClearOpponentHand();
             _playerTurnCount++;   // el ataque directo se bloquea en el turno 1
             screen.HideFieldBar();
             screen.HideTargetBar();
@@ -228,7 +235,34 @@ public class DuelController : MonoBehaviour
         }
         else
         {
-            Opponent.DrawUpToFive();
+            // TU mano se retira y la cámara GIRA hasta la mano del rival; recién ahí se
+            // renderiza la suya (dorsos) con las mismas animaciones que la tuya.
+            screen.SetHandVisible(false);
+            yield return board.OrbitCameraTo(DuelBoard3D.CameraView.OpponentHand, 1.2f, boardYaw: 180f);
+
+            var before = new List<CardData>(Opponent.Hand);   // lo que ya tenía
+            var drawn = Opponent.DrawUpToFive();              // lo que roba ahora
+            screen.ClearOpponentHand();
+
+            if (!_opponentOpeningDealt)
+            {
+                // ROBO INICIAL del rival: su mano de apertura entra carta a carta.
+                _opponentOpeningDealt = true;
+                foreach (var c in Opponent.Hand)
+                {
+                    screen.Log($"  {Opponent.Name} roba una carta.");
+                    yield return screen.AnimateOpponentDraw(c);
+                }
+            }
+            else
+            {
+                screen.RefreshOpponentHand(before);   // lo que ya tenía, al instante
+                foreach (var c in drawn)
+                {
+                    screen.Log($"  {Opponent.Name} roba una carta.");
+                    yield return screen.AnimateOpponentDraw(c);   // solo los nuevos, animados
+                }
+            }
             if (Opponent.DeckOut) { StartCoroutine(EndSequence(DuelResult.PlayerWin, "¡El rival se quedó sin cartas!")); yield break; }
         }
 
@@ -240,6 +274,7 @@ public class DuelController : MonoBehaviour
 
         if (IsPlayerTurn)
         {
+            _busy = false;
             EnterHandContext();
             screen.Log("Mano — ←→: mover · ↑: fusión · A: elegir · E: ir a batalla.");
         }
@@ -289,9 +324,9 @@ public class DuelController : MonoBehaviour
     private void ToggleFusionMark(int index)
     {
         var card = Player.Hand[index];
-        if (!card.IsMonster && !card.IsEquip)
+        if (!card.IsMonster && !card.IsEquip && !card.IsSpell && !card.IsTrap)
         {
-            screen.Log("Solo Monstruos y Equipos entran en la fusión.");
+            screen.Log("Esa carta no puede usarse como material de fusión.");
             return;
         }
         if (!_fusionOrder.Remove(index)) _fusionOrder.Add(index);
@@ -523,12 +558,19 @@ public class DuelController : MonoBehaviour
         // (mientras el resto de la mano se retira).
         yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
         Vector3 summonStart = board.HandStartWorld(screen.HandCardScreenPos(handIndex));
+        screen.SetHandCardVisible(handIndex, false);   // oculta la 2D: se levanta la 3D, sin duplicado
         yield return DuelTween.Parallel(this,
             board.ShowcaseRaise(card, faceDown, summonStart),
             screen.SlideHandDown(0.3f));
 
+        // La carta se CENTRA y hace su destello de presentación (igual que la fusión),
+        // y flota suavemente mientras se elige la Estrella Guardiana.
+        yield return board.PresentSummonCard(playerSide: true);
+        board.StartSummonIdle();
+
         _ctx = KeyCtx.Star;
         yield return WaitForStarChoice(card);
+        board.StopSummonIdle();
         GuardianStar star = _chosenStar;
 
         Player.Hand.RemoveAt(handIndex);
@@ -561,6 +603,10 @@ public class DuelController : MonoBehaviour
         screen.Log(faceDown
             ? "Colocas un monstruo boca abajo."
             : $"¡{card.cardName}! (ATK {atk} / DEF {def}, ★{star})");
+
+        // Trampas del rival que respondan a la invocación (Trap Hole, Negate Summon…).
+        yield return AfterSummonTraps(Player, slot);
+        if (CheckDefeatedAndEnd()) yield break;
 
         _busy = false;
         EnterBattlePhase();   // ya en el campo del jugador → directo a la batalla
@@ -681,11 +727,13 @@ public class DuelController : MonoBehaviour
     private IEnumerator FusionAtSlotRoutine(List<CardData> materials, List<int> handIdx,
                                             int slot, bool tookFieldMonster)
     {
-        // Validar la cadena ANTES de consumir nada.
+        // Validar la cadena ANTES de consumir nada. El resultado DEBE ser un monstruo:
+        // se coloca en la zona de monstruos, así que un equipo/magia/trampa como resultado
+        // final rompería el juego (por eso los no-monstruos nunca sobreviven una absorción).
         var chain = fusionDb.ResolveChain(materials);
-        if (chain.FinalResult == null)
+        if (chain.FinalResult == null || !chain.FinalResult.IsMonster)
         {
-            screen.Log("No hay fusión posible con esas cartas (en ese orden).");
+            screen.Log("Esa combinación no produce un monstruo invocable.");
             RefreshSlotCursor();
             yield break;
         }
@@ -700,6 +748,14 @@ public class DuelController : MonoBehaviour
         // estaba ocupada, va PRIMERO en materials y sube desde su propia casilla).
         var handScreens = new List<Vector3>();
         foreach (var i in handIdx) handScreens.Add(screen.HandCardScreenPos(i));
+
+        // Si se EQUIPA sobre un monstruo del campo (no una fusión real), el bonus debe
+        // SUMARSE a lo que ya tenía (base + terreno + equipos previos), que vive en
+        // MonsterCurrentAtk/Def. Se captura ANTES de consumir el monstruo, porque
+        // TakeMonsterForFusion pone esos valores a 0.
+        int fieldAtkBefore = tookFieldMonster ? Player.MonsterCurrentAtk[slot] : 0;
+        int fieldDefBefore = tookFieldMonster ? Player.MonsterCurrentDef[slot] : 0;
+        CardData fieldCardBefore = tookFieldMonster ? Player.MonsterZone[slot] : null;
 
         // Consumir materiales: monstruo del campo (sin contar como destruido)
         // y cartas de la mano (índices descendentes).
@@ -733,6 +789,19 @@ public class DuelController : MonoBehaviour
         yield return board.AnimateFusionGather(materials, worldStarts);
         yield return screen.SlideHandDown(0.3f);   // el resto de la mano se retira
 
+        // ATK/DEF "efectivo" base de un monstruo: si es el del campo, con sus equipos
+        // previos (fieldAtkBefore); si no, su base + terreno.
+        int BaseAtkOf(CardData m) => (m == fieldCardBefore)
+            ? fieldAtkBefore : CombatCalculator.CalculateAtk(m, m.starA, m.starA, _terrain);
+        int BaseDefOf(CardData m) => (m == fieldCardBefore)
+            ? fieldDefBefore : CombatCalculator.CalculateDef(m);
+
+        // ATK/DEF que muestra la carta acumuladora durante la fusión. En cada EQUIPO el
+        // número SUBE en la propia carta (funcione el equipo antes o después en la lista).
+        int curAtk = materials[0].IsMonster ? BaseAtkOf(materials[0]) : 0;
+        int curDef = materials[0].IsMonster ? BaseDefOf(materials[0]) : 0;
+        if (materials[0].IsMonster) board.SetFusionResultStats(curAtk, curDef);
+
         CardData stepCurrent = materials[0];
         for (int i = 0; i < chain.Steps.Count; i++)
         {
@@ -749,7 +818,7 @@ public class DuelController : MonoBehaviour
                     screen.Log($"  {stepCurrent.cardName} + {next.cardName} → {step.Result.cardName} (categoría)");
                     break;
                 case FusionStepType.Equip:
-                    screen.Log($"  {stepCurrent.cardName} absorbe {next.cardName} (+{step.EquipAtkBonusApplied} ATK / +{step.EquipDefBonusApplied} DEF)");
+                    screen.Log($"  {step.Result.cardName} se equipa (+{step.EquipAtkBonusApplied} ATK / +{step.EquipDefBonusApplied} DEF)");
                     break;
                 case FusionStepType.Absorption:
                     var absorbed = firstSurvives ? next : stepCurrent;
@@ -757,19 +826,62 @@ public class DuelController : MonoBehaviour
                     break;
             }
 
-            yield return board.AnimateFusionStep(step.Type, step.Result, firstSurvives);
+            // ATK/DEF antes → después del paso (para el conteo en la carta al equipar).
+            int fromAtk, fromDef, toAtk, toDef;
+            if (step.Type == FusionStepType.Equip)
+            {
+                // El monstruo es step.Result (sobreviva antes o después el equipo): si ya
+                // era el acumulado, parte de curAtk; si "llega" ahora, de su base efectivo.
+                fromAtk = (stepCurrent == step.Result) ? curAtk : BaseAtkOf(step.Result);
+                fromDef = (stepCurrent == step.Result) ? curDef : BaseDefOf(step.Result);
+                toAtk = fromAtk + step.EquipAtkBonusApplied;
+                toDef = fromDef + step.EquipDefBonusApplied;
+            }
+            else   // fusión real / absorción
+            {
+                fromAtk = curAtk; fromDef = curDef;
+                if (step.Result == stepCurrent)   // el acumulado sobrevive: conserva sus stats
+                { toAtk = curAtk; toDef = curDef; }
+                else                              // nace/gana otra carta → sus stats base
+                { toAtk = BaseAtkOf(step.Result); toDef = BaseDefOf(step.Result); }
+            }
+            curAtk = toAtk; curDef = toDef;
+
+            yield return board.AnimateFusionStep(step.Type, step.Result, firstSurvives,
+                                                 fromAtk, toAtk, fromDef, toDef);
             stepCurrent = step.Result;
         }
+
+        // La carta fusionada se CENTRA y hace su destello de presentación (mismo punto y
+        // tamaño que la invocación simple) y flota mientras se elige la Estrella.
+        yield return board.PresentSummonCard(playerSide: true);
+        board.StartSummonIdle();
 
         // ── Estrella Guardiana del resultado (cámara ya en la vista original) ─
         _ctx = KeyCtx.Star;
         yield return WaitForStarChoice(chain.FinalResult);
+        board.StopSummonIdle();
         GuardianStar star = _chosenStar;
 
         if (chain.Steps.Count > 0) Player.RegisterFusion();
-        int atk = CombatCalculator.CalculateAtk(chain.FinalResult, star, star, _terrain)
+
+        int atk, def;
+        if (tookFieldMonster && chain.FinalResult == fieldCardBefore)
+        {
+            // SOLO se equipó (el monstruo del campo sobrevive, no hubo fusión real):
+            // suma el bonus sobre lo que YA tenía, sin recalcular desde base (así no se
+            // pierden los equipos aplicados en turnos anteriores).
+            atk = fieldAtkBefore + chain.TotalEquipAtkBonus;
+            def = fieldDefBefore + chain.TotalEquipDefBonus;
+        }
+        else
+        {
+            // Fusión real (nace un monstruo nuevo): stats desde su base + equipos de ESTA
+            // cadena. Los equipos previos del material se pierden (regla FM), correcto.
+            atk = CombatCalculator.CalculateAtk(chain.FinalResult, star, star, _terrain)
                   + chain.TotalEquipAtkBonus;
-        int def = CombatCalculator.CalculateDef(chain.FinalResult, chain.TotalEquipDefBonus);
+            def = CombatCalculator.CalculateDef(chain.FinalResult, chain.TotalEquipDefBonus);
+        }
         Player.PlaceMonsterAt(slot, chain.FinalResult, CardPosition.FaceUpAttack, atk, def, star);
         _hasSummonedThisTurn = true;
 
@@ -778,6 +890,11 @@ public class DuelController : MonoBehaviour
         yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerField, 0.5f);
 
         screen.Log($"→ {chain.FinalResult.cardName} (ATK {atk} / DEF {def}, ★{star})");
+
+        // Trampas del rival que respondan a la invocación (la fusión también invoca).
+        yield return AfterSummonTraps(Player, slot);
+        if (CheckDefeatedAndEnd()) yield break;
+
         _busy = false;
         EnterBattlePhase();   // ya en el campo del jugador → directo a la batalla
     }
@@ -915,6 +1032,8 @@ public class DuelController : MonoBehaviour
         board.ClearHighlights();
         board.HideSlotCursor();
         board.SetPlayerMonsterHighlight(_attackerSlot, true);
+        // Info del ATACANTE (tu carta) visible durante toda la selección de objetivo.
+        screen.ShowFieldBar(Player.MonsterZone[_attackerSlot], bottom: true);
         if (Opponent.MonsterZone[_targetCursor] != null)
         {
             board.SetOpponentMonsterHighlight(_targetCursor, true);
@@ -948,6 +1067,7 @@ public class DuelController : MonoBehaviour
         _busy = true;
         _attackerSlot = -1;
         screen.HideTargetBar();
+        screen.HideFieldBar();
         board.ClearHighlights();
         board.HideSlotCursor();
         yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerField, 0.5f);
@@ -1032,11 +1152,17 @@ public class DuelController : MonoBehaviour
 
         if (card.IsTrap)
         {
-            screen.Log("Las trampas aún no pueden activarse (motor pendiente). Se vuelve a colocar.");
-            yield return board.AnimateFlipFieldCard(slot, card, faceDown: true);
-            yield return board.AnimateFieldCardBack(slot);
+            // Activación MANUAL de la trampa (sin un disparador concreto): se resuelve
+            // lo que pueda contra el rival y se descarta. Los efectos que necesitan un
+            // atacante/invocado concreto no tendrán objetivo (se indica en el log); esos
+            // se disparan solos por evento (ver CheckTraps).
+            Player.SpellZone[slot] = null;
+            var tres = TrapEffectResolver.Resolve(card, Player, Opponent, -1);
+            screen.Log(tres.message);
+            screen.UpdateLP(Player.LP, Opponent.LP);
             board.SyncField(Player, Opponent);
             _busy = false;
+            if (CheckDefeatedAndEnd()) yield break;
             EnterBoardContext();
             yield break;
         }
@@ -1093,15 +1219,41 @@ public class DuelController : MonoBehaviour
     {
         _busy = true;
         Player.MonsterHasAttacked[atkSlot] = true;
+        // ResolveCombatAnimated maneja la cámara (mano → cinemática → tablero).
         yield return ResolveCombatAnimated(Player, Opponent, attackerIsPlayer: true, atkSlot, defSlot);
         if (CheckDefeatedAndEnd()) { _busy = false; yield break; }
-        // La cámara regresa a nuestro lado del campo.
-        yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerField, 0.5f);
         _busy = false;
         EnterBoardContext();   // el selector vuelve a tu campo
     }
 
     // ── Turno de la IA ────────────────────────────────────────────────────
+
+    /// <summary>La flecha del rival "camina" por su mano hasta la carta elegida.</summary>
+    private IEnumerator OppArrowWalkTo(int target)
+    {
+        int n = Opponent.Hand.Count;
+        if (n == 0) yield break;
+        target = Mathf.Clamp(target, 0, n - 1);
+        for (int i = 0; i <= target; i++)
+        {
+            screen.ShowOpponentHandCursor(i);
+            yield return new WaitForSeconds(0.16f);
+        }
+        yield return new WaitForSeconds(0.3f);   // se detiene en la elegida
+    }
+
+    /// <summary>El selector de casilla del rival "camina" hasta la casilla elegida
+    /// (cámara ya en el campo del rival), como cuando tú eliges casilla.</summary>
+    private IEnumerator OppSlotWalkTo(int slot, bool monsterRow)
+    {
+        slot = Mathf.Clamp(slot, 0, 4);
+        for (int i = 0; i <= slot; i++)
+        {
+            board.ShowSlotCursor(playerSide: false, monsterRow, i);
+            yield return new WaitForSeconds(0.16f);
+        }
+        yield return new WaitForSeconds(0.3f);
+    }
 
     private IEnumerator RunAIMainPhase()
     {
@@ -1113,22 +1265,73 @@ public class DuelController : MonoBehaviour
         {
             case AIActionType.Summon:
             {
-                var star = _ai.ChooseGuardianStar(action.Card, Player);
-                Opponent.Hand.Remove(action.Card);
-                int atk = CombatCalculator.CalculateAtk(action.Card, star, star, _terrain);
-                int def = CombatCalculator.CalculateDef(action.Card);
-                int slot = Opponent.PlaceMonster(action.Card, action.SummonPosition, atk, def, star);
-
-                yield return board.AnimateSummon(playerSide: false, slot, Opponent);
-
+                var card = action.Card;
+                var star = _ai.ChooseGuardianStar(card, Player);
+                bool faceDown = action.SummonPosition == CardPosition.FaceDownDefense;
                 bool inDef = action.SummonPosition == CardPosition.FaceUpDefense;
-                screen.Log($"{Opponent.Name} invoca {action.Card.cardName} en {(inDef ? "Defensa" : "Ataque")} (ATK {atk}/DEF {def}).");
+
+                // ── Mismo recorrido que el jugador (mano visible hasta invocar) ──
+                // 1) Selección de carta: la flecha camina por su mano; HUD con su info.
+                int handIdx = Opponent.Hand.IndexOf(card);
+                yield return OppArrowWalkTo(handIdx);
+                Vector3 handScreen = screen.OpponentHandCardScreenPos(handIdx);
+                screen.HideOpponentHandCursor();
+                screen.ShowCardInfoBlank();   // HUD del rival VACÍO: no se revela hasta invocar boca arriba
+
+                // 2) Cámara al TABLERO: el selector camina hasta la casilla (mano SIGUE visible).
+                int slot = FirstFreeSlot(Opponent.MonsterZone);
+                if (slot < 0) slot = 0;
+                yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentMonsterZone, 0.5f);
+                yield return OppSlotWalkTo(slot, monsterRow: true);
+                board.HideSlotCursor();
+
+                // 3) Cámara de vuelta a la MANO: la carta se LEVANTA de la mano (misma
+                //    animación pulida del jugador). AQUÍ desaparece la mano.
+                yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentHand, 0.5f);
+                screen.SetOpponentHandCardVisible(handIdx, false);
+                Vector3 raiseStart = board.HandStartWorldFor(playerSide: false, handScreen);
+                yield return DuelTween.Parallel(this,
+                    board.ShowcaseRaise(card, faceDown, raiseStart, playerSide: false),
+                    screen.SlideOpponentHandDown(0.3f));
+
+                // Igual que el jugador: la carta se CENTRA y se presenta antes de invocarse
+                // (el rival ya eligió su Estrella); flota un instante y luego vuela a la casilla.
+                yield return board.PresentSummonCard(playerSide: false);
+                board.StartSummonIdle();
+                yield return new WaitForSeconds(0.5f);
+                board.StopSummonIdle();
+
+                // Coloca en el estado y la carta 3D vuela a su casilla.
+                Opponent.Hand.Remove(card);
+                int atk = CombatCalculator.CalculateAtk(card, star, star, _terrain);
+                int def = CombatCalculator.CalculateDef(card);
+                Opponent.PlaceMonsterAt(slot, card, action.SummonPosition, atk, def, star);
+                yield return board.ShowcaseToSlot(slot, Opponent, playerSide: false);
+
+                // 4) Ya invocada: normaliza y la CÁMARA vuelve al tablero a mostrarla.
+                //    El HUD se rellena SOLO si quedó boca arriba; si es boca abajo, en blanco.
+                board.SyncField(Player, Opponent);
+                if (faceDown) screen.ShowCardInfoBlank();
+                else screen.ShowCardInfo(card);
+                yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentMonsterZone, 0.55f);
+
+                screen.Log($"{Opponent.Name} invoca {card.cardName} en " +
+                           $"{(faceDown ? "boca abajo" : inDef ? "Defensa" : "Ataque")} (ATK {atk}/DEF {def}).");
+
+                // TUS trampas pueden responder a la invocación del rival (Trap Hole…).
+                yield return AfterSummonTraps(Opponent, slot);
+                if (CheckDefeatedAndEnd()) yield break;
                 break;
             }
 
             case AIActionType.PlaySpell:
             {
+                // La flecha CAMINA hasta la magia elegida antes de activarla.
+                yield return OppArrowWalkTo(Opponent.Hand.IndexOf(action.Card));
+                screen.HideOpponentHandCursor();
+
                 Opponent.Hand.Remove(action.Card);
+                screen.RefreshOpponentHand(Opponent.Hand); // sale de su mano
                 Opponent.RegisterSpell();
                 string msg = action.Card.IsFieldSpell
                     ? SetTerrain(action.Card.fieldTerrain)
@@ -1144,13 +1347,22 @@ public class DuelController : MonoBehaviour
             {
                 var materials = action.FuseMaterials;
                 var chain = fusionDb.ResolveChain(materials);
-                if (chain.FinalResult == null) { screen.Log($"{Opponent.Name} duda…"); break; }
+                if (chain.FinalResult == null || !chain.FinalResult.IsMonster) { screen.Log($"{Opponent.Name} duda…"); break; }
+
+                // Marca una a una (flecha) las cartas que el rival va a fusionar.
+                foreach (var m in materials)
+                {
+                    screen.ShowOpponentHandCursor(Opponent.Hand.IndexOf(m));
+                    yield return new WaitForSeconds(0.45f);
+                }
+                screen.HideOpponentHandCursor();
 
                 foreach (var m in materials)
                     Opponent.Hand.Remove(m);
+                screen.RefreshOpponentHand(Opponent.Hand); // salen de su mano
 
                 screen.Log($"¡{Opponent.Name} inicia una fusión!");
-                yield return board.AnimateFusionGather(materials);
+                yield return board.AnimateFusionGather(materials); // sube de frente → revela las cartas
 
                 CardData stepCurrent = materials[0];
                 for (int i = 0; i < chain.Steps.Count; i++)
@@ -1161,6 +1373,13 @@ public class DuelController : MonoBehaviour
                     stepCurrent = step.Result;
                 }
 
+                // La carta fusionada se CENTRA y se presenta (igual que el jugador) antes
+                // de volar a su casilla.
+                yield return board.PresentSummonCard(playerSide: false);
+                board.StartSummonIdle();
+                yield return new WaitForSeconds(0.5f);
+                board.StopSummonIdle();
+
                 var fstar = _ai.ChooseGuardianStar(chain.FinalResult, Player);
                 Opponent.RegisterFusion();
                 int fatk = CombatCalculator.CalculateAtk(chain.FinalResult, fstar, fstar, _terrain)
@@ -1170,6 +1389,10 @@ public class DuelController : MonoBehaviour
 
                 yield return board.AnimateFusionSummon(playerSide: false, fslot, Opponent);
                 screen.Log($"¡{Opponent.Name} fusiona! → {chain.FinalResult.cardName} (ATK {fatk}/DEF {fdef})");
+
+                // TUS trampas pueden responder a la invocación por fusión del rival.
+                yield return AfterSummonTraps(Opponent, fslot);
+                if (CheckDefeatedAndEnd()) yield break;
                 break;
             }
 
@@ -1177,6 +1400,8 @@ public class DuelController : MonoBehaviour
                 screen.Log($"{Opponent.Name} pasa.");
                 break;
         }
+        // Nota: cada caso ya actualiza su propia mano (la invocación la OCULTA al elegir
+        // posición y no reaparece; magia/fusión muestran lo que queda).
 
         yield return new WaitForSeconds(0.6f);
         yield return StartCoroutine(RunAIBattlePhase());
@@ -1206,9 +1431,17 @@ public class DuelController : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
             Opponent.MonsterHasAttacked[atkSlot] = true;
+
+            // La cinemática de combate (dentro de ResolveCombatAnimated) se encarga de todo:
+            // cámara a la mano → cartas al frente → corte/destello/fuego → LP → tablero.
             yield return ResolveCombatAnimated(Opponent, Player, attackerIsPlayer: false, atkSlot, target);
+            board.ClearHighlights();
             if (CheckDefeatedAndEnd()) { _busy = false; yield break; }
         }
+
+        // Fin de sus ataques: la cámara se reposiciona en SU MANO, para que el giro de
+        // vuelta a la tuya (al empezar tu turno) arranque siempre desde el mismo sitio.
+        yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentHand, 0.5f);
 
         _busy = false;
         yield return StartCoroutine(RunEndPhase());
@@ -1216,21 +1449,137 @@ public class DuelController : MonoBehaviour
 
     // ── Combate animado (reglas exactas + ventaja de estrella) ────────────
 
+    // ── Trampas (motor de disparo por eventos) ────────────────────────────
+
+    /// <summary>Qué provocó una tanda de trampas (para que el flujo reaccione).</summary>
+    private class TrapOutcome
+    {
+        public bool anyActivated;      // se activó al menos una trampa
+        public bool negatedAction;     // el ataque/invocación queda anulado
+        public bool destroyedTrigger;  // se destruyó el monstruo que disparó
+    }
+
+    /// <summary>
+    /// Revisa las trampas seteadas de <paramref name="owner"/> cuyo disparador coincide
+    /// con <paramref name="trigger"/> y las activa por prioridad (mayor primero). El
+    /// evento lo provocó <paramref name="foe"/> con su monstruo en <paramref name="triggerSlot"/>.
+    /// Revela cada trampa, resuelve su efecto y la descarta (salvo las Continuas).
+    /// Se detiene si una trampa anula la acción o destruye al monstruo que disparó.
+    /// </summary>
+    private IEnumerator CheckTraps(Duelist owner, Duelist foe, TrapTrigger trigger,
+                                   int triggerSlot, TrapOutcome outcome)
+    {
+        // Trampas boca abajo que respondan a este evento, ordenadas por prioridad desc.
+        var hits = new List<int>();
+        for (int i = 0; i < owner.SpellZone.Length; i++)
+        {
+            var c = owner.SpellZone[i];
+            if (c != null && c.IsTrap && c.trapTrigger == trigger) hits.Add(i);
+        }
+        if (hits.Count == 0) yield break;
+        hits.Sort((a, b) => owner.SpellZone[b].resolutionPriority
+                                 .CompareTo(owner.SpellZone[a].resolutionPriority));
+
+        bool ownerIsPlayer = owner == Player;
+        bool foeIsPlayer = foe == Player;
+
+        foreach (int slot in hits)
+        {
+            var trap = owner.SpellZone[slot];
+            if (trap == null) continue;   // pudo consumirse antes
+
+            screen.Log($"¡{owner.Name} activa una trampa!");
+
+            // Posiciones EN PANTALLA (antes de resolver: el monstruo puede desaparecer)
+            // para que la cinemática arranque desde el tablero.
+            Vector2 trapScreen = board.SpellSlotScreenPos(ownerIsPlayer, slot);
+            CardData triggerCard = (triggerSlot >= 0 && foe.MonsterZone[triggerSlot] != null)
+                ? foe.MonsterZone[triggerSlot] : null;
+            Vector2 triggerScreen = triggerCard != null
+                ? board.MonsterSlotScreenPos(foeIsPlayer, triggerSlot) : Vector2.zero;
+
+            // Resolver el efecto (aplica el estado lógico) ANTES de escenificarlo.
+            var res = TrapEffectResolver.Resolve(trap, owner, foe, triggerSlot);
+
+            // Consumir: Normal/Counter se descartan; Continuous permanece en el campo.
+            if (trap.trapKind != TrapKind.Continuous) owner.SpellZone[slot] = null;
+
+            outcome.anyActivated = true;
+            if (res.negatedAction) outcome.negatedAction = true;
+            if (res.destroyedTriggerMonster) outcome.destroyedTrigger = true;
+
+            // Cinemática a pantalla completa: trampa + monstruo al frente, la trampa
+            // se desvanece en fuego rosa y el monstruo arde si fue destruido.
+            yield return screen.PlayTrapCinematic(trap, trapScreen, triggerCard, triggerScreen,
+                                                  res.destroyedTriggerMonster);
+            screen.Log(res.message);
+
+            screen.UpdateLP(Player.LP, Opponent.LP);
+            board.SyncField(Player, Opponent);
+            yield return new WaitForSeconds(0.2f);
+
+            // Si anuló la acción o destruyó al disparador, no siguen más trampas.
+            if (res.negatedAction || res.destroyedTriggerMonster) break;
+        }
+    }
+
+    /// <summary>Tras invocar un monstruo, las trampas del RIVAL del invocador pueden
+    /// dispararse (Trap Hole, Negate Summon…). Devuelve true si el monstruo fue destruido.</summary>
+    private IEnumerator AfterSummonTraps(Duelist summoner, int summonedSlot)
+    {
+        var trapOwner = summoner == Player ? Opponent : Player;
+        var outcome = new TrapOutcome();
+        yield return CheckTraps(trapOwner, summoner, TrapTrigger.MonsterSummoned, summonedSlot, outcome);
+        if (outcome.anyActivated)
+        {
+            board.SyncField(Player, Opponent);
+            // Vuelve la cámara al campo del invocador para continuar el flujo.
+            yield return board.MoveCamera(summoner == Player ? DuelBoard3D.CameraView.PlayerField
+                                                             : DuelBoard3D.CameraView.OpponentMonsterZone, 0.45f);
+        }
+    }
+
     private IEnumerator ResolveCombatAnimated(Duelist attacker, Duelist defender,
                                               bool attackerIsPlayer, int atkSlot, int defSlot)
     {
         if (attacker.MonsterZone[atkSlot] == null) yield break;
         string attackerName = attacker.MonsterZone[atkSlot].cardName;
 
-        // ── Ataque directo: embiste al vacío, daño = ATK ──────────────────
+        // ── Trampas del DEFENSOR al DECLARARSE el ataque (Mirror Force, Negate
+        //    Attack, destruir atacante, daño…). Si anulan el ataque o destruyen al
+        //    atacante, el combate no llega a resolverse. ────────────────────────
+        var atkTrap = new TrapOutcome();
+        yield return CheckTraps(defender, attacker, TrapTrigger.MonsterDeclaresAttack, atkSlot, atkTrap);
+        if (atkTrap.anyActivated && (atkTrap.negatedAction || attacker.MonsterZone[atkSlot] == null))
+        {
+            board.SyncField(Player, Opponent);
+            screen.UpdateLP(Player.LP, Opponent.LP);
+            yield return board.MoveCamera(
+                attackerIsPlayer ? DuelBoard3D.CameraView.PlayerField : DuelBoard3D.CameraView.OpponentMonsterZone, 0.45f);
+            yield break;
+        }
+
+        // ── Ataque directo: la carta se centra en pantalla y el daño sale en un
+        //    destello, IGUAL que el combate entre cartas (misma cinemática 2D).
         if (defSlot == -1)
         {
             int damage = attacker.MonsterCurrentAtk[atkSlot];
-            yield return board.AnimateAttack(attackerIsPlayer, atkSlot, -1);
+            CardData directAttacker = attacker.MonsterZone[atkSlot];
+
+            yield return board.MoveCamera(
+                attackerIsPlayer ? DuelBoard3D.CameraView.PlayerField : DuelBoard3D.CameraView.OpponentMonsterZone, 0.5f);
+
+            // Barra del atacante (como en el combate) y punto de partida de la carta.
+            screen.ShowFieldBar(directAttacker, bottom: true);
+            Vector2 atkScr = board.MonsterSlotScreenPos(attackerIsPlayer, atkSlot);
+
+            int dirDef = attacker.MonsterCurrentDef[atkSlot];
             defender.TakeDamage(damage);
-            board.ShowDamageText(playerSide: !attackerIsPlayer, damage);
+            yield return screen.PlayDirectAttackCinematic(directAttacker, atkScr, damage, damage, dirDef);
+
             screen.UpdateLP(Player.LP, Opponent.LP);
             screen.Log($"{attackerName} ataca directamente: {damage} de daño.");
+            screen.HideFieldBar();
             yield break;
         }
 
@@ -1254,80 +1603,98 @@ public class DuelController : MonoBehaviour
         int atkBonus = CombatCalculator.GetGuardianStarBonus(atkStar, defStar);
         int defBonus = inDefense ? 0 : CombatCalculator.GetGuardianStarBonus(defStar, atkStar);
 
-        if (atkBonus > 0)
-        {
-            screen.Log($"★ {attackerName} ({atkStar}) domina a {defStar}: +{atkBonus} ATK.");
-            yield return board.AnimateStarBoost(attackerIsPlayer, atkSlot, atkBonus);
-        }
-        if (defBonus > 0)
-        {
-            screen.Log($"★ {defenderName} ({defStar}) domina a {atkStar}: +{defBonus} ATK.");
-            yield return board.AnimateStarBoost(!attackerIsPlayer, defSlot, defBonus);
-        }
+        // El boost de estrella se ESCENIFICA dentro de la cinemática (glow + número que
+        // sube), justo cuando las cartas llegan al frente. Aquí solo se registra en el log.
+        if (atkBonus > 0) screen.Log($"★ {attackerName} ({atkStar}) domina a {defStar}: +{atkBonus} ATK.");
+        if (defBonus > 0) screen.Log($"★ {defenderName} ({defStar}) domina a {atkStar}: +{defBonus} ATK.");
 
         int atkPower = attacker.MonsterCurrentAtk[atkSlot] + atkBonus;
 
-        // ── Embestida ─────────────────────────────────────────────────────
-        yield return board.AnimateAttack(attackerIsPlayer, atkSlot, defSlot);
+        // ── Resolución (se calcula ANTES de aplicar, para escenificarla) ──
+        CardData attackerCard = attacker.MonsterZone[atkSlot];
+        CardData defenderCard = defender.MonsterZone[defSlot];
+        int atkShown = attacker.MonsterCurrentAtk[atkSlot];   // ATK/DEF ACTUALES antes de aplicar
+        int defShown = defender.MonsterCurrentAtk[defSlot];   // el estado (para pintarlos en la carta:
+        int atkDefShown = attacker.MonsterCurrentDef[atkSlot];// se leen ahora porque RemoveMonster
+        int defDefShown = defender.MonsterCurrentDef[defSlot];// pone estos valores a 0).
+        bool attackerDies = false, defenderDies = false, attackerWeaker = false;
+        int lpLost = 0; bool lpOnAttacker = false;
+        string logMsg;
 
         if (inDefense)
         {
-            // ATK vs DEF.
             int defPower = defender.MonsterCurrentDef[defSlot];
             int diff = atkPower - defPower;
-
-            if (diff > 0)
-            {
-                defender.RemoveMonster(defSlot);
-                yield return board.AnimateDestroy(!attackerIsPlayer, defSlot);
-                screen.Log($"{attackerName} destruye a {defenderName} (Defensa). Sin daño de batalla.");
-            }
-            else if (diff < 0)
-            {
-                attacker.TakeDamage(-diff);
-                board.ShowDamageText(playerSide: attackerIsPlayer, -diff);
-                screen.Log($"{defenderName} resiste (DEF {defPower}): {attacker.Name} recibe {-diff} de daño.");
-            }
-            else
-            {
-                screen.Log($"{attackerName} empata con la Defensa de {defenderName}: sin efecto.");
-            }
+            if (diff > 0) { defenderDies = true; logMsg = $"{attackerName} destruye a {defenderName} (Defensa). Sin daño."; }
+            else if (diff < 0) { attackerWeaker = true; lpLost = -diff; lpOnAttacker = true; logMsg = $"{defenderName} resiste (DEF {defPower}): {attacker.Name} recibe {-diff} de daño."; }
+            else logMsg = $"{attackerName} empata con la Defensa de {defenderName}: sin efecto.";
         }
         else
         {
-            // ATK vs ATK.
             int defAtk = defender.MonsterCurrentAtk[defSlot] + defBonus;
-            int diffAtk = atkPower - defAtk;
-
-            if (diffAtk > 0)
-            {
-                defender.TakeDamage(diffAtk);
-                defender.RemoveMonster(defSlot);
-                yield return board.AnimateDestroy(!attackerIsPlayer, defSlot);
-                board.ShowDamageText(playerSide: !attackerIsPlayer, diffAtk);
-                screen.Log($"{attackerName} derrota a {defenderName}: {diffAtk} de daño.");
-            }
-            else if (diffAtk < 0)
-            {
-                attacker.TakeDamage(-diffAtk);
-                attacker.RemoveMonster(atkSlot);
-                yield return board.AnimateDestroy(attackerIsPlayer, atkSlot);
-                board.ShowDamageText(playerSide: attackerIsPlayer, -diffAtk);
-                screen.Log($"¡{attackerName} cae ante {defenderName}! {-diffAtk} de daño.");
-            }
-            else
-            {
-                attacker.RemoveMonster(atkSlot);
-                defender.RemoveMonster(defSlot);
-                yield return DuelTween.Parallel(this,
-                    board.AnimateDestroy(attackerIsPlayer, atkSlot),
-                    board.AnimateDestroy(!attackerIsPlayer, defSlot));
-                screen.Log($"¡Empate! {attackerName} y {defenderName} se destruyen mutuamente.");
-            }
+            int diff = atkPower - defAtk;
+            if (diff > 0) { defenderDies = true; lpLost = diff; logMsg = $"{attackerName} derrota a {defenderName}: {diff} de daño."; }
+            else if (diff < 0) { attackerDies = true; attackerWeaker = true; lpLost = -diff; lpOnAttacker = true; logMsg = $"¡{attackerName} cae ante {defenderName}! {-diff} de daño."; }
+            else { attackerDies = true; defenderDies = true; logMsg = $"¡Empate! {attackerName} y {defenderName} se destruyen mutuamente."; }
         }
 
+        // ── Cámara previa al combate ──
+        if (attackerIsPlayer)
+        {
+            yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
+        }
+        else
+        {
+            // El rival ataca: la cámara SUBE a TU campo y MARCA qué carta va a atacar,
+            // mostrando YA la barra de objetivo (y la del atacante) al resaltarla —
+            // no hasta que se confirma el ataque; de ahí arranca la animación.
+            yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerFieldFromOpp, 0.6f);
+            board.SetPlayerMonsterHighlight(defSlot, true);
+            screen.ShowFieldBar(attackerCard, bottom: true);
+            screen.ShowTargetBar(defenderCard, faceDown: false);
+            yield return new WaitForSeconds(0.85f);
+            board.SetPlayerMonsterHighlight(defSlot, false);
+        }
+
+        // HUD: info del ATACANTE (barra de campo) y de la carta ATACADA (barra objetivo),
+        // las MISMAS barras que en la selección (sin duplicar).
+        screen.ShowFieldBar(attackerCard, bottom: true);
+        screen.ShowTargetBar(defenderCard, faceDown: false);
+
+        Vector2 atkScreen = board.MonsterSlotScreenPos(attackerIsPlayer, atkSlot);
+        Vector2 defScreen = board.MonsterSlotScreenPos(!attackerIsPlayer, defSlot);
+
+        // ── Aplica el estado lógico ──
+        if (defenderDies) defender.RemoveMonster(defSlot);
+        if (attackerDies) attacker.RemoveMonster(atkSlot);
+        if (lpLost > 0) { if (lpOnAttacker) attacker.TakeDamage(lpLost); else defender.TakeDamage(lpLost); }
+
+        // ── Cinemática de combate (cartas al frente, corte/destello/fuego, LP) ──
+        yield return screen.PlayCombatCinematic(
+            attackerCard, atkScreen, defenderCard, defScreen,
+            new DuelScreen.CombatCine
+            {
+                attackerDies = attackerDies,
+                defenderDies = defenderDies,
+                lpLost = lpLost,
+                attackerWeaker = attackerWeaker,
+                attackerAtk = atkShown,
+                attackerDef = atkDefShown,
+                attackerBoost = atkBonus,
+                defenderAtk = defShown,
+                defenderDef = defDefShown,
+                defenderBoost = defBonus,
+            });
+
+        screen.Log(logMsg);
         screen.UpdateLP(Player.LP, Opponent.LP);
         board.SyncField(Player, Opponent);
+        screen.HideFieldBar();
+        screen.HideTargetBar();
+
+        // ── La cámara vuelve al tablero ──
+        yield return board.MoveCamera(
+            attackerIsPlayer ? DuelBoard3D.CameraView.PlayerField : DuelBoard3D.CameraView.OpponentMonsterZone, 0.5f);
     }
 
     // ── Fin del duelo → banner → estadísticas → recompensa ────────────────

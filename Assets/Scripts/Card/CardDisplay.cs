@@ -61,6 +61,10 @@ public class CardDisplay : MonoBehaviour
 
     // ── Estado interno ──────────────────────────────────────────
     private CardData _data;
+    // ATK/DEF ACTUALES (con terreno/equipos/buffs). Si son null se muestra la base.
+    // Permiten que el número EN LA CARTA refleje los cambios en duelo, sin etiquetas aparte.
+    private int? _atkOverride;
+    private int? _defOverride;
     private GuardianStar _activeGuardian;
     private CardPosition _position = CardPosition.FaceUpAttack;
     private CardHoloEffect _holoEffect;
@@ -87,6 +91,8 @@ public class CardDisplay : MonoBehaviour
     {
         if (data == null) return;
         _data = data;
+        _atkOverride = null;   // nueva carta → vuelve a la base hasta que se fije lo actual
+        _defOverride = null;
         _activeGuardian = data.starA;
         _position = CardPosition.FaceUpAttack;
 
@@ -225,14 +231,37 @@ public class CardDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Devuelve el ATK base de la carta. 0 si no es Monster.
+    /// Fija el ATK/DEF ACTUALES a mostrar EN LA CARTA (con terreno/equipos/buffs).
+    /// El número de la propia carta se actualiza al instante, sin etiquetas flotantes.
     /// </summary>
-    public int GetCurrentAtk() => (_data != null && _data.IsMonster) ? _data.baseAtk : 0;
+    public void SetCurrentStats(int atk, int def)
+    {
+        _atkOverride = atk;
+        _defOverride = def;
+        if (_data != null && _data.IsMonster)
+        {
+            if (atkText != null) atkText.text = atk.ToString();
+            if (defText != null) defText.text = def.ToString();
+        }
+    }
 
-    /// <summary>
-    /// Devuelve el DEF base de la carta. 0 si no es Monster.
-    /// </summary>
-    public int GetCurrentDef() => (_data != null && _data.IsMonster) ? _data.baseDef : 0;
+    /// <summary>Vuelve a mostrar el ATK/DEF BASE de la carta (descarta el override).</summary>
+    public void ClearCurrentStats()
+    {
+        _atkOverride = null;
+        _defOverride = null;
+        if (_data != null && _data.IsMonster)
+        {
+            if (atkText != null) atkText.text = _data.baseAtk.ToString();
+            if (defText != null) defText.text = _data.baseDef.ToString();
+        }
+    }
+
+    /// <summary>ATK actual mostrado (override si se fijó; si no, la base). 0 si no es Monster.</summary>
+    public int GetCurrentAtk() => (_data != null && _data.IsMonster) ? (_atkOverride ?? _data.baseAtk) : 0;
+
+    /// <summary>DEF actual mostrado (override si se fijó; si no, la base). 0 si no es Monster.</summary>
+    public int GetCurrentDef() => (_data != null && _data.IsMonster) ? (_defOverride ?? _data.baseDef) : 0;
 
     // Propiedades de solo lectura
     public CardData Data => _data;
@@ -305,6 +334,10 @@ public class CardDisplay : MonoBehaviour
         if (starAButton != null) starAButton.gameObject.SetActive(showMonsterBlock);
         if (starBButton != null) starBButton.gameObject.SetActive(showMonsterBlock);
 
+        // Nombre del monstruo: visible SOLO boca arriba (si no, se filtra sobre el dorso,
+        // p. ej. la "T" de "Tralalero" sobre el reverso de las cartas en mano).
+        if (nameText != null) nameText.gameObject.SetActive(showMonsterBlock);
+
         // ── Bloque no-monstruo (Magia/Equipo/Ritual/Especial): panel descriptivo ──
         bool showSpellEquipBlock = !isFaceDown && isNonMonster;
         if (spellEquipPanel != null) spellEquipPanel.SetActive(showSpellEquipBlock);
@@ -329,8 +362,8 @@ public class CardDisplay : MonoBehaviour
             if (isMonster)
             {
                 if (nameText != null) nameText.text = _data.cardName;
-                if (atkText != null) atkText.text = _data.baseAtk.ToString();
-                if (defText != null) defText.text = _data.baseDef.ToString();
+                if (atkText != null) atkText.text = (_atkOverride ?? _data.baseAtk).ToString();
+                if (defText != null) defText.text = (_defOverride ?? _data.baseDef).ToString();
                 RefreshGuardianStars();
                 RefreshIcons();
                 RefreshMonsterExtras(); // Layout V2 (no-op si los campos son nulos)

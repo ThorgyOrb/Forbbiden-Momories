@@ -235,7 +235,11 @@ public class DuelBoard3D : MonoBehaviour
 
     // ── Vistas de cámara del duelo ───────────────────────────────────────
 
-    public enum CameraView { Play, MonsterZone, PlayerField, OpponentField }
+    public enum CameraView { Play, MonsterZone, PlayerField, OpponentField, OpponentHand, OpponentMonsterZone, PlayerFieldFromOpp }
+
+    // Centro del tablero (punto medio entre las vistas cenitales de ambos campos).
+    // Se usa como pivote de la órbita y como eje de espejo para la vista del rival.
+    private static readonly Vector3 BoardCenter = new Vector3(0f, 0f, -0.54f);
 
     /// <summary>Mueve la cámara con animación a una de las vistas del duelo.</summary>
     public IEnumerator MoveCamera(CameraView view, float duration = 0.55f)
@@ -247,6 +251,52 @@ public class DuelBoard3D : MonoBehaviour
             DuelTween.RotateTo(mainCamera.transform, rot, duration));
     }
 
+    /// <summary>
+    /// Lleva la cámara a una vista DANDO LA VUELTA al tablero (órbita alrededor del
+    /// centro): interpola el ángulo alrededor de Y manteniendo radio/altura, así la
+    /// cámara "rodea" la mesa en vez de atravesarla. Para cambiar de la mano del
+    /// jugador a la del rival y viceversa.
+    /// </summary>
+    public IEnumerator OrbitCameraTo(CameraView view, float duration = 1.2f, float? boardYaw = null)
+    {
+        if (mainCamera == null) yield break;
+        GetViewPose(view, out Vector3 endPos, out Quaternion endRot);
+        Vector3 startPos = mainCamera.transform.position;
+        Quaternion startRot = mainCamera.transform.rotation;
+
+        Vector3 sOff = startPos - BoardCenter, eOff = endPos - BoardCenter;
+        float sAng = Mathf.Atan2(sOff.x, sOff.z) * Mathf.Rad2Deg;
+        float eAng = Mathf.Atan2(eOff.x, eOff.z) * Mathf.Rad2Deg;
+        float dAng = Mathf.DeltaAngle(sAng, eAng);
+        float sRad = new Vector2(sOff.x, sOff.z).magnitude;
+        float eRad = new Vector2(eOff.x, eOff.z).magnitude;
+
+        // Si arranque y destino coinciden (misma vista), no hay nada que orbitar.
+        if (Mathf.Abs(dAng) < 0.5f && Mathf.Abs(sRad - eRad) < 0.05f)
+        {
+            mainCamera.transform.SetPositionAndRotation(endPos, endRot);
+            if (boardYaw.HasValue) SetBoardCardsYaw(boardYaw.Value);
+            yield break;
+        }
+
+        bool yawApplied = false;
+        for (float e = 0f; e < duration; e += Time.deltaTime)
+        {
+            float k = Mathf.SmoothStep(0f, 1f, e / duration);
+            // Gira las cartas del tablero a MITAD de la órbita (cámara de canto: apenas
+            // se nota el giro).
+            if (boardYaw.HasValue && !yawApplied && k >= 0.5f) { SetBoardCardsYaw(boardYaw.Value); yawApplied = true; }
+            float ang = (sAng + dAng * k) * Mathf.Deg2Rad;
+            float rad = Mathf.Lerp(sRad, eRad, k);
+            float h = Mathf.Lerp(sOff.y, eOff.y, k);
+            mainCamera.transform.position = BoardCenter + new Vector3(Mathf.Sin(ang) * rad, h, Mathf.Cos(ang) * rad);
+            mainCamera.transform.rotation = Quaternion.Slerp(startRot, endRot, k);
+            yield return null;
+        }
+        mainCamera.transform.SetPositionAndRotation(endPos, endRot);
+        if (boardYaw.HasValue && !yawApplied) SetBoardCardsYaw(boardYaw.Value);
+    }
+
     private void GetViewPose(CameraView v, out Vector3 pos, out Quaternion rot)
     {
         switch (v)
@@ -256,9 +306,18 @@ public class DuelBoard3D : MonoBehaviour
             case CameraView.MonsterZone:
             case CameraView.PlayerField:
                 pos = new Vector3(0f, 7.45f, -4.43f); rot = Quaternion.Euler(90f, 0f, 0f); break;
-            case CameraView.OpponentField:  // cenital sobre el campo del rival (elegir objetivo)
+            case CameraView.OpponentField:  // cenital sobre el campo del rival (TÚ eliges objetivo)
                 pos = new Vector3(0f, 7.45f, 3.35f); rot = Quaternion.Euler(90f, 0f, 0f); break;
-            default:                        // vista de juego normal (con la mano)
+            case CameraView.OpponentMonsterZone:  // cenital del campo del rival, orientada A SU LADO
+                pos = new Vector3(0f, 7.45f, 3.35f); rot = Quaternion.Euler(90f, 180f, 0f); break;
+            case CameraView.PlayerFieldFromOpp:   // cenital del campo del JUGADOR, orientada al rival
+                pos = new Vector3(0f, 7.45f, -4.43f); rot = Quaternion.Euler(90f, 180f, 0f); break;
+            case CameraView.OpponentHand:   // frente a la mano del rival: espejo del punto de juego
+                pos = new Vector3(2f * BoardCenter.x - cameraPlayPoint.position.x,
+                                  cameraPlayPoint.position.y,
+                                  2f * BoardCenter.z - cameraPlayPoint.position.z);
+                rot = Quaternion.Euler(0f, 180f, 0f) * cameraPlayPoint.rotation; break;
+            default:                        // vista de juego normal (con la mano del jugador)
                 pos = cameraPlayPoint.position; rot = cameraPlayPoint.rotation; break;
         }
     }
@@ -295,6 +354,26 @@ public class DuelBoard3D : MonoBehaviour
     private const float CardY = 0.5f;
     private Vector3 SlotPos(Transform anchor) => new Vector3(anchor.position.x, CardY, anchor.position.z);
 
+    // Orientación de TODAS las cartas del tablero según qué lado mira la cámara:
+    // 0 = del derecho para el jugador; 180 = para el rival (al girar la cámara).
+    private float _boardYaw;
+
+    /// <summary>Gira todas las cartas del tablero hacia el lado que mira la cámara
+    /// (0 = jugador, 180 = rival) para que se vean siempre del derecho.</summary>
+    public void SetBoardCardsYaw(float yaw)
+    {
+        _boardYaw = yaw;
+        ApplyYawTo(_playerMonsters);
+        ApplyYawTo(_opponentMonsters);
+        ApplyYawTo(_playerSpells);
+        ApplyYawTo(_opponentSpells);
+    }
+
+    private void ApplyYawTo(Duel3DCardView[] views)
+    {
+        foreach (var v in views) if (v != null) v.SetTableYaw(_boardYaw);
+    }
+
     public void SyncField(Duelist player, Duelist opponent)
     {
         SyncMonsterRow(player, _playerMonsters, playerMonsterAnchors);
@@ -320,7 +399,8 @@ public class DuelBoard3D : MonoBehaviour
             var pos = owner.MonsterPositions[i];
             views[i].transform.position = SlotPos(anchors[i]);
             views[i].Show(card, pos);
-            views[i].SetStats(StatsFor(owner, i));
+            views[i].SetTableYaw(_boardYaw);
+            views[i].SetCurrentStats(owner.MonsterCurrentAtk[i], owner.MonsterCurrentDef[i]);
         }
     }
 
@@ -341,17 +421,9 @@ public class DuelBoard3D : MonoBehaviour
             // Las trampas esperan boca abajo (se ve el dorso).
             views[i].transform.position = SlotPos(anchors[i]);
             views[i].Show(card, card.IsTrap ? CardPosition.FaceDownAttack : CardPosition.FaceUpAttack);
+            views[i].SetTableYaw(_boardYaw);
             views[i].SetStats("");
         }
-    }
-
-    /// <summary>Texto de stats actuales de un monstruo ("" si está boca abajo).</summary>
-    private static string StatsFor(Duelist owner, int slot)
-    {
-        var pos = owner.MonsterPositions[slot];
-        bool faceDown = pos == CardPosition.FaceDownAttack || pos == CardPosition.FaceDownDefense;
-        if (faceDown) return "";
-        return $"ATK {owner.MonsterCurrentAtk[slot]}  DEF {owner.MonsterCurrentDef[slot]}";
     }
 
     // ── Resaltados ───────────────────────────────────────────────────────
@@ -437,6 +509,33 @@ public class DuelBoard3D : MonoBehaviour
         yield return DuelTween.ScaleTo(v.transform, Vector3.one * 0.9f, 0.12f);
     }
 
+    /// <summary>
+    /// Revela una carta SETEADA (magia/trampa) EN SU CASILLA, del lado indicado: la
+    /// voltea boca arriba con un destello dorado. Se usa al activarse una trampa por
+    /// evento (no se alza al centro; se resuelve donde está).
+    /// </summary>
+    public IEnumerator AnimateRevealSetCard(bool playerSide, int slot, CardData card)
+    {
+        var views = playerSide ? _playerSpells : _opponentSpells;
+        if (slot < 0 || slot >= views.Length) yield break;
+        var v = views[slot];
+        if (v == null) yield break;
+
+        // Volteo (encoge en X, cambia cara, expande).
+        yield return DuelTween.ScaleTo(v.transform, new Vector3(0.04f, 1f, 1f), 0.12f);
+        v.Show(card, CardPosition.FaceUpAttack);
+        v.SetTableYaw(_boardYaw);
+        FaceCamera(v, v.transform.position);
+        yield return DuelTween.ScaleTo(v.transform, Vector3.one, 0.12f);
+
+        // Destello de activación: fulgor + onda + latido.
+        var light = SpawnFusionLight(v.transform.position, FusionGold);
+        StartCoroutine(FlashLight(light, 2.2f, 0.5f));
+        StartCoroutine(Shockwave(v.transform.position, 0f, FusionGold));
+        yield return DuelTween.Punch(v.transform, Vector3.one, 0.14f, 0.28f);
+        if (light != null) Destroy(light.gameObject, 0.6f);
+    }
+
     /// <summary>Devuelve la carta alzada a su casilla (SyncField la normaliza).</summary>
     public IEnumerator AnimateFieldCardBack(int slot)
     {
@@ -454,23 +553,25 @@ public class DuelBoard3D : MonoBehaviour
     /// dueño y vuela en arco hasta su slot. El estado lógico ya debe estar
     /// aplicado (el slot indica qué pintar).
     /// </summary>
-    public IEnumerator AnimateSummon(bool playerSide, int slot, Duelist owner)
+    public IEnumerator AnimateSummon(bool playerSide, int slot, Duelist owner, Vector3? fromWorld = null)
     {
         var anchors = playerSide ? playerMonsterAnchors : opponentMonsterAnchors;
         var views = playerSide ? _playerMonsters : _opponentMonsters;
         var spawn = playerSide ? playerSpawnPoint : opponentSpawnPoint;
+        Vector3 start = fromWorld ?? spawn.position;   // desde la mano (si se indica) o el borde
 
-        var view = SpawnView(spawn.position);
+        var view = SpawnView(start);
         views[slot] = view;
         view.Show(owner.MonsterZone[slot], owner.MonsterPositions[slot]);
+        view.SetTableYaw(_boardYaw);   // orientada al lado que mira la cámara
         view.SetStats("");
         view.transform.localScale = Vector3.one * 0.25f;
 
         yield return DuelTween.Parallel(this,
-            DuelTween.Arc(view.transform, spawn.position, SlotPos(anchors[slot]), 1.6f, 0.55f),
+            DuelTween.Arc(view.transform, start, SlotPos(anchors[slot]), 1.6f, 0.55f),
             DuelTween.ScaleTo(view.transform, Vector3.one, 0.55f));
 
-        view.SetStats(StatsFor(owner, slot));
+        view.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
     }
 
     /// <summary>Cámara del duelo (para proyectar casillas 3D a la pantalla).</summary>
@@ -478,6 +579,47 @@ public class DuelBoard3D : MonoBehaviour
 
     /// <summary>Posición de mundo de una casilla de monstruo del jugador.</summary>
     public Vector3 GetPlayerMonsterSlotWorld(int slot) => SlotPos(playerMonsterAnchors[slot]);
+
+    /// <summary>Posición de mundo de una casilla de monstruo del rival.</summary>
+    public Vector3 GetOpponentMonsterSlotWorld(int slot) => SlotPos(opponentMonsterAnchors[slot]);
+
+    /// <summary>Posición EN PANTALLA (píxeles) de la carta de un monstruo del campo, con la
+    /// cámara actual — para que la cinemática de combate arranque desde ahí.</summary>
+    public Vector2 MonsterSlotScreenPos(bool playerSide, int slot)
+    {
+        var views = playerSide ? _playerMonsters : _opponentMonsters;
+        var anchors = playerSide ? playerMonsterAnchors : opponentMonsterAnchors;
+        Vector3 world = (views[slot] != null) ? views[slot].transform.position : SlotPos(anchors[slot]);
+        if (mainCamera == null) return new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        Vector3 sp = mainCamera.WorldToScreenPoint(world);
+        return new Vector2(sp.x, sp.y);
+    }
+
+    /// <summary>Posición EN PANTALLA (píxeles) de una carta seteada (magia/trampa) del campo,
+    /// con la cámara actual — para que la cinemática de trampa arranque desde ahí.</summary>
+    public Vector2 SpellSlotScreenPos(bool playerSide, int slot)
+    {
+        var views = playerSide ? _playerSpells : _opponentSpells;
+        var anchors = playerSide ? playerSpellAnchors : opponentSpellAnchors;
+        Vector3 world = (slot >= 0 && slot < views.Length && views[slot] != null)
+            ? views[slot].transform.position : SlotPos(anchors[slot]);
+        if (mainCamera == null) return new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        Vector3 sp = mainCamera.WorldToScreenPoint(world);
+        return new Vector2(sp.x, sp.y);
+    }
+
+    /// <summary>
+    /// Proyecta un punto de PANTALLA (una carta de la mano 2D) al mundo, a la profundidad
+    /// de una casilla de monstruo, para animar la carta desde la mano hasta el campo.
+    /// </summary>
+    public Vector3 HandScreenToSlotWorld(Vector3 screenPos, bool playerSide, int slot)
+    {
+        var anchors = playerSide ? playerMonsterAnchors : opponentMonsterAnchors;
+        Vector3 slotW = SlotPos(anchors[slot]);
+        if (mainCamera == null) return slotW;
+        float dist = Vector3.Distance(mainCamera.transform.position, slotW);
+        return mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, dist));
+    }
 
     /// <summary>
     /// El monstruo APARECE en su casilla creciendo desde pequeño (sin arco desde
@@ -493,11 +635,12 @@ public class DuelBoard3D : MonoBehaviour
         var view = views[slot];
         view.transform.position = SlotPos(anchors[slot]);
         view.Show(owner.MonsterZone[slot], owner.MonsterPositions[slot]);
+        view.SetTableYaw(_boardYaw);
         view.SetStats("");
         view.transform.localScale = Vector3.one * 0.6f;
 
         yield return DuelTween.ScaleTo(view.transform, Vector3.one, 0.25f);
-        view.SetStats(StatsFor(owner, slot));
+        view.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
     }
 
     /// <summary>Colocar una trampa boca abajo en la zona de magias.</summary>
@@ -510,6 +653,7 @@ public class DuelBoard3D : MonoBehaviour
         var view = SpawnView(spawn.position);
         views[slot] = view;
         view.Show(card, CardPosition.FaceDownAttack);
+        view.SetTableYaw(_boardYaw);
         view.SetStats("");
         view.transform.localScale = Vector3.one * 0.25f;
 
@@ -534,6 +678,15 @@ public class DuelBoard3D : MonoBehaviour
     {
         float x = fusionPoint != null ? fusionPoint.position.x : 0f;
         return new Vector3(x, FusionAnchorY, FusionAnchorZ);
+    }
+
+    /// <summary>Ancla del showcase para un lado: la del jugador, o su ESPEJO (rival),
+    /// para que la carta se alce frente a la cámara de ese lado.</summary>
+    private Vector3 FusionAnchorFor(bool playerSide)
+    {
+        Vector3 a = FusionAnchor();
+        if (playerSide) return a;
+        return new Vector3(2f * BoardCenter.x - a.x, a.y, 2f * BoardCenter.z - a.z);
     }
 
     // Escenografía de la fusión en coordenadas de PANTALLA (fracción horizontal 0..1).
@@ -567,11 +720,16 @@ public class DuelBoard3D : MonoBehaviour
     /// para que una carta 3D "se levante" desde su posición en la mano (UI 2D) hacia el
     /// punto de fusión/showcase. Llamar con la cámara ya en su vista final.
     /// </summary>
-    public Vector3 HandStartWorld(Vector3 screenPos)
+    public Vector3 HandStartWorld(Vector3 screenPos) => HandStartWorldFor(true, screenPos);
+
+    /// <summary>Como <see cref="HandStartWorld"/> pero para el lado indicado (proyecta a
+    /// la distancia del ancla de ESE lado, para que el rival levante su carta bien).</summary>
+    public Vector3 HandStartWorldFor(bool playerSide, Vector3 screenPos)
     {
+        Vector3 anchor = FusionAnchorFor(playerSide);
         if (mainCamera == null)
-            return playerSpawnPoint != null ? playerSpawnPoint.position : FusionAnchor();
-        float dist = Vector3.Distance(mainCamera.transform.position, FusionAnchor());
+            return playerSpawnPoint != null ? playerSpawnPoint.position : anchor;
+        float dist = Vector3.Distance(mainCamera.transform.position, anchor);
         return mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, dist));
     }
 
@@ -628,8 +786,12 @@ public class DuelBoard3D : MonoBehaviour
     ///   • Fusión (específica/categoría): remolino de luces → nace la fusionada.
     ///   • Equipo: la segunda es ABSORBIDA por la primera (se encoge dentro).
     ///   • Incompatible (absorción): la perdedora embiste y sale despedida a la derecha.
+    /// <paramref name="fromAtk"/>/<paramref name="toAtk"/> (y def) son el ATK/DEF que
+    /// muestra la carta acumuladora ANTES y DESPUÉS del paso; en un EQUIPO el número
+    /// SUBE (conteo) en la propia carta. -1 = no animar el número (rival/legado).
     /// </summary>
-    public IEnumerator AnimateFusionStep(FusionStepType type, CardData stepResult, bool firstSurvives)
+    public IEnumerator AnimateFusionStep(FusionStepType type, CardData stepResult, bool firstSurvives,
+                                         int fromAtk = -1, int toAtk = -1, int fromDef = 0, int toDef = 0)
     {
         if (_fusionQueue.Count < 2) yield break;
 
@@ -664,32 +826,34 @@ public class DuelBoard3D : MonoBehaviour
 
             case FusionStepType.Equip:
             {
-                // Absorción: el equipo se hunde dentro del monstruo.
-                yield return DuelTween.Parallel(this,
-                    DuelTween.MoveTo(b.transform, a.transform.position, 0.4f),
-                    DuelTween.ScaleTo(b.transform, Vector3.zero, 0.4f),
-                    DuelTween.Spin(b.transform, Vector3.up, 540f, 0.4f));
-                Destroy(b.gameObject);
-                _fusionQueue.RemoveAt(1);
-
-                // El monstruo "late" al recibir el bonus.
-                yield return DuelTween.ScaleTo(a.transform, Vector3.one * (fusionCardScale * 1.18f), 0.12f);
-                yield return DuelTween.ScaleTo(a.transform, Vector3.one * fusionCardScale, 0.12f);
+                // El equipo puede ir ANTES o DESPUÉS del monstruo: firstSurvives indica
+                // cuál de las dos es el MONSTRUO (el que sobrevive); el equipo se absorbe
+                // en él (carga → cometa → clímax con aura + conteo ascendente de ATK/DEF).
+                var monster = firstSurvives ? a : b;
+                var equipCard = firstSurvives ? b : a;
+                yield return EquipAbsorb(equipCard, monster, fromAtk, toAtk, fromDef, toDef);
+                Destroy(equipCard.gameObject);
+                _fusionQueue.Remove(equipCard);   // el monstruo queda en índice 0
                 break;
             }
 
             case FusionStepType.Absorption:
             {
-                // Incompatibles: la carta de la DERECHA (b) embiste a la de la
-                // IZQUIERDA (a) y la saca despedida hacia la izquierda (descarte).
-                // La superviviente se queda y muestra la carta resultante del paso.
-                var aggressor = b;  // derecha (queue[1])
-                var victim = a;     // izquierda (queue[0])
+                // Incompatibles: sobrevive la de MAYOR ATK, que el motor ya determinó y
+                // llega en 'firstSurvives' (true = sobrevive la ACUMULADA 'a'; false =
+                // sobrevive la entrante 'b'). La perdedora embiste/gira y sale despedida
+                // al lado contrario de la superviviente; esta se queda mostrando el
+                // resultado del paso.
+                //   BUG previo: se descartaba SIEMPRE 'a' (ignorando firstSurvives), por
+                //   lo que cuando debía quedarse la izquierda, la superviviente y la
+                //   siguiente carta de la lista se INTERCAMBIABAN.
+                var survivor = firstSurvives ? a : b;
+                var victim   = firstSurvives ? b : a;
 
-                // 1) Embestida: la derecha se lanza sobre la izquierda.
+                // 1) Embestida: la superviviente se lanza sobre la víctima.
                 Vector3 impact = victim.transform.position;
-                yield return DuelTween.MoveTo(aggressor.transform,
-                    Vector3.Lerp(aggressor.transform.position, impact, 0.55f), 0.16f);
+                yield return DuelTween.MoveTo(survivor.transform,
+                    Vector3.Lerp(survivor.transform.position, impact, 0.55f), 0.16f);
 
                 // 2) Impacto: chispa de luz + onda de choque + chispas radiales +
                 //    sacudida de la víctima y de la cámara (golpe con peso).
@@ -702,15 +866,18 @@ public class DuelBoard3D : MonoBehaviour
                     ImpactSparks(impact, FusionGold, 12));
                 if (spark != null) Destroy(spark.gameObject);
 
-                // 3) La víctima sale despedida hacia la IZQUIERDA (descarte), girando
-                //    y desvaneciéndose. Reusa altura/profundidad del discardPoint.
-                Vector3 outPos = impact + Vector3.left * 11f;
+                // 3) La víctima sale despedida AL LADO CONTRARIO de la superviviente
+                //    (empujada por el golpe), girando y desvaneciéndose. Reusa
+                //    altura/profundidad del discardPoint.
+                float dir = (victim.transform.position.x >= survivor.transform.position.x) ? 1f : -1f;
+                Vector3 outPos = impact + Vector3.right * (11f * dir);
                 if (discardPoint != null)
                 {
                     outPos.y = discardPoint.position.y;
                     outPos.z = discardPoint.position.z;
                 }
-                outPos.x = Mathf.Min(outPos.x, impact.x - 7f); // asegura que sea a la izquierda
+                outPos.x = (dir > 0f) ? Mathf.Max(outPos.x, impact.x + 7f)
+                                      : Mathf.Min(outPos.x, impact.x - 7f);
                 var fade = victim.CanvasGroup != null
                     ? DuelTween.FadeCanvas(victim.CanvasGroup, 1f, 0f, 0.45f)
                     : DuelTween.ScaleTo(victim.transform, Vector3.zero, 0.45f);
@@ -722,17 +889,29 @@ public class DuelBoard3D : MonoBehaviour
                 Destroy(victim.gameObject);
                 _fusionQueue.Remove(victim);
 
-                // La superviviente (la derecha) pasa al frente y muestra el resultado.
-                _fusionQueue.Remove(aggressor);
-                _fusionQueue.Insert(0, aggressor);
-                aggressor.Show(stepResult, CardPosition.FaceUpAttack);
-                FaceCamera(aggressor, aggressor.transform.position);
+                // La superviviente pasa al frente (índice 0) y muestra el resultado.
+                _fusionQueue.Remove(survivor);
+                _fusionQueue.Insert(0, survivor);
+                survivor.Show(stepResult, CardPosition.FaceUpAttack);
+                FaceCamera(survivor, survivor.transform.position);
                 break;
             }
         }
 
         // Reacomoda la cola restante en fila.
         yield return RealignFusionQueue();
+
+        // La carta acumuladora muestra el ATK/DEF resultante del paso (en un EQUIPO el
+        // conteo ya lo hizo EquipAbsorb; aquí solo se asegura el valor final).
+        if (toAtk >= 0 && _fusionQueue.Count > 0 && _fusionQueue[0] != null)
+            _fusionQueue[0].SetCurrentStats(toAtk, toDef);
+    }
+
+    /// <summary>Fija el ATK/DEF que muestra la carta acumuladora de la fusión (índice 0).</summary>
+    public void SetFusionResultStats(int atk, int def)
+    {
+        if (_fusionQueue.Count > 0 && _fusionQueue[0] != null)
+            _fusionQueue[0].SetCurrentStats(atk, def);
     }
 
     private IEnumerator RealignFusionQueue()
@@ -789,13 +968,15 @@ public class DuelBoard3D : MonoBehaviour
 
         views[slot] = view;
         view.Show(owner.MonsterZone[slot], owner.MonsterPositions[slot]);
+        view.SetTableYaw(_boardYaw);
         view.SetStats("");
 
         yield return DuelTween.Parallel(this,
             DuelTween.Arc(view.transform, view.transform.position, anchors[slot].position, 1.2f, 0.5f),
             DuelTween.ScaleTo(view.transform, Vector3.one, 0.5f));
+        yield return LandOnSlot(view, anchors[slot].position);
 
-        view.SetStats(StatsFor(owner, slot));
+        view.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
     }
 
     // ── Showcase 3D de UNA carta (invocación simple) ─────────────────────
@@ -809,9 +990,9 @@ public class DuelBoard3D : MonoBehaviour
 
     /// <summary>Alza UNA carta como pieza 3D al showcase, ARRANCANDO desde
     /// <paramref name="worldStart"/> (p. ej. su carta de la mano) y subiendo en arco.</summary>
-    public IEnumerator ShowcaseRaise(CardData card, bool faceDown, Vector3 worldStart)
+    public IEnumerator ShowcaseRaise(CardData card, bool faceDown, Vector3 worldStart, bool playerSide = true)
     {
-        Vector3 anchor = FusionAnchor();
+        Vector3 anchor = FusionAnchorFor(playerSide);
         if (_showcaseView == null)
             _showcaseView = SpawnView(worldStart);
         else
@@ -839,19 +1020,24 @@ public class DuelBoard3D : MonoBehaviour
         FaceCamera(v, v.transform.position);
     }
 
-    /// <summary>Vuela la carta de showcase a su casilla y la deja como carta 3D del tablero.</summary>
-    public IEnumerator ShowcaseToSlot(int slot, Duelist owner)
+    /// <summary>Vuela la carta de showcase a su casilla y la deja como carta 3D del tablero
+    /// (del lado indicado).</summary>
+    public IEnumerator ShowcaseToSlot(int slot, Duelist owner, bool playerSide = true)
     {
         if (_showcaseView == null) yield break;
         var v = _showcaseView;
         _showcaseView = null;
-        _playerMonsters[slot] = v;   // pasa a ser la carta 3D del tablero
+        var anchors = playerSide ? playerMonsterAnchors : opponentMonsterAnchors;
+        var views = playerSide ? _playerMonsters : _opponentMonsters;
+        views[slot] = v;   // pasa a ser la carta 3D del tablero
         v.Show(owner.MonsterZone[slot], owner.MonsterPositions[slot]);
+        v.SetTableYaw(_boardYaw);
         v.SetStats("");
         yield return DuelTween.Parallel(this,
-            DuelTween.Arc(v.transform, v.transform.position, playerMonsterAnchors[slot].position, 1.0f, 0.5f),
+            DuelTween.Arc(v.transform, v.transform.position, anchors[slot].position, 1.0f, 0.5f),
             DuelTween.ScaleTo(v.transform, Vector3.one, 0.5f));
-        v.SetStats(StatsFor(owner, slot));
+        yield return LandOnSlot(v, anchors[slot].position);
+        v.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
     }
 
     /// <summary>
@@ -875,6 +1061,291 @@ public class DuelBoard3D : MonoBehaviour
     public void ClearShowcase()
     {
         if (_showcaseView != null) { Destroy(_showcaseView.gameObject); _showcaseView = null; }
+    }
+
+    // ── Presentación centrada de la carta a invocar (antes de la estrella) ────
+    // Unifica invocación simple y fusión: la carta que se va a invocar SIEMPRE se
+    // coloca CENTRADA (mismo punto/tamaño) y hace un "flourish" antes de que se elija
+    // la Estrella Guardiana, para que ambas invocaciones se vean iguales y con vida.
+
+    /// <summary>Carta que está a punto de invocarse (showcase o resultado de fusión).</summary>
+    private Duel3DCardView ActiveSummonView()
+    {
+        if (_showcaseView != null) return _showcaseView;
+        if (_fusionQueue.Count > 0 && _fusionQueue[0] != null) return _fusionQueue[0];
+        return null;
+    }
+
+    /// <summary>
+    /// Centra la carta a invocar en el punto de presentación (mismo para simple y
+    /// fusión) y lanza un destello de aparición. El showcase usa el ancla del lado
+    /// (espejo para el rival); la fusión usa el ancla frontal donde se escenifica.
+    /// </summary>
+    public IEnumerator PresentSummonCard(bool playerSide)
+    {
+        var v = ActiveSummonView();
+        if (v == null) yield break;
+
+        Vector3 center = (_showcaseView != null) ? FusionAnchorFor(playerSide) : FusionAnchor();
+        FaceCamera(v, center);
+        // Se desliza al centro y crece al tamaño de presentación.
+        yield return DuelTween.Parallel(this,
+            DuelTween.MoveTo(v.transform, center, 0.3f),
+            DuelTween.ScaleTo(v.transform, Vector3.one * fusionCardScale, 0.3f));
+        FaceCamera(v, center);
+        yield return SummonFlourish(v, center);
+    }
+
+    /// <summary>Destello de presentación: aro de luz, chispas, fulgor y un latido de escala.</summary>
+    private IEnumerator SummonFlourish(Duel3DCardView v, Vector3 center)
+    {
+        var light = SpawnFusionLight(center, FusionGold);
+        StartCoroutine(FlashLight(light, 2.4f, 0.55f));
+        StartCoroutine(Shockwave(center, 0f, FusionGold));
+        StartCoroutine(ImpactSparks(center, FusionGold, 12));
+        yield return DuelTween.Punch(v.transform, Vector3.one * fusionCardScale, 0.16f, 0.34f);
+        if (light != null) Destroy(light.gameObject, 0.5f);
+    }
+
+    // ── Flotación suave mientras se elige la Estrella (para que no se vea "sosa") ──
+    private Coroutine _summonIdle;
+    private Vector3 _idleBaseP, _idleBaseS;
+
+    /// <summary>La carta presentada flota suavemente (sube/baja + respira) hasta detenerla.</summary>
+    public void StartSummonIdle()
+    {
+        StopSummonIdle();
+        var v = ActiveSummonView();
+        if (v == null) return;
+        _idleBaseP = v.transform.position;
+        _idleBaseS = v.transform.localScale;
+        _summonIdle = StartCoroutine(SummonIdleLoop(v));
+    }
+
+    /// <summary>Detiene la flotación y restaura la pose base (para volar limpio a la casilla).</summary>
+    public void StopSummonIdle()
+    {
+        if (_summonIdle == null) return;   // no había flotado: NO tocar la pose (base sin fijar)
+        StopCoroutine(_summonIdle);
+        _summonIdle = null;
+        var v = ActiveSummonView();
+        if (v != null)
+        {
+            v.transform.position = _idleBaseP;
+            v.transform.localScale = _idleBaseS;
+        }
+    }
+
+    private IEnumerator SummonIdleLoop(Duel3DCardView v)
+    {
+        float t = 0f;
+        while (v != null)
+        {
+            t += Time.deltaTime;
+            float b = Mathf.Sin(t * 2.2f);
+            v.transform.position = _idleBaseP + Vector3.up * (b * 0.12f);
+            v.transform.localScale = _idleBaseS * (1f + b * 0.02f);
+            yield return null;
+        }
+    }
+
+    /// <summary>Impacto al aterrizar en la casilla: onda, polvillo, sacudida leve y latido.</summary>
+    private IEnumerator LandOnSlot(Duel3DCardView v, Vector3 pos)
+    {
+        StartCoroutine(Shockwave(pos + Vector3.up * 0.06f, 0f, new Color(1f, 0.88f, 0.5f)));
+        StartCoroutine(ImpactSparks(pos + Vector3.up * 0.1f, FusionGold, 8));
+        StartCoroutine(CameraKick(0.05f, 0.14f));
+        yield return DuelTween.Punch(v.transform, Vector3.one, 0.12f, 0.2f);
+    }
+
+    // ── Absorción de EQUIPO (espiral con brillos hacia el monstruo) ──────────
+    private static readonly Color EquipCyan = new Color(0.55f, 0.98f, 0.88f);
+
+    /// <summary>
+    /// Absorción de EQUIPO espectacular: (1) CARGA — la carta de equipo se eleva y late
+    /// con un aura cian mientras chispas convergen hacia ella; (2) LANZAMIENTO — gira en
+    /// espiral (cometa con estela) hasta hundirse en el monstruo; (3) CLÍMAX — gran
+    /// fogonazo blanco, doble onda de choque (cian + dorada), lluvia de chispas, columna
+    /// de brillos que asciende, sacudida de cámara, un aura envolvente sobre el monstruo
+    /// y un latido fuerte.
+    /// </summary>
+    private IEnumerator EquipAbsorb(Duel3DCardView equip, Duel3DCardView monster,
+                                    int fromAtk = -1, int toAtk = -1, int fromDef = 0, int toDef = 0)
+    {
+        Vector3 center = monster.transform.position;
+        if (fromAtk >= 0) monster.SetCurrentStats(fromAtk, fromDef);   // parte del total actual
+
+        // ── 1) CARGA ──
+        var chargeLight = SpawnFusionLight(equip.transform.position, EquipCyan);
+        chargeLight.intensity = 0f;
+        Vector3 lift = equip.transform.position + Vector3.up * 0.55f;
+        const float chargeDur = 0.5f;
+        for (float e = 0f; e < chargeDur; e += Time.deltaTime)
+        {
+            if (equip == null) break;
+            float k = e / chargeDur;
+            equip.transform.position = Vector3.Lerp(equip.transform.position, lift, 0.12f);
+            equip.transform.localScale = Vector3.one * fusionCardScale * (1f + 0.09f * Mathf.Sin(k * Mathf.PI * 4f));
+            equip.transform.Rotate(Vector3.up, 140f * Time.deltaTime, Space.World);
+            if (chargeLight != null) { chargeLight.transform.position = equip.transform.position; chargeLight.intensity = Mathf.Lerp(0f, 2.2f, k); }
+            if (UnityEngine.Random.value < 0.55f) StartCoroutine(ConvergeMote(equip.transform.position, EquipCyan));
+            yield return null;
+        }
+
+        // ── 2) LANZAMIENTO en espiral (cometa) ──
+        Vector3 start = equip != null ? equip.transform.position : center;
+        Vector3 offset = start - center;
+        float baseAngle = Mathf.Atan2(offset.z, offset.x);
+        float radius0 = new Vector2(offset.x, offset.z).magnitude;
+        if (radius0 < 0.1f) radius0 = 1.4f;
+
+        var comet = SpawnFusionLight(start, EquipCyan);
+        if (comet != null) comet.intensity = 2.4f;
+
+        const float dur = 0.5f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            if (equip == null) break;
+            float k = e / dur;
+            float ease = k * k;                              // acelera hacia el centro
+            float ang = baseAngle + k * Mathf.PI * 3.2f;     // ~1.6 vueltas
+            float r = Mathf.Lerp(radius0, 0f, ease);
+            Vector3 p = center + new Vector3(
+                Mathf.Cos(ang) * r,
+                Mathf.Lerp(offset.y, 0f, ease) + 0.3f * Mathf.Sin(k * Mathf.PI),
+                Mathf.Sin(ang) * r);
+            equip.transform.position = p;
+            equip.transform.localScale = Vector3.Lerp(Vector3.one * fusionCardScale, Vector3.zero, ease);
+            equip.transform.Rotate(Vector3.up, 1100f * Time.deltaTime, Space.World);
+            if (comet != null) { comet.transform.position = p; comet.intensity = Mathf.Lerp(2.4f, 3.6f, k); }
+            StartCoroutine(EquipMote(p));   // estela densa del cometa
+            yield return null;
+        }
+        if (chargeLight != null) Destroy(chargeLight.gameObject);
+
+        // ── 3) CLÍMAX ──
+        var flash = SpawnFusionLight(center, Color.white);
+        StartCoroutine(FlashLight(flash, 5f, 0.5f));
+        StartCoroutine(Shockwave(center, 0f, EquipCyan));
+        StartCoroutine(Shockwave(center, 0.08f, new Color(1f, 0.9f, 0.5f)));   // 2ª onda dorada
+        StartCoroutine(ImpactSparks(center, EquipCyan, 22));
+        StartCoroutine(CameraKick(0.1f, 0.25f));
+        StartCoroutine(RisingMotes(center, 14));       // columna de brillos que asciende
+        StartCoroutine(PowerAura(monster, center));    // aura envolvente sobre el monstruo
+        if (comet != null) Destroy(comet.gameObject, 0.3f);
+
+        // El monstruo absorbe el poder: sus números de ATK/DEF SUBEN (conteo) en la
+        // propia carta, sincronizados con un latido, mientras el aura fulgura.
+        if (fromAtk >= 0)
+        {
+            Vector3 baseScale = Vector3.one * fusionCardScale;
+            const float cdur = 0.7f;
+            for (float e = 0f; e < cdur; e += Time.deltaTime)
+            {
+                float k = e / cdur;
+                float ease = Mathf.SmoothStep(0f, 1f, k);
+                monster.SetCurrentStats(Mathf.RoundToInt(Mathf.Lerp(fromAtk, toAtk, ease)),
+                                        Mathf.RoundToInt(Mathf.Lerp(fromDef, toDef, ease)));
+                monster.transform.localScale = baseScale * (1f + 0.07f * Mathf.Sin(k * Mathf.PI));
+                yield return null;
+            }
+            monster.SetCurrentStats(toAtk, toDef);
+            monster.transform.localScale = baseScale;
+        }
+        else
+        {
+            yield return DuelTween.Punch(monster.transform, Vector3.one * fusionCardScale, 0.26f, 0.5f);
+        }
+        if (flash != null) Destroy(flash.gameObject, 0.5f);
+    }
+
+    /// <summary>Mota que aparece FUERA y converge brillando hacia el centro (carga del equipo).</summary>
+    private IEnumerator ConvergeMote(Vector3 center, Color color)
+    {
+        Vector3 from = center + UnityEngine.Random.insideUnitSphere * 1.7f;
+        var m = SpawnMote(from, out var sr);
+        sr.color = color;
+        const float dur = 0.4f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            if (m == null) yield break;
+            float k = e / dur;
+            m.position = Vector3.Lerp(from, center, k * k);
+            m.localScale = Vector3.one * Mathf.Lerp(0.05f, 0.2f, k);
+            var c = sr.color; c.a = k; sr.color = c;   // brilla al acercarse
+            BillboardFull(m);
+            yield return null;
+        }
+        if (m != null) Destroy(m.gameObject);
+    }
+
+    /// <summary>Columna de brillos (cian + dorado) que ascienden y se desvanecen (clímax).</summary>
+    private IEnumerator RisingMotes(Vector3 center, int count)
+    {
+        var list = new List<Transform>();
+        var srs = new List<SpriteRenderer>();
+        var vel = new List<Vector3>();
+        for (int i = 0; i < count; i++)
+        {
+            var m = SpawnMote(center + UnityEngine.Random.insideUnitSphere * 0.4f, out var sr);
+            sr.color = (i % 2 == 0) ? EquipCyan : new Color(1f, 0.85f, 0.4f);
+            list.Add(m); srs.Add(sr);
+            vel.Add(new Vector3(UnityEngine.Random.Range(-0.6f, 0.6f), UnityEngine.Random.Range(2.6f, 4.6f), UnityEngine.Random.Range(-0.6f, 0.6f)));
+        }
+        const float dur = 0.7f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] == null) continue;
+                list[i].position += vel[i] * Time.deltaTime;
+                list[i].localScale = Vector3.one * Mathf.Lerp(0.22f, 0f, k);
+                var c = srs[i].color; c.a = 1f - k; srs[i].color = c;
+                BillboardFull(list[i]);
+            }
+            yield return null;
+        }
+        foreach (var m in list) if (m != null) Destroy(m.gameObject);
+    }
+
+    /// <summary>Aura radial que envuelve al monstruo, crece y se desvanece (cian→dorada).</summary>
+    private IEnumerator PowerAura(Duel3DCardView monster, Vector3 center)
+    {
+        var aura = SpawnFx(GlowSprite(), center, out var sr);
+        const float dur = 0.8f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            if (aura == null) yield break;
+            float k = e / dur;
+            aura.position = (monster != null) ? monster.transform.position : center;
+            aura.localScale = Vector3.one * Mathf.Lerp(2f, 5f, k);
+            var c = Color.Lerp(EquipCyan, new Color(1f, 0.85f, 0.4f), k);
+            c.a = Mathf.Sin(k * Mathf.PI) * 0.9f;
+            sr.color = c;
+            BillboardFull(aura);
+            yield return null;
+        }
+        if (aura != null) Destroy(aura.gameObject);
+    }
+
+    /// <summary>Mota cian que deja estela y se desvanece (brillos de la absorción de equipo).</summary>
+    private IEnumerator EquipMote(Vector3 pos)
+    {
+        var m = SpawnMote(pos, out var sr);
+        sr.color = EquipCyan;
+        Vector3 vel = UnityEngine.Random.insideUnitSphere * 1.4f + Vector3.up * 0.4f;
+        const float dur = 0.4f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            if (m == null) yield break;
+            m.position += vel * Time.deltaTime;
+            m.localScale = Vector3.one * Mathf.Lerp(0.22f, 0f, e / dur);
+            var c = sr.color; c.a = Mathf.Lerp(1f, 0f, e / dur); sr.color = c;
+            BillboardFull(m);
+            yield return null;
+        }
+        if (m != null) Destroy(m.gameObject);
     }
 
     /// <summary>Limpia cualquier carta flotante que quede en la cola de fusión.</summary>
@@ -1232,7 +1703,22 @@ public class DuelBoard3D : MonoBehaviour
         sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = sprite;
         sr.sortingOrder = 3000; // por encima de las cartas del canvas de mundo
+        var mat = FxMaterial();
+        if (mat != null) sr.sharedMaterial = mat; // ZTest Always → no lo recorta el campo
         return go.transform;
+    }
+
+    // Material compartido de los FX de fusión: dibuja SIEMPRE por encima del campo
+    // (ZTest Always) para que los destellos/luces 3D no queden recortados por el tablero.
+    private static Material _fxMat;
+    private static Material FxMaterial()
+    {
+        if (_fxMat == null)
+        {
+            var sh = Shader.Find("YGO/FusionFxOverlay");
+            if (sh != null) _fxMat = new Material(sh) { name = "FusionFxOverlay (runtime)" };
+        }
+        return _fxMat;
     }
 
     /// <summary>Posición en un círculo del plano XY alrededor de un centro.</summary>

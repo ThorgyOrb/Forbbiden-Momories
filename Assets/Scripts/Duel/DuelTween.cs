@@ -52,6 +52,39 @@ public static class DuelTween
         if (t != null) t.rotation = target;
     }
 
+    /// <summary>Rebote suave con overshoot (para asentar una escala/aparición).</summary>
+    private static float BackOut(float x)
+    {
+        const float c1 = 1.70158f, c3 = c1 + 1f;
+        float xm = x - 1f;
+        return 1f + c3 * xm * xm * xm + c1 * xm * xm;
+    }
+
+    /// <summary>
+    /// Golpe de escala con "vida": crece pasándose un poco del tamaño (overshoot) y
+    /// vuelve a asentarse en <paramref name="baseScale"/>. Da un latido satisfactorio a
+    /// invocaciones y aterrizajes (en vez de una escala plana).
+    /// </summary>
+    public static IEnumerator Punch(Transform t, Vector3 baseScale, float amount, float duration)
+    {
+        float up = duration * 0.4f;
+        Vector3 peak = baseScale * (1f + amount);
+        for (float e = 0f; e < up; e += Time.deltaTime)
+        {
+            if (t == null) yield break;
+            t.localScale = Vector3.LerpUnclamped(baseScale, peak, Ease(e / up));
+            yield return null;
+        }
+        float down = duration - up;
+        for (float e = 0f; e < down; e += Time.deltaTime)
+        {
+            if (t == null) yield break;
+            t.localScale = Vector3.LerpUnclamped(peak, baseScale, BackOut(e / down));
+            yield return null;
+        }
+        if (t != null) t.localScale = baseScale;
+    }
+
     /// <summary>Escala un transform (aparecer/desaparecer/absorber).</summary>
     public static IEnumerator ScaleTo(Transform t, Vector3 target, float duration)
     {

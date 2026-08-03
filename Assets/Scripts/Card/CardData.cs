@@ -80,6 +80,13 @@ public class CardData : ScriptableObject
     public int equipAtkBonus = 0;
     public int equipDefBonus = 0;
 
+    [Tooltip("Si está activo, el equipo SOLO puede aplicarse a monstruos del tipo indicado " +
+             "(p. ej. Dragón). Si está desactivado, aplica a cualquier monstruo.")]
+    public bool equipRestrictToType = false;
+
+    [Tooltip("Tipo de monstruo al que se restringe el equipo (solo si equipRestrictToType).")]
+    public MonsterType equipMonsterType = MonsterType.Dragon;
+
     // ── Ritual ───────────────────────────────────────────────────────────
     [Header("Ritual (si cardCategory = Ritual)")]
     [Tooltip("Cartas requeridas para completar el ritual.")]
@@ -124,6 +131,18 @@ public class CardData : ScriptableObject
 
     /// <summary>Magia de terreno (Spell + spellKind Field).</summary>
     public bool IsFieldSpell => IsSpell && spellKind == SpellKind.Field;
+
+    /// <summary>
+    /// ¿Este EQUIPO puede aplicarse al monstruo <paramref name="target"/>?
+    /// Un equipo sin restricción aplica a cualquier monstruo; con restricción,
+    /// solo a los del <see cref="equipMonsterType"/> indicado (p. ej. Dragón).
+    /// </summary>
+    public bool EquipAppliesTo(CardData target)
+    {
+        if (!IsEquip) return false;
+        if (!equipRestrictToType) return true;
+        return target != null && target.IsMonster && target.monsterType == equipMonsterType;
+    }
 
     /// <summary>Texto descriptivo preferente: 'description', o el legado 'spellDescription'.</summary>
     public string DisplayDescription =>
