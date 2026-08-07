@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Abyss Script - Rise of the Abyss King_13662809
+  m_EditorClassIdentifier: 
+  cardId: 13662809
+  cardName: Abyss Script - Rise of the Abyss King
+  artwork: {fileID: 0}
+  artFile: CardArt/Abyss Script - Rise of the Abyss King_13662809.jpg
+  rarity: 0
+  cardCategory: 1
+  attribute: 7
+  description: 'Target face-up cards on the field, up to the number of Attack Position
+    "Abyss Actor" monsters with different names you control; destroy them. If you
+    control a Level 7 or higher "Abyss Actor" monster, your opponent cannot activate
+    cards or effects in response to this card''s activation. If this Set card in
+    its owner''s control is destroyed by an opponent''s card effect, and you have
+    a face-up "Abyss Actor" Pendulum Monster in your Extra Deck: You can add up to
+    2 "Abyss Actor" cards and/or "Abyss Script" Spells with different names from
+    your Deck to your hand.'
+  fusionGroup: Abyss Actor
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

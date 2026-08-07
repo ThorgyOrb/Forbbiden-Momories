@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Penguin Brave_91397409
+  m_EditorClassIdentifier: 
+  cardId: 91397409
+  cardName: Penguin Brave
+  artwork: {fileID: 0}
+  artFile: CardArt/Penguin Brave_91397409.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: '1 Tuner + 1+ non-Tuner monsters
+
+    Your opponent cannot target
+    face-down Defense Position monsters you control with card effects. You can only
+    use each of the following effects of "Penguin Brave" once per turn. If this card
+    is Synchro Summoned: You can Special Summon 1 "Penguin" monster from your Deck
+    in face-down Defense Position. When your opponent activates a monster effect
+    (Quick Effect): You can flip 1 face-down Defense Position WATER monster you control
+    face-up.'
+  fusionGroup: Penguin
+  monsterType: 7
+  baseAtk: 2400
+  baseDef: 1200
+  stars: 6
+  starA: 8
+  starB: 9
+  favoriteTerrain: 3
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -307,7 +307,7 @@ public class CardDisplay : MonoBehaviour
         if (artImage != null)
         {
             artImage.gameObject.SetActive(!isFaceDown);
-            artImage.sprite = _data.artwork;
+            artImage.sprite = _data.Artwork;
             artImage.preserveAspect = false;
 
             // Ya NO se toca artImage.material aquí. CardHoloEffect.Apply()

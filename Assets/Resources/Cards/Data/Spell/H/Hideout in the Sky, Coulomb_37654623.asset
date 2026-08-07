@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Hideout in the Sky, Coulomb_37654623
+  m_EditorClassIdentifier: 
+  cardId: 37654623
+  cardName: Hideout in the Sky, Coulomb
+  artwork: {fileID: 0}
+  artFile: CardArt/Hideout in the Sky, Coulomb_37654623.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: 'Monsters you control that were Normal or Special Summoned from the
+    hand gain 500 ATK/DEF. You can only use each of the following effects of "Hideout
+    in the Sky, Coulomb" once per turn. During your Main Phase: You can Special Summon
+    1 "Mech Beast Token" (Machine/EARTH/Level 6/ATK 2000/DEF 2000) to your opponent''s
+    field, and if you do, add 1 "Blitzclique" monster from your Deck to your hand.
+    If a card(s) is destroyed by your "Blitzclique" card''s effect, while this card
+    is in your GY (except during the Damage Step): You can add this card to your
+    hand.'
+  fusionGroup: 
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 2
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

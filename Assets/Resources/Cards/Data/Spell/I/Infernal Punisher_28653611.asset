@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Infernal Punisher_28653611
+  m_EditorClassIdentifier: 
+  cardId: 28653611
+  cardName: Infernal Punisher
+  artwork: {fileID: 0}
+  artFile: CardArt/Infernal Punisher_28653611.jpg
+  rarity: 0
+  cardCategory: 1
+  attribute: 7
+  description: "Activate 1 of these effects (but you can only use each effect of
+    \"Infernal Punisher\" once per turn);\r\n\u25CF Add 1 WATER Dinosaur monster
+    from your Deck to your hand, then you can Special Summon it if your opponent
+    controls a monster.\r\n\u25CF Tribute 1 monster; Special Summon 1 Level 6 or
+    higher FIRE monster from your hand, Deck, or GY, but negate its effects if it
+    is a non-Fiend monster."
+  fusionGroup: 
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

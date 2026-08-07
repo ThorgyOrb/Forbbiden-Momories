@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Reeshaddoll Wendi_51023024
+  m_EditorClassIdentifier: 
+  cardId: 51023024
+  cardName: Reeshaddoll Wendi
+  artwork: {fileID: 0}
+  artFile: CardArt/Reeshaddoll Wendi_51023024.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: 'FLIP: You can Special Summon 1 "Shaddoll" monster from your Deck
+    in face-up or face-down Defense Position, except "Reeshaddoll Wendi".
+
+    If
+    this card is sent to the GY by a card effect: You can Special Summon 1 "Shaddoll"
+    monster from your Deck in face-down Defense Position, except "Reeshaddoll Wendi".
+    You can only use 1 "Reeshaddoll Wendi" effect per turn, and only once that turn.'
+  fusionGroup: Shaddoll
+  monsterType: 20
+  baseAtk: 1500
+  baseDef: 1000
+  stars: 3
+  starA: 5
+  starB: 6
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

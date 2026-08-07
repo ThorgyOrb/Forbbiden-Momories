@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Reverse Jar_67248304
+  m_EditorClassIdentifier: 
+  cardId: 67248304
+  cardName: Reverse Jar
+  artwork: {fileID: 0}
+  artFile: CardArt/Reverse Jar_67248304.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 4
+  description: 'FLIP: Change as many other monsters on the field as possible to face-down
+    Defense Position, then, return as many face-up Spells/Traps as possible from
+    the field to the hand, then, each player can Set Spells/Traps from their hand,
+    up to the number returned to their own hand by this effect. You can only use
+    this effect of "Reverse Jar" once per turn.'
+  fusionGroup: Jar
+  monsterType: 17
+  baseAtk: 800
+  baseDef: 900
+  stars: 3
+  starA: 7
+  starB: 6
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

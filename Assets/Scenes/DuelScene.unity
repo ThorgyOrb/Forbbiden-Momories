@@ -9193,6 +9193,7 @@ MonoBehaviour:
   rewardNameText: {fileID: 2146224901}
   btnRematch: {fileID: 1028288652}
   btnBackMenu: {fileID: 865722119}
+  cineCardWidthFrac: 0.42
 --- !u!114 &962140188
 MonoBehaviour:
   m_ObjectHideFlags: 0

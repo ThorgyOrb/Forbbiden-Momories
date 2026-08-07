@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Marincess Battle Ocean_91027843
+  m_EditorClassIdentifier: 
+  cardId: 91027843
+  cardName: Marincess Battle Ocean
+  artwork: {fileID: 0}
+  artFile: CardArt/Marincess Battle Ocean_91027843.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: 'All "Marincess" monsters you control gain 200 ATK, also each one
+    gains 600 ATK for each "Marincess" card equipped to it. Monsters you control
+    in the Extra Monster Zone that were Link Summoned using "Marincess Crystal Heart"
+    as material are unaffected by your opponent''s card effects. When you Link Summon
+    a "Marincess" monster to the Extra Monster Zone (except during the Damage Step):
+    You can equip up to 3 "Marincess" Link Monsters with different names from your
+    GY to that Link Summoned monster.'
+  fusionGroup: Marincess
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 3
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

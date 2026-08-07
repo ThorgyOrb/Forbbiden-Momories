@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Interrupt Resistor_2414168
+  m_EditorClassIdentifier: 
+  cardId: 2414168
+  cardName: Interrupt Resistor
+  artwork: {fileID: 0}
+  artFile: CardArt/Interrupt Resistor_2414168.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 1
+  description: 'When you take battle damage: You can Special Summon this card from
+    your hand, and if you do, it gains ATK equal to the damage you took. Once per
+    turn, during damage calculation, when another Defense Position monster you control
+    is attacked by an opponent''s monster (Quick Effect): You can activate this effect;
+    during this damage calculation, your attacked monster''s DEF becomes equal to
+    this card''s DEF, also it cannot be destroyed by that battle.'
+  fusionGroup: 
+  monsterType: 22
+  baseAtk: 0
+  baseDef: 2100
+  stars: 6
+  starA: 0
+  starB: 7
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

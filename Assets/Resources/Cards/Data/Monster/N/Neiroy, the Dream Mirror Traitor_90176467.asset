@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Neiroy, the Dream Mirror Traitor_90176467
+  m_EditorClassIdentifier: 
+  cardId: 90176467
+  cardName: Neiroy, the Dream Mirror Traitor
+  artwork: {fileID: 0}
+  artFile: CardArt/Neiroy, the Dream Mirror Traitor_90176467.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: 'If this card is Normal or Special Summoned: You can add 1 "Neiroy,
+    the Dream Mirror Disciple" from your Deck to your hand, then you can make this
+    card become LIGHT. You can Tribute 1 other "Dream Mirror" monster; choose 1 "Dream
+    Mirror" monster from your Deck with a different Level than the Tributed monster,
+    add 1 "Dream Mirror of Joy" or 1 "Dream Mirror of Terror" from your Deck to your
+    hand that is mentioned on that chosen monster, and Special Summon that chosen
+    monster in Defense Position. You can only use each effect of "Neiroy, the Dream
+    Mirror Traitor" once per turn.'
+  fusionGroup: Dream Mirror
+  monsterType: 2
+  baseAtk: 1000
+  baseDef: 1000
+  stars: 3
+  starA: 1
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

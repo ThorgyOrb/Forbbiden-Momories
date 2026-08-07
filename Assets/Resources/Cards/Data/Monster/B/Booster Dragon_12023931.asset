@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Booster Dragon_12023931
+  m_EditorClassIdentifier: 
+  cardId: 12023931
+  cardName: Booster Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Booster Dragon_12023931.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: '2 "Rokket" monsters
+
+    Once per turn: You can target 1 other face-up
+    monster on the field; it gains 500 ATK/DEF. Your opponent cannot activate cards
+    or effects in response to this effect''s activation. If this Link Summoned card
+    is destroyed by battle or card effect and sent to the GY: You can target 1 other
+    Dragon monster in your GY; Special Summon it. You can only use this effect of
+    "Booster Dragon" once per turn.'
+  fusionGroup: Rokket
+  monsterType: 0
+  baseAtk: 1900
+  baseDef: 0
+  stars: 0
+  starA: 1
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

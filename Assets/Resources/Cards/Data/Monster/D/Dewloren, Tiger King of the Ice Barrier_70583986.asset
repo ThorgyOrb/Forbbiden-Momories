@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Dewloren, Tiger King of the Ice Barrier_70583986
+  m_EditorClassIdentifier: 
+  cardId: 70583986
+  cardName: Dewloren, Tiger King of the Ice Barrier
+  artwork: {fileID: 0}
+  artFile: CardArt/Dewloren, Tiger King of the Ice Barrier_70583986.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: '1 Tuner + 1 or more non-Tuner WATER monsters
+
+    Once per turn,
+    you can return any number of face-up cards you control to the owner''s hand.
+    For each card returned to the owner''s hand by this effect, this card gains 500
+    ATK until the End Phase.'
+  fusionGroup: Ice Barrier
+  monsterType: 3
+  baseAtk: 2000
+  baseDef: 1400
+  stars: 6
+  starA: 8
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

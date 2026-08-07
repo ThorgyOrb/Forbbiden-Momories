@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Magikey Unlocking_98904974
+  m_EditorClassIdentifier: 
+  cardId: 98904974
+  cardName: Magikey Unlocking
+  artwork: {fileID: 0}
+  artFile: CardArt/Magikey Unlocking_98904974.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: 'When your opponent activates a Spell/Trap Card while you control
+    a "Magikey" Ritual Monster or a "Magikey" monster Special Summoned from the Extra
+    Deck: Negate the activation, and if you do, destroy that card, then you can declare
+    1 Attribute, and if you do that, for the rest of this turn all face-up monsters
+    your opponent controls become that Attribute. You can only activate 1 "Magikey
+    Unlocking" per turn.'
+  fusionGroup: Magikey
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 2
+  trapTrigger: 2
+  trapEffect: 7
+  trapValue: 0
+  resolutionPriority: 10
+  sources: []

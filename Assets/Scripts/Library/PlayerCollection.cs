@@ -20,6 +20,10 @@ public class PlayerCollection : MonoBehaviour
     private Dictionary<int, PlayerCardEntry> _entries = new();
     private Dictionary<int, OpponentProgress> _opponents = new();
 
+    // Guardado diferido para operaciones masivas — ver BeginBatch/EndBatch.
+    private int _batchDepth;
+    private bool _savePending;
+
     /// <summary>Crea el singleton si aún no existe (auto-arranque). Idempotente.</summary>
     public static PlayerCollection EnsureExists()
     {
@@ -204,14 +208,44 @@ public class PlayerCollection : MonoBehaviour
 
     private static string SavePath => Path.Combine(Application.persistentDataPath, "collection_save.json");
 
+    /// <summary>
+    /// Agrupa muchas mutaciones en un solo guardado. Cada AddCopy/DiscoverCard llama a
+    /// <see cref="Save"/>, y Save reescribe el archivo ENTERO: otorgar el catálogo completo
+    /// sin esto son ~14.600 escrituras de un archivo que va creciendo hasta 14.600 entradas
+    /// (coste cuadrático — la escena se quedaba colgada).
+    ///
+    /// Siempre en try/finally, para no dejar el guardado suspendido si algo lanza:
+    /// <code>
+    /// col.BeginBatch();
+    /// try { /* muchas mutaciones */ } finally { col.EndBatch(); }
+    /// </code>
+    /// Anidable.
+    /// </summary>
+    public void BeginBatch() => _batchDepth++;
+
+    /// <summary>Cierra el lote; al salir del último, guarda una sola vez si hizo falta.</summary>
+    public void EndBatch()
+    {
+        _batchDepth = Mathf.Max(0, _batchDepth - 1);
+        if (_batchDepth > 0 || !_savePending) return;
+
+        _savePending = false;
+        Save();
+    }
+
     public void Save()
     {
+        // Dentro de un lote solo se anota la intención; se escribe al cerrarlo.
+        if (_batchDepth > 0) { _savePending = true; return; }
+
         var data = new SaveData
         {
             entries = _entries.Values.ToList(),
             opponents = _opponents.Values.ToList()
         };
-        string json = JsonUtility.ToJson(data, prettyPrint: true);
+        // Sin prettyPrint: con el catálogo completo el save pasa de unos pocos KB a varios
+        // MB, y el sangrado casi duplica el tamaño y el tiempo de serialización.
+        string json = JsonUtility.ToJson(data, prettyPrint: false);
 
         try
         {

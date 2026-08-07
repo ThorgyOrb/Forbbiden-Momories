@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: FusionDatabase
   m_EditorClassIdentifier: 
   recipes:
-  - materialA: {fileID: 11400000, guid: 4d2dff8644e5abc4f9ac492e85b91c7e, type: 2}
-    materialB: {fileID: 11400000, guid: 4d2dff8644e5abc4f9ac492e85b91c7e, type: 2}
-    result: {fileID: 11400000, guid: 9a53d11f9bd353a41b63b5cdf53b5e79, type: 2}
+  - materialA: {fileID: 11400000, guid: be8b4648489f44641920ce7b5010f2e7, type: 2}
+    materialB: {fileID: 11400000, guid: be8b4648489f44641920ce7b5010f2e7, type: 2}
+    result: {fileID: 11400000, guid: fc5de12f36a6d8b4693dc1d1c06ad3eb, type: 2}
+  categoryFusions:
+  - categoryA: {fileID: 11400000, guid: 1df79b3bf94de3844a02a479dccb0a81, type: 2}
+    categoryB: {fileID: 11400000, guid: 71bf837325251fd46998eccc2089afb5, type: 2}
+    result: {fileID: 11400000, guid: fc5de12f36a6d8b4693dc1d1c06ad3eb, type: 2}
+    priority: 1
   categoryRecipes:
   - groupA: 
     groupB: 

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Ghostrick-Go-Round_37055344
+  m_EditorClassIdentifier: 
+  cardId: 37055344
+  cardName: Ghostrick-Go-Round
+  artwork: {fileID: 0}
+  artFile: CardArt/Ghostrick-Go-Round_37055344.jpg
+  rarity: 0
+  cardCategory: 5
+  attribute: 7
+  description: "Once per turn, during the Battle Phase: You can activate 1 of these
+    effects.\n\u25CF Target 1 \"Ghostrick\" monster you control; change that target
+    to face-down Defense Position, and if you do, change 1 face-down Defense Position
+    monster your opponent controls to face-up Attack Position.\n\u25CF Target 1 face-down
+    Defense Position monster you control; change that target to face-up Attack Position,
+    and if it is a \"Ghostrick\" monster, change 1 face-up monster your opponent
+    controls to face-down Defense Position."
+  fusionGroup: Ghostrick
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 1
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Salamangreat Charge_83533296
+  m_EditorClassIdentifier: 
+  cardId: 83533296
+  cardName: Salamangreat Charge
+  artwork: {fileID: 0}
+  artFile: CardArt/Salamangreat Charge_83533296.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: "Activate 1 of these effects;\r\n\u25CF Target 3 of your FIRE monsters
+    that are banished and/or in your GY; shuffle 2 of the 3 into the Deck, and if
+    you do, Special Summon the remaining monster, but for the rest of this turn,
+    its effects are negated, also it cannot attack.\r\n\u25CF If you control a FIRE
+    Ritual, Fusion, Synchro, Xyz, or Link Monster(s) whose current ATK is different
+    from its original ATK: You can target 1 card on the field; destroy it.\r\nYou
+    can only activate 1 \"Salamangreat Charge\" per turn."
+  fusionGroup: Salamangreat
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 4
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

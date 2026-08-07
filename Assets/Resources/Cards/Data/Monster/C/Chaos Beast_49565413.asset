@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Chaos Beast_49565413
+  m_EditorClassIdentifier: 
+  cardId: 49565413
+  cardName: Chaos Beast
+  artwork: {fileID: 0}
+  artFile: CardArt/Chaos Beast_49565413.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: '1 LIGHT Tuner + 1+ non-Tuner DARK monsters
+
+    If any card(s) have
+    been banished this turn, this card gains 1000 ATK. You can only use each of the
+    following effects of "Chaos Beast" once per turn. You can target 1 of your banished
+    LIGHT or DARK monsters; add it to your hand. During your Main Phase, except the
+    turn this card was sent to the GY: You can banish 1 LIGHT and 1 DARK monster
+    from your hand and/or GY, except this card; Special Summon this card from your
+    GY.'
+  fusionGroup: Chaos
+  monsterType: 2
+  baseAtk: 2000
+  baseDef: 1800
+  stars: 6
+  starA: 1
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

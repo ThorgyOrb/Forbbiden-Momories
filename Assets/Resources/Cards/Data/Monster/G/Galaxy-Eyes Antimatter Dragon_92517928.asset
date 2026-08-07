@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Galaxy-Eyes Antimatter Dragon_92517928
+  m_EditorClassIdentifier: 
+  cardId: 92517928
+  cardName: Galaxy-Eyes Antimatter Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Galaxy-Eyes Antimatter Dragon_92517928.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: '2 Level 9 monsters
+
+    Once per turn, you can also Xyz Summon "Galaxy-Eyes
+    Antimatter Dragon" by using an Xyz Monster you control with 3 or more materials
+    (transfer its materials). Any battle damage this card with material inflicts
+    to your opponent is halved. You can detach 1 material from this card; this card
+    gains the ability this turn to make up to 2 attacks on monsters during each Battle
+    Phase, then if the detached material was a monster, you can send 1 monster with
+    its same Type from your Deck to the GY.'
+  fusionGroup: Galaxy
+  monsterType: 0
+  baseAtk: 4000
+  baseDef: 0
+  stars: 9
+  starA: 0
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

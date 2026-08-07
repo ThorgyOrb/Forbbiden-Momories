@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af441f07ad27aa046a6657712471a87a, type: 3}
+  m_Name: DuelAudioBank
+  m_EditorClassIdentifier: 
+  bgm: {fileID: 8300000, guid: 18ac61a81e2981b4dabc68c4f74b88af, type: 3}
+  victoryBgm: {fileID: 0}
+  defeatBgm: {fileID: 0}
+  bgmVolume: 0.5
+  sfxVolume: 0.85
+  cursorMove: {fileID: 8300000, guid: c4e06ed5736bf7747a07f484f802dad4, type: 3}
+  select: {fileID: 0}
+  cancel: {fileID: 8300000, guid: 054337c9b4c26a948b2cf3c1c1f9a5b4, type: 3}
+  guardianStar: {fileID: 0}
+  draw: {fileID: 8300000, guid: ebf6102d7b4fcf943b4d4aa05a7c89b0, type: 3}
+  summon: {fileID: 0}
+  flip: {fileID: 0}
+  setCard: {fileID: 0}
+  spell: {fileID: 0}
+  trap: {fileID: 0}
+  fusionStart: {fileID: 0}
+  fuse: {fileID: 8300000, guid: be3e3e2a766012b4287c148e3307862c, type: 3}
+  equip: {fileID: 8300000, guid: f52e36ca8d53e3c41af128ee451c42f5, type: 3}
+  attack: {fileID: 8300000, guid: 55f9c9d830cd8204d921b892f0fc7054, type: 3}
+  slash: {fileID: 8300000, guid: c6416026519d5124d9cc80e15ae886f5, type: 3}
+  destroy: {fileID: 8300000, guid: ba1ae9e6f68228a40b294c7b0083fd91, type: 3}
+  damage: {fileID: 8300000, guid: 095b5778adc90a14ea257739d02606f4, type: 3}
+  phase: {fileID: 8300000, guid: 25266d47fda574843ab6a413b4963e5d, type: 3}
+  turnStart: {fileID: 0}

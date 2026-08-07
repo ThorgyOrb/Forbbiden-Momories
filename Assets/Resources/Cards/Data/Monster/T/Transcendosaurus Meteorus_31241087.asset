@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Transcendosaurus Meteorus_31241087
+  m_EditorClassIdentifier: 
+  cardId: 31241087
+  cardName: Transcendosaurus Meteorus
+  artwork: {fileID: 0}
+  artFile: CardArt/Transcendosaurus Meteorus_31241087.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 2
+  description: 'Cannot be Normal Summoned/Set. Must be Special Summoned by card effect.
+    During your opponent''s turn (Quick Effect): You can destroy 2 other Dinosaur
+    monsters in your hand and/or field, and if you do, Special Summon this card from
+    your hand. If this card is Special Summoned: You can send 1 Dinosaur monster
+    from your Deck to the GY. If this card is destroyed: You can shuffle 1 Normal
+    Monster from your GY into the Deck, then you can Special Summon this card. You
+    can only use each effect of "Transcendosaurus Meteorus" once per turn.'
+  fusionGroup: Transcendosaurus
+  monsterType: 10
+  baseAtk: 3500
+  baseDef: 700
+  stars: 12
+  starA: 4
+  starB: 6
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

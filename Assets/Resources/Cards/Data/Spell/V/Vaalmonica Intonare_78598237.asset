@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Vaalmonica Intonare_78598237
+  m_EditorClassIdentifier: 
+  cardId: 78598237
+  cardName: Vaalmonica Intonare
+  artwork: {fileID: 0}
+  artFile: CardArt/Vaalmonica Intonare_78598237.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: "Apply 1 of these effects. Unless you have a \"Vaalmonica\" card in
+    your Pendulum Zone, your opponent chooses the effect.\r\n\u25CF Gain 500 LP,
+    then if you have any monsters in your GY that can be Special Summoned, your opponent
+    chooses 1 for you to Special Summon to your field.\r\n\u25CF Take 500 damage,
+    then you can add 1 Level 4 monster from your GY to your hand.\r\nYou can only
+    activate 1 \"Vaalmonica Intonare\" per turn."
+  fusionGroup: Vaalmonica
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 1
+  spellValue: 500
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -29,6 +29,8 @@ public class LibraryManager : MonoBehaviour
     private CardFilterCriteria _criteria = new();
     private CardSortOption _sort = CardSortOption.IdAsc;
     private readonly List<LibraryCardSlot> _spawnedSlots = new();
+    private List<LibraryEntry> _entries = new();
+    private IncrementalGridFiller _filler;
 
     void Start()
     {
@@ -95,21 +97,32 @@ public class LibraryManager : MonoBehaviour
     private void RefreshGrid()
     {
         foreach (var slot in _spawnedSlots)
-            Destroy(slot.gameObject);
+            if (slot != null) Destroy(slot.gameObject);
         _spawnedSlots.Clear();
 
-        List<LibraryEntry> entries = LibraryQueryService.Query(_criteria, _sort);
+        _entries = LibraryQueryService.Query(_criteria, _sort);
 
-        foreach (var entry in entries)
-        {
-            GameObject go = Instantiate(cardSlotPrefab, gridContainer);
-            var slot = go.GetComponent<LibraryCardSlot>();
-            slot.Setup(entry, OnSlotClicked);
-            _spawnedSlots.Add(slot);
-        }
+        // Por bloques: instanciar las 14.000+ de golpe congelaba el juego (y el editor).
+        _filler ??= new IncrementalGridFiller(gridContainer);
+        _filler.Restart(_entries.Count, SpawnSlotRange);
 
         UpdateHeader();
     }
+
+    /// <summary>Crea los slots [from, from+count). Lo llama IncrementalGridFiller.</summary>
+    private void SpawnSlotRange(int from, int count)
+    {
+        for (int i = from; i < from + count && i < _entries.Count; i++)
+        {
+            GameObject go = Instantiate(cardSlotPrefab, gridContainer);
+            var slot = go.GetComponent<LibraryCardSlot>();
+            if (slot == null) continue;
+            slot.Setup(_entries[i], OnSlotClicked);
+            _spawnedSlots.Add(slot);
+        }
+    }
+
+    void OnDestroy() => _filler?.Detach();
 
     private void OnSlotClicked(LibraryEntry entry, RectTransform sourceRect)
     {

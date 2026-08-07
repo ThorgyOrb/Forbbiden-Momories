@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: D_D Count Surveyor_5997110
+  m_EditorClassIdentifier: 
+  cardId: 5997110
+  cardName: D/D Count Surveyor
+  artwork: {fileID: 0}
+  artFile: CardArt/DD Count Surveyor_5997110.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: "[ Pendulum Effect ] \nOnce per turn, if you Pendulum Summon a \"D/D/D\"
+    monster(s): You can target 3 monsters your opponent controls with the same Type
+    or Attribute as each other; Tribute 2 of those 3 face-up monsters, and if you
+    do, the third gains ATK/DEF equal to the total ATK/DEF the Tributed monsters
+    had on the field.\n\n[ Monster Effect ] \nYou can discard 1 other \"D/D\" monster;
+    Special Summon this card from your hand. If this card is Normal or Special Summoned:
+    You can add 1 \"D/D\" monster with 0 ATK or DEF from your Deck to your hand.
+    You can only use each effect of \"D/D Count Surveyor\" once per turn."
+  fusionGroup: D/D
+  monsterType: 2
+  baseAtk: 2000
+  baseDef: 2000
+  stars: 8
+  starA: 1
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

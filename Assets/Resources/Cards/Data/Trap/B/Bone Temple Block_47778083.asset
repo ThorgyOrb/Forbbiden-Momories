@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Bone Temple Block_47778083
+  m_EditorClassIdentifier: 
+  cardId: 47778083
+  cardName: Bone Temple Block
+  artwork: {fileID: 0}
+  artFile: CardArt/Bone Temple Block_47778083.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: Discard 1 card. Special Summon 1 Level 4 or lower monster from your
+    opponent's Graveyard to your side of the field, and your opponent Special Summons
+    1 Level 4 or lower monster from your Graveyard to your opponent's side of the
+    field. Those monsters are destroyed during the End Phase of the next turn.
+  fusionGroup: 
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 1
+  trapEffect: 4
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

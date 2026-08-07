@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: The Wicked Avatar_21208154
+  m_EditorClassIdentifier: 
+  cardId: 21208154
+  cardName: The Wicked Avatar
+  artwork: {fileID: 0}
+  artFile: CardArt/The Wicked Avatar_21208154.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: This card cannot be Special Summoned. This card cannot be Normal Summoned
+    or Set except by Tributing 3 monsters. Your opponent cannot activate Spell or
+    Trap Cards until the end of their 2nd turn after this card is Normal Summoned.
+    The ATK and DEF of this card are each 100 points higher than the highest face-up
+    monster's ATK on the field (except "The Wicked Avatar").
+  fusionGroup: Wicked God
+  monsterType: 2
+  baseAtk: -1
+  baseDef: -1
+  stars: 10
+  starA: 1
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

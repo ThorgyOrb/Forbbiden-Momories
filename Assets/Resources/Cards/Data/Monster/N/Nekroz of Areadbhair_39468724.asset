@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Nekroz of Areadbhair_39468724
+  m_EditorClassIdentifier: 
+  cardId: 39468724
+  cardName: Nekroz of Areadbhair
+  artwork: {fileID: 0}
+  artFile: CardArt/Nekroz of Areadbhair_39468724.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 3
+  description: "You can Ritual Summon this card with any \"Nekroz\" Ritual Spell.
+    Must be Ritual Summoned, without using any Level 10 monsters. You can only use
+    each of these effects of \"Nekroz of Areadbhair\" once per turn.\r\n\u25CF You
+    can discard this card; Tribute up to 2 \"Nekroz\" monsters from your hand and/or
+    field, and if you do, send that many \"Nekroz\" cards from your Deck to the GY.\r\n\u25CF
+    When a monster effect is activated (Quick Effect): You can Tribute 1 monster
+    from your hand or field; negate the activation, and if you do, banish that card."
+  fusionGroup: Nekroz
+  monsterType: 12
+  baseAtk: 3300
+  baseDef: 3200
+  stars: 10
+  starA: 8
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

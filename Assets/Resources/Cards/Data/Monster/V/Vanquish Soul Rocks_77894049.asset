@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Vanquish Soul Rocks_77894049
+  m_EditorClassIdentifier: 
+  cardId: 77894049
+  cardName: Vanquish Soul Rocks
+  artwork: {fileID: 0}
+  artFile: CardArt/Vanquish Soul Rocks_77894049.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: "2+ Level 4 \"Vanquish Soul\" monsters\r\nOnce per turn, if a \"Vanquish
+    Soul\" monster battled this turn, you can also Xyz Summon \"Vanquish Soul Rocks\"
+    by using 1 \"Vanquish Soul\" monster or 1 \"Rock of the Vanquisher\" you control
+    (transfer its materials to this card). Gains the following effects, based on
+    the Attributes of its attached materials.\r\n\u25CF DARK: All monsters your opponent
+    controls lose 800 ATK.\r\n\u25CF FIRE: \"Vanquish Soul\" monsters you control
+    gain 1000 ATK.\r\n\u25CF EARTH: You can detach 1 material from this card; destroy
+    1 card your opponent controls."
+  fusionGroup: Vanquish Soul
+  monsterType: 18
+  baseAtk: 2000
+  baseDef: 2500
+  stars: 4
+  starA: 1
+  starB: 4
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Lunalight Sabre Dancer_88753594
+  m_EditorClassIdentifier: 
+  cardId: 88753594
+  cardName: Lunalight Sabre Dancer
+  artwork: {fileID: 0}
+  artFile: CardArt/Lunalight Sabre Dancer_88753594.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: '3 "Lunalight" monsters
+
+    Must be Fusion Summoned. Gains 200 ATK
+    for each Beast-Warrior monster that is banished or in the GYs. Your opponent
+    cannot target this card with card effects. During your Main Phase, except the
+    turn this card was sent to the GY: You can banish this card from your GY, then
+    target 1 Fusion Monster you control; it gains 3000 ATK until the end of this
+    turn. You can only use this effect of "Lunalight Sabre Dancer" once per turn.'
+  fusionGroup: Lunalight
+  monsterType: 19
+  baseAtk: 3000
+  baseDef: 2600
+  stars: 9
+  starA: 1
+  starB: 2
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

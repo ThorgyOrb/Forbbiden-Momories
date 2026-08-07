@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Galaxy-Eyes Afterglow Dragon_62968263
+  m_EditorClassIdentifier: 
+  cardId: 62968263
+  cardName: Galaxy-Eyes Afterglow Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Galaxy-Eyes Afterglow Dragon_62968263.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: 'If you control a "Galaxy-Eyes" monster: You can Special Summon this
+    card from your hand in Defense Position. If this card is detached from an Xyz
+    Monster to activate that monster''s effect: You can take 1 "Galaxy-Eyes Photon
+    Dragon" from your hand or Deck, and either Special Summon it, or attach it to
+    an Xyz Monster you control as material, then if you activated this effect during
+    the Battle Phase, double the ATK of all "Number" Xyz Monsters you control. You
+    can only use each effect of "Galaxy-Eyes Afterglow Dragon" once per turn.'
+  fusionGroup: Galaxy-Eyes
+  monsterType: 0
+  baseAtk: 3000
+  baseDef: 2500
+  stars: 8
+  starA: 0
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

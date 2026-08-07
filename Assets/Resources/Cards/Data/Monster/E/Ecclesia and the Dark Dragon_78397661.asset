@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Ecclesia and the Dark Dragon_78397661
+  m_EditorClassIdentifier: 
+  cardId: 78397661
+  cardName: Ecclesia and the Dark Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Ecclesia and the Dark Dragon_78397661.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: '1 Tuner + 1+ non-Tuners
+
+    During the Main Phase (Quick Effect):
+    You can banish this card (until the End Phase), and if you do, Special Summon
+    1 "Fallen of Albaz" or 1 Level 4 or lower monster that mentions it from your
+    Deck or GY. If this card is in your GY: You can target 1 Level 8 Fusion Monster
+    in your GY or banishment and 1 card on the field; shuffle both of those cards
+    and this card into the Deck. You can only use each effect of "Ecclesia and the
+    Dark Dragon" once per turn.'
+  fusionGroup: Ecclesia
+  monsterType: 1
+  baseAtk: 2500
+  baseDef: 2500
+  stars: 8
+  starA: 0
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

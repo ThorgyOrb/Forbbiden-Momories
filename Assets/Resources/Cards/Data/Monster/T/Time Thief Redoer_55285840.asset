@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Time Thief Redoer_55285840
+  m_EditorClassIdentifier: 
+  cardId: 55285840
+  cardName: Time Thief Redoer
+  artwork: {fileID: 0}
+  artFile: CardArt/Time Thief Redoer_55285840.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: "2 Level 4 monsters\r\nOnce per turn, during the Standby Phase: You
+    can attach the top card of your opponent's Deck to this card as material. (Quick
+    Effect): You can detach up to 3 different types of materials from this card,
+    then apply the following effect(s) depending on what was detached.\r\n\u25CF
+    Monster: Banish this card until the End Phase. \u25CF Spell: Draw 1 card.\r\n\u25CF
+    Trap: Place 1 face-up card your opponent controls on the top of the Deck.\r\nYou
+    can only use this effect of \"Time Thief Redoer\" once per turn."
+  fusionGroup: Time Thief
+  monsterType: 20
+  baseAtk: 2400
+  baseDef: 2000
+  stars: 4
+  starA: 1
+  starB: 6
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

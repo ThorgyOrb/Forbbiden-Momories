@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Vampire Fascinator_72860663
+  m_EditorClassIdentifier: 
+  cardId: 72860663
+  cardName: Vampire Fascinator
+  artwork: {fileID: 0}
+  artFile: CardArt/Vampire Fascinator_72860663.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: '2+ monsters, including a Zombie monster
+
+    If this card is Link
+    Summoned: You can target 1 monster in your opponent''s GY; Special Summon it
+    to your field in Defense Position, also you cannot Special Summon monsters for
+    the rest of this turn, except Zombie monsters. You can Tribute 1 "Vampire" monster,
+    then target 1 monster your opponent controls; take control of it until the End
+    Phase. You can only use each effect of "Vampire Fascinator" once per turn.'
+  fusionGroup: Vampire
+  monsterType: 9
+  baseAtk: 2400
+  baseDef: 0
+  stars: 0
+  starA: 1
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

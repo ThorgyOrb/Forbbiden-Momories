@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Advanced Crystal Beast Cobalt Eagle_45236142
+  m_EditorClassIdentifier: 
+  cardId: 45236142
+  cardName: Advanced Crystal Beast Cobalt Eagle
+  artwork: {fileID: 0}
+  artFile: CardArt/Advanced Crystal Beast Cobalt Eagle_45236142.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: 'If "Advanced Dark" is not in a Field Zone, send this monster to the
+    GY. You can send this card from your hand or field to the GY; add 1 "Advanced
+    Dark" from your Deck to your hand. Once per turn: You can target 1 "Advanced
+    Crystal Beast" card you control; return it to the hand or place it on top of
+    the Deck. If this face-up card is destroyed in a Monster Zone, you can place
+    it face-up in your Spell & Trap Zone as a Continuous Spell, instead of sending
+    it to the GY.'
+  fusionGroup: Advanced Crystal Beast
+  monsterType: 11
+  baseAtk: 1400
+  baseDef: 800
+  stars: 4
+  starA: 5
+  starB: 6
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

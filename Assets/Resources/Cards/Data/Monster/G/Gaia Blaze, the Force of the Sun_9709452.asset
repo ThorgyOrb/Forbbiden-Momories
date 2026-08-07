@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Gaia Blaze, the Force of the Sun_9709452
+  m_EditorClassIdentifier: 
+  cardId: 9709452
+  cardName: Gaia Blaze, the Force of the Sun
+  artwork: {fileID: 0}
+  artFile: CardArt/Gaia Blaze, the Force of the Sun_9709452.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 2
+  description: '1 Tuner + 1+ non-Tuner monsters
+
+    If this attacking card destroys
+    an opponent''s monster by battle: It can make a second attack in a row. Once
+    per turn, at the end of the Battle Phase: You can target FIRE monsters in your
+    GY up to the number of monsters this card destroyed by battle this turn; add
+    them to your hand.'
+  fusionGroup: Gaia Knight
+  monsterType: 18
+  baseAtk: 2600
+  baseDef: 2100
+  stars: 7
+  starA: 4
+  starB: 5
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

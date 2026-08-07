@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Revealer of the Ice Barrier_18319762
+  m_EditorClassIdentifier: 
+  cardId: 18319762
+  cardName: Revealer of the Ice Barrier
+  artwork: {fileID: 0}
+  artFile: CardArt/Revealer of the Ice Barrier_18319762.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 3
+  description: While you control another "Ice Barrier" monster, your opponent cannot
+    Tribute Summon. You can only use each of the following effects of "Revealer of
+    the Ice Barrier" once per turn. You can discard 1 card; Special Summon 1 "Ice
+    Barrier" Tuner from your Deck, also you cannot Special Summon monsters for the
+    rest of this turn, except WATER monsters. If you would discard, or send a card(s)
+    from your hand to the GY, to activate an "Ice Barrier" monster's effect, you
+    can banish this card from your GY instead of 1 of those cards.
+  fusionGroup: Ice Barrier
+  monsterType: 1
+  baseAtk: 1700
+  baseDef: 1000
+  stars: 4
+  starA: 8
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

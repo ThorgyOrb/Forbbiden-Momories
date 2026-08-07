@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Metamorphosed Insect Queen_41456841
+  m_EditorClassIdentifier: 
+  cardId: 41456841
+  cardName: Metamorphosed Insect Queen
+  artwork: {fileID: 0}
+  artFile: CardArt/Metamorphosed Insect Queen_41456841.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 4
+  description: 'Cannot be Normal Summoned/Set. Must be Special Summoned by a card
+    effect. If another Insect monster is on the field, your opponent cannot target
+    Insect monsters you control with card effects, also they cannot be destroyed
+    by your opponent''s card effects. At the end of the Damage Step, if this card
+    attacked: You can Tribute 1 monster; this card can attack an opponent''s monster
+    again in a row. Once per turn, during the End Phase: You can Special Summon 1
+    "Insect Monster Token" (Insect/EARTH/Level 1/ATK 100/DEF 100).'
+  fusionGroup: 
+  monsterType: 4
+  baseAtk: 2800
+  baseDef: 2400
+  stars: 7
+  starA: 7
+  starB: 2
+  favoriteTerrain: 1
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Cyber Angel Natasha_99427357
+  m_EditorClassIdentifier: 
+  cardId: 99427357
+  cardName: Cyber Angel Natasha
+  artwork: {fileID: 0}
+  artFile: CardArt/Cyber Angel Natasha_99427357.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: 'You can Ritual Summon this card with "Machine Angel Ritual". Once
+    per turn: You can target 1 face-up monster you control; gain LP equal to half
+    its ATK. When a Ritual Monster you control is targeted for an attack: You can
+    negate the attack. If this card is in the Graveyard: You can banish 1 other "Cyber
+    Angel" monster from your Graveyard, then target 1 monster your opponent controls;
+    Special Summon this card, and if you do, take control of that monster.'
+  fusionGroup: Cyber Angel
+  monsterType: 15
+  baseAtk: 1000
+  baseDef: 1000
+  stars: 5
+  starA: 0
+  starB: 1
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

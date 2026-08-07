@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Number 29_ Mannequin Cat_54191698
+  m_EditorClassIdentifier: 
+  cardId: 54191698
+  cardName: 'Number 29: Mannequin Cat'
+  artwork: {fileID: 0}
+  artFile: CardArt/Number 29 Mannequin Cat_54191698.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: '2 Level 2 monsters
+
+    Once per turn: You can detach 1 material
+    from this card, then target 1 monster in your opponent''s GY; Special Summon
+    it to your opponent''s field. If a monster(s) is Special Summoned to your opponent''s
+    field, while you control this monster (except during the Damage Step): You can
+    target 1 face-up monster your opponent controls; Special Summon 1 monster with
+    the same Type or Attribute from your hand, Deck, or GY. You can only use this
+    effect of "Number 29: Mannequin Cat" once per turn.'
+  fusionGroup: 
+  monsterType: 3
+  baseAtk: 2000
+  baseDef: 900
+  stars: 2
+  starA: 0
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

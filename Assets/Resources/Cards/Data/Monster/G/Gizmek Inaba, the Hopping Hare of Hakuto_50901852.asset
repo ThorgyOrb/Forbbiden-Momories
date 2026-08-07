@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Gizmek Inaba, the Hopping Hare of Hakuto_50901852
+  m_EditorClassIdentifier: 
+  cardId: 50901852
+  cardName: Gizmek Inaba, the Hopping Hare of Hakuto
+  artwork: {fileID: 0}
+  artFile: CardArt/Gizmek Inaba, the Hopping Hare of Hakuto_50901852.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: 'When this card is Normal Summoned: You can Special Summon 1 Machine
+    monster whose ATK equals its own DEF from your hand in Defense Position. You
+    can banish this card from your GY, then target 1 Machine monster you control
+    whose ATK equals its own DEF; this turn, you cannot declare attacks, except with
+    that monster, also its ATK/DEF become the combined original ATK of all Machine
+    monsters you currently control whose ATK equals their own DEF. You can only use
+    this effect of "Gizmek Inaba, the Hopping Hare of Hakuto" once per turn.'
+  fusionGroup: Gizmek
+  monsterType: 13
+  baseAtk: 50
+  baseDef: 50
+  stars: 1
+  starA: 5
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

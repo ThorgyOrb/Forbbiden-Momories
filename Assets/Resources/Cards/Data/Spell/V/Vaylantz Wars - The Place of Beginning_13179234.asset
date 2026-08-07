@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Vaylantz Wars - The Place of Beginning_13179234
+  m_EditorClassIdentifier: 
+  cardId: 13179234
+  cardName: Vaylantz Wars - The Place of Beginning
+  artwork: {fileID: 0}
+  artFile: CardArt/Vaylantz Wars - The Place of Beginning_13179234.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: "Add 1 \"Vaylantz\" Field Spell from your Deck to your hand, then
+    you can apply the following effect.\r\n\u25CF Destroy 1 Pendulum Monster Card
+    you control, and if you do, add 1 \"Senet Switch\" from your Deck to your hand.\r\nIf
+    this card is in your GY, except the turn it was sent there: You can banish this
+    card; place 1 face-up \"Vaylantz\" Pendulum Monster from your Extra Deck in your
+    Pendulum Zone. You can only use each effect of \"Vaylantz Wars - The Place of
+    Beginning\" once per turn."
+  fusionGroup: Vaylantz
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 4
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

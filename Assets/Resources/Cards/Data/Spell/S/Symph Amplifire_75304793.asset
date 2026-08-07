@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Symph Amplifire_75304793
+  m_EditorClassIdentifier: 
+  cardId: 75304793
+  cardName: Symph Amplifire
+  artwork: {fileID: 0}
+  artFile: CardArt/Symph Amplifire_75304793.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: "Each time an effect of a \"Symphonic Warrior\" card is activated,
+    place 1 Symphonic Counter on this card when that effect resolves. All \"Symphonic
+    Warrior\" monsters on the field gain 100 ATK for each Symphonic Counter on this
+    card. Once per turn: You can remove 5 or 7 Symphonic Counters from your field;
+    apply this effect, depending on the number of Symphonic Counters removed.\r\n\u25CF
+    5 Counters: Inflict 300 damage to your opponent for each \"Symphonic Warrior\"
+    card on the field.\r\n\u25CF 7 Counters: Banish cards your opponent controls
+    and/or in their Graveyard, up to the number of \"Symphonic Warrior\" cards on
+    the field."
+  fusionGroup: Symphonic Warrior
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

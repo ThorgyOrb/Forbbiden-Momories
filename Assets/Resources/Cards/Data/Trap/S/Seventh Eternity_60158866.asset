@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Seventh Eternity_60158866
+  m_EditorClassIdentifier: 
+  cardId: 60158866
+  cardName: Seventh Eternity
+  artwork: {fileID: 0}
+  artFile: CardArt/Seventh Eternity_60158866.jpg
+  rarity: 0
+  cardCategory: 5
+  attribute: 7
+  description: "Target 1 \"Number\" Xyz Monster you control that has a number between
+    \"101\" and \"107\" in its name, or 1 Xyz Monster you control that has any such
+    monsters as material, then activate 1 of these effects;\r\n\u25CF Negate the
+    effects of 1 monster your opponent controls with ATK less than or equal to the
+    targeted monster's ATK, until the end of this turn.\r\n\u25CF Detach all materials
+    from the targeted monster, then you can Special Summon 1 \"Number\" Xyz Monster
+    from your GY.\r\nYou can only use this effect of \"Seventh Eternity\" once per
+    turn."
+  fusionGroup: Seventh
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 1
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

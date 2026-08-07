@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: White Knight Lord_14732294
+  m_EditorClassIdentifier: 
+  cardId: 14732294
+  cardName: White Knight Lord
+  artwork: {fileID: 0}
+  artFile: 
+  rarity: 1
+  cardCategory: 0
+  attribute: 1
+  description: "You can banish 3 monsters from your GY; Special Summon this card
+    from your hand, then you can apply 1 of these effects.\r\n\u25CF Special Summon
+    1 \"White Knight\" or \"White Night\" monster from your hand or Deck.\r\n\u25CF
+    Add 1 \"White Veil\" from your Deck to your hand.\r\nYou can only use this effect
+    of \"White Knight Lord\" once per turn. When an attack is declared involving
+    this card and an opponent's monster: Change that opponent's monster's ATK to
+    0. If this card in its owner's possession is destroyed by an opponent's card:
+    Inflict 1000 damage to your opponent."
+  fusionGroup: White Knight
+  monsterType: 12
+  baseAtk: 2000
+  baseDef: 2000
+  stars: 7
+  starA: 0
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1008,9 +1008,10 @@ public class DeckBuilderController : MonoBehaviour
             imgRT.anchorMax = new Vector2(0.95f, 0.98f);
             imgRT.offsetMin = Vector2.zero; imgRT.offsetMax = Vector2.zero;
             var artImg = img.GetComponent<Image>();
-            artImg.sprite = card.artwork;
+            var art = card.Artwork;
+            artImg.sprite = art;
             artImg.preserveAspect = true;
-            artImg.color = card.artwork != null ? Color.white : new Color(0.2f, 0.2f, 0.28f);
+            artImg.color = art != null ? Color.white : new Color(0.2f, 0.2f, 0.28f);
 
             var name = NewText(tileRT, "N", card.cardName, 13, BrightCol, TextAlignmentOptions.Center);
             name.enableWordWrapping = true;

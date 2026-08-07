@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Myutant Ultimus_6182103
+  m_EditorClassIdentifier: 
+  cardId: 6182103
+  cardName: Myutant Ultimus
+  artwork: {fileID: 0}
+  artFile: CardArt/Myutant Ultimus_6182103.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: '3 Level 8 or higher "Myutant" monsters
+
+    When a card or effect
+    is activated (Quick Effect): You can banish 1 "Myutant" card from your hand,
+    GY, or face-up field, of the same type (Monster, Spell, or Trap); negate the
+    activation, and if you do, banish that card. If this Fusion Summoned card you
+    control is destroyed by an opponent''s card: You can add up to 3 of your banished
+    "Myutant" cards (up to 1 each of Monster, Spell, and Trap) to your hand. You
+    can only use each effect of "Myutant Ultimus" once per turn.'
+  fusionGroup: Myutant
+  monsterType: 20
+  baseAtk: 3500
+  baseDef: 3000
+  stars: 10
+  starA: 1
+  starB: 6
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

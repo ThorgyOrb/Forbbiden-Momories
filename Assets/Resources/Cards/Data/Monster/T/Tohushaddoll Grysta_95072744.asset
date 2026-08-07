@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Tohushaddoll Grysta_95072744
+  m_EditorClassIdentifier: 
+  cardId: 95072744
+  cardName: Tohushaddoll Grysta
+  artwork: {fileID: 0}
+  artFile: CardArt/Tohushaddoll Grysta_95072744.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 4
+  description: 'FLIP: You can target 1 non-Rock "Shaddoll" monster in your GY; apply
+    its effect that activates when it is flipped face-up.
+
+    If this card is sent
+    to the GY by card effect (except during the Damage Step): You can Fusion Summon
+    1 "Shaddoll" Fusion Monster from your Extra Deck, by banishing its materials
+    from your hand, field, and/or GY. You cannot Special Summon from the Extra Deck
+    the turn you activate this effect, except "Shaddoll" monsters. You can only use
+    1 "Tohushaddoll Grysta" effect per turn, and only once that turn.'
+  fusionGroup: Shaddoll
+  monsterType: 17
+  baseAtk: 2450
+  baseDef: 1950
+  stars: 7
+  starA: 7
+  starB: 6
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

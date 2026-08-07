@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Dark Magical Curtain_41350417
+  m_EditorClassIdentifier: 
+  cardId: 41350417
+  cardName: Dark Magical Curtain
+  artwork: {fileID: 0}
+  artFile: CardArt/Dark Magical Curtain_41350417.jpg
+  rarity: 0
+  cardCategory: 1
+  attribute: 7
+  description: Each player can Special Summon 1 DARK Spellcaster monster from their
+    hand or Deck (but neither player can activate their effects this turn), then
+    if you Special Summoned a monster whose original name is "Dark Magician" or "Dark
+    Magician Girl", you can add 1 Spell/Trap that mentions "Dark Magician" from your
+    Deck to your hand, except "Dark Magical Curtain". You can only activate 1 "Dark
+    Magical Curtain" per turn.
+  fusionGroup: Prophecy
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

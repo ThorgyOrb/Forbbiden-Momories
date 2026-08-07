@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Last Counter_86049351
+  m_EditorClassIdentifier: 
+  cardId: 86049351
+  cardName: Last Counter
+  artwork: {fileID: 0}
+  artFile: CardArt/Last Counter_86049351.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: 'When an attack is declared involving a "Battlin'' Boxer" monster
+    you control and an opponent''s monster: Negate the attack, and if you do, send
+    that monster you control to the Graveyard, then 1 "Battlin'' Boxer" monster you
+    control (in Attack Position, if you declared the attack) gains ATK equal to the
+    original ATK of that opponent''s monster, also proceed to damage calculation
+    using those monsters. Then, you take damage equal to the amount of ATK gained
+    from this effect.'
+  fusionGroup: Battlin' Boxer
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 2
+  trapTrigger: 0
+  trapEffect: 3
+  trapValue: 0
+  resolutionPriority: 10
+  sources: []

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: P_U_N_K_ JAM Dragon Drive_28403802
+  m_EditorClassIdentifier: 
+  cardId: 28403802
+  cardName: P.U.N.K. JAM Dragon Drive
+  artwork: {fileID: 0}
+  artFile: CardArt/P.U.N.K. JAM Dragon Drive_28403802.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 4
+  description: '1 Psychic Tuner + 1+ non-Tuner monsters
+
+    If this card is Special
+    Summoned by the effect of a "P.U.N.K." card, or Synchro Summoned: You can pay
+    600 LP; take 1 Level 3 Psychic monster from your Deck and either add it to your
+    hand or send it to the GY. If your opponent activates a card or effect in response
+    to your "P.U.N.K." card or effect activation, while this card is in your GY:
+    You can Special Summon this card. You can only use each effect of "P.U.N.K. JAM
+    Dragon Drive" once per turn.'
+  fusionGroup: P.U.N.K.
+  monsterType: 20
+  baseAtk: 2700
+  baseDef: 2400
+  stars: 8
+  starA: 7
+  starB: 6
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

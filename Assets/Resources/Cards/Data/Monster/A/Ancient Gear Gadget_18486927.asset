@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Ancient Gear Gadget_18486927
+  m_EditorClassIdentifier: 
+  cardId: 18486927
+  cardName: Ancient Gear Gadget
+  artwork: {fileID: 0}
+  artFile: CardArt/Ancient Gear Gadget_18486927.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 4
+  description: 'If this card is Normal or Special Summoned: You can declare 1 card
+    type (Monster, Spell, or Trap); this turn, if a monster you control attacks,
+    your opponent''s Spell Cards, Trap Cards, or monster effects (whichever was declared)
+    cannot be activated until the end of the Damage Step. Once per turn: You can
+    declare 1 "Gadget" monster''s card name; until the End Phase, this card''s name
+    becomes that name.'
+  fusionGroup: Ancient Gear
+  monsterType: 13
+  baseAtk: 500
+  baseDef: 2000
+  stars: 4
+  starA: 7
+  starB: 8
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Angel Statue - Azurune_44822037
+  m_EditorClassIdentifier: 
+  cardId: 44822037
+  cardName: Angel Statue - Azurune
+  artwork: {fileID: 0}
+  artFile: CardArt/Angel Statue - Azurune_44822037.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: 'Special Summon this card as an Effect Monster (Fairy/LIGHT/Level
+    4/ATK 1800/DEF 1800). (This card is also still a Trap.) Once per turn, when your
+    opponent would Special Summon a monster(s) while this card is in your Monster
+    Zone: You can send to the GY, 1 Continuous Trap in your Monster Zone that was
+    Special Summoned from the Spell & Trap Zone; negate the Summon, and if you do,
+    destroy that monster(s). When this card in the Monster Zone is destroyed by battle:
+    You can destroy the monster that destroyed this card.'
+  fusionGroup: Trap Monster
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 1
+  trapTrigger: 1
+  trapEffect: 9
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

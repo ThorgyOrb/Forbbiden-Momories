@@ -1340,6 +1340,7 @@ public class DuelScreen : MonoBehaviour
     /// anillo de choque, número más grande y una sacudida de cámara más fuerte.</summary>
     private IEnumerator ShowDamageBurst(RectTransform root, int amount, Vector2 pos, Color color, float severity)
     {
+        DuelAudio.Play(DuelAudio.Sfx.Damage);
         float rw = root.rect.width;
         float glowSize = rw * Mathf.Lerp(0.34f, 0.66f, severity);   // más grande a más daño
 
@@ -1600,6 +1601,7 @@ public class DuelScreen : MonoBehaviour
     /// sacudida — el golpe.</summary>
     private IEnumerator SlashOver(RectTransform root, RectTransform card)
     {
+        DuelAudio.Play(DuelAudio.Sfx.Slash);
         Vector2 c = card.anchoredPosition;
         float cw = card.rect.width * card.localScale.x, ch = card.rect.height * card.localScale.y;
         Vector3 baseS = card.localScale;
@@ -1732,6 +1734,7 @@ public class DuelScreen : MonoBehaviour
     /// <summary>LP perdidos que emergen del brillo, suben y se desvanecen.</summary>
     private IEnumerator ShowCineLP(RectTransform root, int amount, Vector2 localPos)
     {
+        DuelAudio.Play(DuelAudio.Sfx.Damage);
         var go = new GameObject("CineLP", typeof(RectTransform));
         go.transform.SetParent(root, false);
         var rt = (RectTransform)go.transform;
@@ -1782,6 +1785,7 @@ public class DuelScreen : MonoBehaviour
     /// por defecto; rosa para las trampas).</summary>
     private IEnumerator FireConsume(RectTransform root, RectTransform card, FirePalette? palette = null)
     {
+        DuelAudio.Play(DuelAudio.Sfx.Destroy);
         var pal = palette ?? OrangeFire;
         float cw = card.rect.width * card.localScale.x, ch = card.rect.height * card.localScale.y;
         Vector2 c = card.anchoredPosition;
@@ -2174,8 +2178,8 @@ public class DuelScreen : MonoBehaviour
         if (rewardGroup != null) rewardGroup.SetActive(true);
         if (rewardArt != null)
         {
-            rewardArt.sprite = reward != null ? reward.artwork : null;
-            rewardArt.enabled = reward != null && reward.artwork != null;
+            rewardArt.sprite = reward != null ? reward.Artwork : null;
+            rewardArt.enabled = rewardArt.sprite != null;
         }
         if (rewardNameText != null)
             rewardNameText.text = reward != null ? $"¡Obtuviste: {reward.cardName}!" : "Esta vez no hubo drop.";

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Millennium Seeker_5130393
+  m_EditorClassIdentifier: 
+  cardId: 5130393
+  cardName: Millennium Seeker
+  artwork: {fileID: 0}
+  artFile: CardArt/Millennium Seeker_5130393.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: 'When you take 1000 or more battle or effect damage: You can Special
+    Summon this card from your hand. You can target 1 monster in your opponent''s
+    GY, except a monster with ? ATK; your opponent can choose 1 monster from their
+    Deck, except a monster with ? ATK. If they chose not to, or if the targeted monster
+    has higher ATK than the chosen monster, Special Summon the targeted monster to
+    your field, and if you do, shuffle the chosen monster back into the Deck. Otherwise,
+    your opponent adds the chosen monster to the hand. You can only use each effect
+    of "Millennium Seeker" once per turn.'
+  fusionGroup: 
+  monsterType: 1
+  baseAtk: 1000
+  baseDef: 1000
+  stars: 4
+  starA: 1
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

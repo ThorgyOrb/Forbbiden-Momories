@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Number 49_ Fortune Tune_16259549
+  m_EditorClassIdentifier: 
+  cardId: 16259549
+  cardName: 'Number 49: Fortune Tune'
+  artwork: {fileID: 0}
+  artFile: CardArt/Number 49 Fortune Tune_16259549.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: '2 Level 3 monsters
+
+    During each of your Standby Phases: Gain
+    500 Life Points. This card cannot be targeted by card effects. If this face-up
+    card would be destroyed, you can detach 1 Xyz Material from this card instead.
+    When this card is sent from the field to the Graveyard: Target 2 Level 3 monsters
+    in your Graveyard; shuffle them both into the Deck, and if you do, return this
+    card from your Graveyard to the Extra Deck. You can only use this effect of "Number
+    49: Fortune Tune" once per turn.'
+  fusionGroup: 
+  monsterType: 11
+  baseAtk: 400
+  baseDef: 900
+  stars: 3
+  starA: 0
+  starB: 5
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

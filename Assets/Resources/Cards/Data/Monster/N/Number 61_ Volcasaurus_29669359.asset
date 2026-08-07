@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Number 61_ Volcasaurus_29669359
+  m_EditorClassIdentifier: 
+  cardId: 29669359
+  cardName: 'Number 61: Volcasaurus'
+  artwork: {fileID: 0}
+  artFile: CardArt/Number 61 Volcasaurus_29669359.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 2
+  description: '2 Level 5 monsters
+
+    Once per turn: You can detach 1 Xyz Material
+    from this card, then target 1 face-up monster your opponent controls; destroy
+    that opponent''s monster, and if you do, inflict damage to your opponent equal
+    to the destroyed monster''s original ATK. This card cannot attack your opponent
+    directly during the turn you activate this effect.'
+  fusionGroup: 
+  monsterType: 10
+  baseAtk: 2500
+  baseDef: 1000
+  stars: 5
+  starA: 4
+  starB: 6
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

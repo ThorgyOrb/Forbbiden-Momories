@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Oafdragon Magician_14920218
+  m_EditorClassIdentifier: 
+  cardId: 14920218
+  cardName: Oafdragon Magician
+  artwork: {fileID: 0}
+  artFile: CardArt/Oafdragon Magician_14920218.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 5
+  description: "[ Pendulum Effect ] \nIf you have a \"Magician\" card in your other
+    Pendulum Zone: You can add 1 face-up \"Magician\" or \"Odd-Eyes\" Pendulum Monster
+    from your Extra Deck to your hand, except \"Oafdragon Magician\". You can only
+    use this effect of \"Oafdragon Magician\" once per turn.\n\n[ Monster Effect
+    ] \nIf this card is Normal or Special Summoned: You can target 1 \"Magician\"
+    Pendulum Monster or \"Odd-Eyes\" monster in your Graveyard, except \"Oafdragon
+    Magician\"; add it to your hand. You can only use this effect of \"Oafdragon
+    Magician\" once per turn."
+  fusionGroup: Magician
+  monsterType: 1
+  baseAtk: 2100
+  baseDef: 1400
+  stars: 6
+  starA: 5
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

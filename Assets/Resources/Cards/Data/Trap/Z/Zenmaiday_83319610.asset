@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Zenmaiday_83319610
+  m_EditorClassIdentifier: 
+  cardId: 83319610
+  cardName: Zenmaiday
+  artwork: {fileID: 0}
+  artFile: CardArt/Zenmaiday_83319610.jpg
+  rarity: 0
+  cardCategory: 5
+  attribute: 7
+  description: 'Once per turn: You can target 1 Machine-Type Xyz Monster you control;
+    attach 1 "Wind-Up" monster from your hand or field to that monster as an Xyz
+    Material. You can send this face-up card from the field to the Graveyard, then
+    target 1 "Wind-Up" Xyz Monster you control; Special Summon, from your Extra Deck,
+    1 "Wind-Up" monster that is 1 Rank higher than that target, by using that target
+    as Xyz Material. (This Special Summon is treated as an Xyz Summon. Xyz Materials
+    attached to it also become Xyz Materials on the Summoned monster.) You cannot
+    activate these effects in the same Chain.'
+  fusionGroup: Wind-Up
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 1
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

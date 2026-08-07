@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Guiding Quem, the Virtuous_45883110
+  m_EditorClassIdentifier: 
+  cardId: 45883110
+  cardName: Guiding Quem, the Virtuous
+  artwork: {fileID: 0}
+  artFile: CardArt/Guiding Quem, the Virtuous_45883110.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: '(This card is always treated as a "Dogmatika" and "Despia" card.)
+
+    If
+    this card is Normal or Special Summoned: You can send 1 "Fallen of Albaz" or
+    1 card that mentions it from your Deck to the GY. If a card(s) leaves the Extra
+    Deck (except during the Damage Step): You can target 1 "Fallen of Albaz", or
+    1 monster that mentions it, in your GY, except "Guiding Quem, the Virtuous";
+    Special Summon it. You can only use each effect of "Guiding Quem, the Virtuous"
+    once per turn.'
+  fusionGroup: Despia
+  monsterType: 1
+  baseAtk: 1500
+  baseDef: 1500
+  stars: 4
+  starA: 0
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

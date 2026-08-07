@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Jupredo the Shademachine Power Patron_43871165
+  m_EditorClassIdentifier: 
+  cardId: 43871165
+  cardName: Jupredo the Shademachine Power Patron
+  artwork: {fileID: 0}
+  artFile: CardArt/Jupredo the Shademachine Power Patron_43871165.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: "[ Pendulum Effect ] \nDuring your Main Phase: You can destroy this
+    card and 1 \"Power Patron\" or \"DoomZ\" monster in your hand or face-up field,
+    then you can destroy 1 card on the field. You can only use this effect of \"Jupredo
+    the Shademachine Power Patron\" once per turn.\n\n[ Monster Effect ] \n(This
+    card is always treated as a \"DoomZ\" card.)\r\nYou can banish the top 3 cards
+    of your Deck, face-down; destroy this card, and if you do, Special Summon 1 \"Jupiter
+    the Power Patron of Destruction\" from your Extra Deck (this is treated as an
+    Xyz Summon), then you can attach 1 card from your hand to it. If this card is
+    added to your Extra Deck face-up: You can add 1 \"Power Patron\" or \"DoomZ\"
+    Spell/Trap from your Deck to your hand. You can only use each effect of \"Jupredo
+    the Shademachine Power Patron\" once per turn."
+  fusionGroup: DoomZ
+  monsterType: 13
+  baseAtk: 300
+  baseDef: 200
+  stars: 10
+  starA: 1
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

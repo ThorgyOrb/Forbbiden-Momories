@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Eidos the Underworld Squire_59463312
+  m_EditorClassIdentifier: 
+  cardId: 59463312
+  cardName: Eidos the Underworld Squire
+  artwork: {fileID: 0}
+  artFile: CardArt/Eidos the Underworld Squire_59463312.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: 'If this card is Normal or Special Summoned: During your Main Phase
+    this turn, you can Tribute Summon 1 monster, in addition to your Normal Summon/Set.
+    (You can only gain this effect once per turn.) You can banish this card from
+    your Graveyard, then target 1 monster with 800 ATK and 1000 DEF in your Graveyard,
+    except "Eidos the Underworld Squire"; Special Summon it in Defense Position,
+    also you cannot Special Summon monsters from the Extra Deck for the rest of this
+    turn. You can only use this effect of "Eidos the Underworld Squire" once per
+    turn.'
+  fusionGroup: Monarch
+  monsterType: 1
+  baseAtk: 800
+  baseDef: 1000
+  stars: 2
+  starA: 1
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

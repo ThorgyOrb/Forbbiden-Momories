@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Arcana Force EX - The Chaos Ruler_12686296
+  m_EditorClassIdentifier: 
+  cardId: 12686296
+  cardName: Arcana Force EX - The Chaos Ruler
+  artwork: {fileID: 0}
+  artFile: CardArt/Arcana Force EX - The Chaos Ruler_12686296.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: "3 \"Arcana Force\" monsters with different names\r\nMust be Special
+    Summoned (from your Extra Deck) by sending the above cards from either field
+    to the GY. If this card is Special Summoned: Toss a coin.\r\n\u25CF Heads: Special
+    Summon 1 Level 10 \"Arcana Force\" monster from your hand or Deck, ignoring its
+    Summoning conditions.\r\n\u25CF Tails: Add 1 card from your Deck to your hand
+    that has a coin tossing effect.\r\nWhile \"Light Barrier\" is in the Field Zone,
+    your opponent cannot activate the effects of monsters on the field."
+  fusionGroup: Arcana Force
+  monsterType: 15
+  baseAtk: 3300
+  baseDef: 3300
+  stars: 10
+  starA: 0
+  starB: 1
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

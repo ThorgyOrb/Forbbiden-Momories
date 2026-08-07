@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Hot Red Dragon Archfiend King Calamity_62242678
+  m_EditorClassIdentifier: 
+  cardId: 62242678
+  cardName: Hot Red Dragon Archfiend King Calamity
+  artwork: {fileID: 0}
+  artFile: CardArt/Hot Red Dragon Archfiend King Calamity_62242678.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: '2 Tuners + 1 non-Tuner DARK Dragon Synchro Monster
+
+    When this
+    card is Synchro Summoned: You can activate this effect; for the rest of this
+    turn, your opponent cannot activate cards, also cards your opponent controls
+    cannot activate their effects. Your opponent cannot activate cards or effects
+    in response to this effect''s activation. If this card destroys a monster by
+    battle: Inflict damage to your opponent equal to that monster''s original ATK.
+    If this card in its owner''s possession is destroyed by an opponent''s card:
+    You can target 1 Level 8 or lower DARK Dragon Synchro Monster in your GY; Special
+    Summon it.'
+  fusionGroup: Archfiend
+  monsterType: 0
+  baseAtk: 4000
+  baseDef: 3500
+  stars: 12
+  starA: 1
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

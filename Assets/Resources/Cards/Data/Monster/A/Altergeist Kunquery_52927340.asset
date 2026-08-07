@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Altergeist Kunquery_52927340
+  m_EditorClassIdentifier: 
+  cardId: 52927340
+  cardName: Altergeist Kunquery
+  artwork: {fileID: 0}
+  artFile: CardArt/Altergeist Kunquery_52927340.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 4
+  description: 'When an opponent''s monster declares an attack, if you control an
+    "Altergeist" card: You can Special Summon this card from your hand, and if you
+    do, negate that attack. If this card is Special Summoned: You can target 1 face-up
+    card your opponent controls; negate the effects of that card while it and this
+    monster are face-up on the field.'
+  fusionGroup: Altergeist
+  monsterType: 1
+  baseAtk: 0
+  baseDef: 2400
+  stars: 5
+  starA: 7
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

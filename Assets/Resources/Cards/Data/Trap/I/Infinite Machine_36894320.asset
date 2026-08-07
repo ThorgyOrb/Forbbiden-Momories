@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Infinite Machine_36894320
+  m_EditorClassIdentifier: 
+  cardId: 36894320
+  cardName: Infinite Machine
+  artwork: {fileID: 0}
+  artFile: CardArt/Infinite Machine_36894320.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: "Activate this card by sending 1 face-up \"Empty Machine\" from your
+    Spell & Trap Zone to the GY. Once per turn, this face-up card cannot be destroyed
+    by your opponent's card effects. Once per turn, you can activate 1 of these effects.\n\u25CF
+    During the Main Phase: Special Summon 1 \"Timelord\" monster from your hand.\n\u25CF
+    You can target 1 \"Timelord\" monster in your GY; shuffle it into the Deck, then,
+    you can Set 1 \"Infinite Light\" directly from your hand or Deck."
+  fusionGroup: Timelord
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 1
+  trapTrigger: 1
+  trapEffect: 4
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

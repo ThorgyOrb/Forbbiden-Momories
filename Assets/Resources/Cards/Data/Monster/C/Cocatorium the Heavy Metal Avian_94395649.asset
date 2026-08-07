@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Cocatorium the Heavy Metal Avian_94395649
+  m_EditorClassIdentifier: 
+  cardId: 94395649
+  cardName: Cocatorium the Heavy Metal Avian
+  artwork: {fileID: 0}
+  artFile: CardArt/Cocatorium the Heavy Metal Avian_94395649.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: 'If this card is in your hand or GY: You can Tribute 1 Beast, Beast-Warrior,
+    or Winged Beast monster; Special Summon this card, but banish it when it leaves
+    the field. You can banish 1 Level 4 or lower Beast, Beast-Warrior, or Winged
+    Beast monster from your Deck; this card''s name becomes that banished monster''s
+    name, also it becomes the same Type, Attribute and Level as that monster''s,
+    until the End Phase. You can only use each effect of "Cocatorium the Heavy Metal
+    Avian" once per turn.'
+  fusionGroup: 
+  monsterType: 11
+  baseAtk: 1300
+  baseDef: 900
+  stars: 4
+  starA: 5
+  starB: 6
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

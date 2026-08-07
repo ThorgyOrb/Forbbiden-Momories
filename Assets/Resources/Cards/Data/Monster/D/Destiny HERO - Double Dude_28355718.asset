@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Destiny HERO - Double Dude_28355718
+  m_EditorClassIdentifier: 
+  cardId: 28355718
+  cardName: Destiny HERO - Double Dude
+  artwork: {fileID: 0}
+  artFile: CardArt/Destiny HERO - Double Dude_28355718.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 0
+  description: 'Cannot be Special Summoned. This card can attack twice during each
+    Battle Phase. During your Standby Phase, if this card was destroyed since your
+    last Standby Phase: You can Special Summon 2 "Double Dude Tokens" (Warrior-Type/DARK/Level
+    4/ATK 1000/DEF 1000). This card must be in your Graveyard to activate and to
+    resolve this effect.'
+  fusionGroup: Destiny HERO
+  monsterType: 12
+  baseAtk: 1000
+  baseDef: 1000
+  stars: 6
+  starA: 1
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

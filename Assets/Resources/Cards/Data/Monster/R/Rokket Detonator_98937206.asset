@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Rokket Detonator_98937206
+  m_EditorClassIdentifier: 
+  cardId: 98937206
+  cardName: Rokket Detonator
+  artwork: {fileID: 0}
+  artFile: CardArt/Rokket Detonator_98937206.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 0
+  description: If you control a DARK Dragon Link Monster, you can Special Summon
+    this card (from your hand). You can only Special Summon "Rokket Detonator" once
+    per turn this way. You can target 1 DARK Dragon Monster Card in your Spell &
+    Trap Zone; Special Summon it (but it cannot attack, also its effects are negated),
+    also you cannot Special Summon from the Extra Deck for the rest of this turn,
+    except DARK monsters. You can only use this effect of "Rokket Detonator" once
+    per turn.
+  fusionGroup: Rokket
+  monsterType: 0
+  baseAtk: 1800
+  baseDef: 2500
+  stars: 7
+  starA: 1
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

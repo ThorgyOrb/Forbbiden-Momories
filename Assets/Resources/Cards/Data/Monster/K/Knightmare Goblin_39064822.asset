@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Knightmare Goblin_39064822
+  m_EditorClassIdentifier: 
+  cardId: 39064822
+  cardName: Knightmare Goblin
+  artwork: {fileID: 0}
+  artFile: CardArt/Knightmare Goblin_39064822.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 5
+  description: '2 monsters with different names
+
+    If this card is Link Summoned
+    during your turn: You can discard 1 card; if this card was co-linked when this
+    effect was activated, you can draw 1 card, also, during your Main Phase this
+    turn, you can Normal Summon 1 monster from your hand to your zone this card points
+    to, in addition to your Normal Summon/Set. You can only apply this effect of
+    "Knightmare Goblin" once per turn. Neither player can target co-linked monsters
+    you control with card effects.'
+  fusionGroup: Knightmare
+  monsterType: 2
+  baseAtk: 1300
+  baseDef: 0
+  stars: 0
+  starA: 5
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

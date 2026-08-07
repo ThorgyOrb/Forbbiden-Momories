@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Argostars - Glorious Adra_91438674
+  m_EditorClassIdentifier: 
+  cardId: 91438674
+  cardName: Argostars - Glorious Adra
+  artwork: {fileID: 0}
+  artFile: CardArt/Argostars - Glorious Adra_91438674.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 4
+  description: 'During your opponent''s turn, if you control a Continuous Trap Card
+    (Quick Effect): You can banish this card from your hand; make the ATK of 1 monster
+    on the field 0 until the end of this turn. If this card is Normal Summoned: This
+    turn, your opponent cannot activate cards or effects in response to the activation
+    of your Continuous Trap Cards or their effects. You can banish this card you
+    control; place up to 2 "Argostars" Continuous Traps with different names from
+    your hand and/or Deck face-up in your Spell & Trap Zone. You can only use this
+    effect of "Argostars - Glorious Adra" once per turn.'
+  fusionGroup: Argostars
+  monsterType: 12
+  baseAtk: 1800
+  baseDef: 1800
+  stars: 4
+  starA: 7
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

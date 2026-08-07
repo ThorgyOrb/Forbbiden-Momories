@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Go! - D_D_D Divine Zero King Rage_40227329
+  m_EditorClassIdentifier: 
+  cardId: 40227329
+  cardName: Go! - D/D/D Divine Zero King Rage
+  artwork: {fileID: 0}
+  artFile: CardArt/Go! - DDD Divine Zero King Rage_40227329.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: "[ Pendulum Effect ] \nIf you would take effect damage, you take no
+    damage. If you Normal Summon 1 Level 5 or higher \"D/D\" monster, you can do
+    it without Tributing. You can only use each Pendulum Effect of \"Go! - D/D/D
+    Divine Zero King Rage\" once per turn.\n\n[ Monster Effect ] \nWhen this card
+    declares an attack, if your opponent's LP is 4000 or less: You can make this
+    card gain ATK equal to your opponent's LP, until the end of this turn. Cannot
+    be destroyed by battle, also you take no damage from battles involving this card.\r\nYou
+    can Tribute 1 other monster; apply 1 of these effects until the end of this turn.\r\n\u25CF
+    This card can attack directly.\r\n\u25CF Your opponent cannot activate cards
+    or effects in the Spell & Trap Zones.\r\n\u25CF Your opponent cannot activate
+    card effects in their hand or GY."
+  fusionGroup: D/D
+  monsterType: 2
+  baseAtk: 0
+  baseDef: 0
+  stars: 10
+  starA: 1
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

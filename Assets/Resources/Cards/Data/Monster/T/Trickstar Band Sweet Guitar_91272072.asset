@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Trickstar Band Sweet Guitar_91272072
+  m_EditorClassIdentifier: 
+  cardId: 91272072
+  cardName: Trickstar Band Sweet Guitar
+  artwork: {fileID: 0}
+  artFile: CardArt/Trickstar Band Sweet Guitar_91272072.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: '1 "Trickstar" Link Monster + 1 "Trickstar" monster
+
+    Effect damage
+    inflicted to your opponent by your "Trickstar" Link Monster linked to this card
+    is doubled. If your opponent takes damage by a "Trickstar" monster''s effect:
+    This card gains ATK equal to the damage they took. Once per turn, during the
+    End Phase, if this card attacked this turn: The ATK gained from this effect returns
+    to 0, then you can add 1 "Trickstar" monster from your GY to your hand.'
+  fusionGroup: Trickstar
+  monsterType: 15
+  baseAtk: 2200
+  baseDef: 1200
+  stars: 7
+  starA: 0
+  starB: 1
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

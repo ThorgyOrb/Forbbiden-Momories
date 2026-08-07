@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Jurrac Astero_52553102
+  m_EditorClassIdentifier: 
+  cardId: 52553102
+  cardName: Jurrac Astero
+  artwork: {fileID: 0}
+  artFile: CardArt/Jurrac Astero_52553102.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 2
+  description: '1 Tuner + 1+ non-Tuner Dinosaur monsters
+
+    If this card is Synchro
+    Summoned: You can Set 1 "Jurrac" Spell/Trap from your Deck or GY. Once per turn,
+    when your opponent would Special Summon a monster(s) (Quick Effect): You can
+    banish 2 Dinosaur monsters from your GY; negate the Summon, and if you do, destroy
+    that monster(s). During your opponent''s turn (Quick Effect): You can banish
+    2 "Jurrac" monsters from your GY, including this card; Special Summon 1 "Jurrac
+    Meteor" from your Extra Deck (this is treated as a Synchro Summon).'
+  fusionGroup: Jurrac
+  monsterType: 10
+  baseAtk: 2500
+  baseDef: 2300
+  stars: 10
+  starA: 4
+  starB: 6
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Double Iris Magician_49684352
+  m_EditorClassIdentifier: 
+  cardId: 49684352
+  cardName: Double Iris Magician
+  artwork: {fileID: 0}
+  artFile: CardArt/Double Iris Magician_49684352.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: "[ Pendulum Effect ] \nOnce per turn: You can target 1 DARK Spellcaster-Type
+    monster you control; apply this effect to it, then destroy this card. Once applied,
+    double any battle damage that monster inflicts to your opponent this turn if
+    it battles an opponent's monster.\n\n[ Monster Effect ] \n(This card is always
+    treated as a \"Pendulum Dragon\" card.)\r\nIf this card is destroyed by battle
+    or card effect: You can add 1 \"Pendulumgraph\" card from your Deck to your hand."
+  fusionGroup: Magician
+  monsterType: 1
+  baseAtk: 1500
+  baseDef: 1000
+  stars: 4
+  starA: 1
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

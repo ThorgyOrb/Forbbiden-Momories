@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Fullmetalfoes Alkahest_77693536
+  m_EditorClassIdentifier: 
+  cardId: 77693536
+  cardName: Fullmetalfoes Alkahest
+  artwork: {fileID: 0}
+  artFile: CardArt/Fullmetalfoes Alkahest_77693536.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 2
+  description: '1 "Metalfoes" monster + 1 Normal Monster
+
+    Must be Fusion Summoned.
+    Once per turn, during your opponent''s turn (Quick Effect): You can target 1
+    Effect Monster on the field; equip that target to this card. This card gains
+    DEF equal to the combined original ATK of the monsters equipped to it by this
+    effect. You can use monsters you control equipped to this card you control as
+    material for the Fusion Summon of a "Metalfoes" Fusion Monster that lists them
+    as materials.'
+  fusionGroup: Metalfoes
+  monsterType: 20
+  baseAtk: 0
+  baseDef: 0
+  stars: 1
+  starA: 4
+  starB: 6
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

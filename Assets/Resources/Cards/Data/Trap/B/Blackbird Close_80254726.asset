@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Blackbird Close_80254726
+  m_EditorClassIdentifier: 
+  cardId: 80254726
+  cardName: Blackbird Close
+  artwork: {fileID: 0}
+  artFile: CardArt/Blackbird Close_80254726.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: 'When a monster your opponent controls activates its effect: You can
+    send 1 face-up "Blackwing" monster you control to the GY; negate the activation,
+    and if you do, destroy it, then, you can Special Summon 1 "Black-Winged Dragon"
+    from your Extra Deck. If you control a "Blackwing" Synchro Monster or "Black-Winged
+    Dragon", you can activate this card from your hand.'
+  fusionGroup: Blackwing
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 2
+  trapTrigger: 1
+  trapEffect: 4
+  trapValue: 0
+  resolutionPriority: 10
+  sources: []

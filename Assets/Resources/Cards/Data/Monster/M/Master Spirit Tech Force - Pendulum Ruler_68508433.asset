@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Master Spirit Tech Force - Pendulum Ruler_68508433
+  m_EditorClassIdentifier: 
+  cardId: 68508433
+  cardName: Master Spirit Tech Force - Pendulum Ruler
+  artwork: {fileID: 0}
+  artFile: CardArt/Master Spirit Tech Force - Pendulum Ruler_68508433.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: "[ Pendulum Effect ] \nDuring your Main Phase: You can return this
+    card to the Extra Deck, then you can add 1 Level 7 Pendulum Monster from your
+    Deck or face-up Extra Deck to your hand. You can only use this effect of \"Master
+    Spirit Tech Force - Pendulum Ruler\" once per turn.\n\n[ Monster Effect ] \n1
+    Level 7 or higher Pendulum Monster + 1 Pendulum Monster\r\nCannot be destroyed
+    by card effects. Your opponent's monsters cannot attack, except Pendulum Monsters
+    without a Level. You can Tribute 1 monster, then target 1 card your opponent
+    controls; destroy it, and if you do, inflict 1600 damage to your opponent. You
+    can only use this effect of \"Master Spirit Tech Force - Pendulum Ruler\" twice
+    per turn. Once per turn: You can place this card in your Pendulum Zone."
+  fusionGroup: Pendulum
+  monsterType: 13
+  baseAtk: 3500
+  baseDef: 3000
+  stars: 12
+  starA: 0
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

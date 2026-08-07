@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Terrifying Trap Hole Nightmare_75294187
+  m_EditorClassIdentifier: 
+  cardId: 75294187
+  cardName: Terrifying Trap Hole Nightmare
+  artwork: {fileID: 0}
+  artFile: CardArt/Terrifying Trap Hole Nightmare_75294187.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: 'If your opponent has Special Summoned a monster(s) this turn: Target
+    1 monster your opponent controls with 2000 or more ATK; destroy it, then if you
+    have a "Hole" Normal Trap in your GY, you can banish 1 monster from your opponent''s
+    GY. You can only activate 1 "Terrifying Trap Hole Nightmare" per turn.'
+  fusionGroup: Trap Hole
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 1
+  trapEffect: 4
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

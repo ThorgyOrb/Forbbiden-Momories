@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Cynet Conflict_7403341
+  m_EditorClassIdentifier: 
+  cardId: 7403341
+  cardName: Cynet Conflict
+  artwork: {fileID: 0}
+  artFile: CardArt/Cynet Conflict_7403341.jpg
+  rarity: 1
+  cardCategory: 5
+  attribute: 7
+  description: 'When a Spell/Trap Card, or monster effect, is activated while you
+    control a "Code Talker" monster: Negate the activation, and if you do, banish
+    that card, and if you do, your opponent cannot activate cards, or effects of
+    cards, with the same original name as that card that was banished, until the
+    end of the next turn. You can only activate 1 "Cynet Conflict" per turn.'
+  fusionGroup: Code Talker
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 2
+  trapTrigger: 2
+  trapEffect: 7
+  trapValue: 0
+  resolutionPriority: 10
+  sources: []

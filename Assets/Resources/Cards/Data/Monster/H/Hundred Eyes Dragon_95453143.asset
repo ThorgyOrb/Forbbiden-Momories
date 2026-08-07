@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Hundred Eyes Dragon_95453143
+  m_EditorClassIdentifier: 
+  cardId: 95453143
+  cardName: Hundred Eyes Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Hundred Eyes Dragon_95453143.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: '1 DARK Tuner + 1 or more non-Tuner Fiend-Type monsters
+
+    Once
+    per turn: You can banish 1 Level 6 or lower DARK Effect Monster from your Graveyard;
+    until the End Phase, this card''s name becomes that banished monster''s, and
+    replace this effect with that banished monster''s original effects. If this card
+    is destroyed and sent to the Graveyard: Add 1 "Earthbound Immortal" monster from
+    your Deck to your hand.'
+  fusionGroup: Earthbound
+  monsterType: 0
+  baseAtk: 3000
+  baseDef: 2500
+  stars: 8
+  starA: 1
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

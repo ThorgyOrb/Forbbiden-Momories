@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Archfiend Palabyrinth_63883999
+  m_EditorClassIdentifier: 
+  cardId: 63883999
+  cardName: Archfiend Palabyrinth
+  artwork: {fileID: 0}
+  artFile: CardArt/Archfiend Palabyrinth_63883999.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: All Fiend-Type monsters you control gain 500 ATK. You can target 1
+    "Archfiend" monster you control; banish 1 other Fiend-Type monster you control,
+    and if you do, Special Summon from your hand, Deck, or Graveyard, 1 "Archfiend"
+    monster with same Level as the targeted monster. You can only use this effect
+    of "Archfiend Palabyrinth" once per turn.
+  fusionGroup: Archfiend
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

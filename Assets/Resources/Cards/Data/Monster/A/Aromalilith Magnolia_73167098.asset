@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Aromalilith Magnolia_73167098
+  m_EditorClassIdentifier: 
+  cardId: 73167098
+  cardName: Aromalilith Magnolia
+  artwork: {fileID: 0}
+  artFile: CardArt/Aromalilith Magnolia_73167098.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: '1 "Aroma" monster + 1 Plant monster
+
+    While your LP are higher
+    than your opponent''s, Plant monsters you control cannot be destroyed by your
+    opponent''s card effects. Once per turn: You can pay 2000 LP; banish cards on
+    the field equal to the number of "Humid Winds", "Dried Winds", and "Blessed Winds"
+    you control. Once per turn, if you gain LP, even during the Damage Step: You
+    can make all Plant monsters you currently control gain ATK equal to the LP gained,
+    until the end of this turn.'
+  fusionGroup: Aroma
+  monsterType: 5
+  baseAtk: 2600
+  baseDef: 1800
+  stars: 8
+  starA: 1
+  starB: 2
+  favoriteTerrain: 1
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

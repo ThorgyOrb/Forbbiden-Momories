@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Hapi, Guidance of Horus_47330808
+  m_EditorClassIdentifier: 
+  cardId: 47330808
+  cardName: Hapi, Guidance of Horus
+  artwork: {fileID: 0}
+  artFile: CardArt/Hapi, Guidance of Horus_47330808.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 5
+  description: 'If you control "King''s Sarcophagus", you can Special Summon this
+    card (from your GY). You can only Special Summon "Hapi, Guidance of Horus" once
+    per turn this way. If another card(s) you control leaves the field by an opponent''s
+    card effect, while this card is in your Monster Zone (except during the Damage
+    Step): You can target 2 cards that are banished and/or in the GYs; either add
+    both to the hand or shuffle both into the Deck. You can only use this effect
+    of "Hapi, Guidance of Horus" once per turn.'
+  fusionGroup: Horus
+  monsterType: 19
+  baseAtk: 2400
+  baseDef: 1600
+  stars: 8
+  starA: 5
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

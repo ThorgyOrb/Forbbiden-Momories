@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Neo Galaxy-Eyes Photon Dragon - Photon Howling_28331069
+  m_EditorClassIdentifier: 
+  cardId: 28331069
+  cardName: Neo Galaxy-Eyes Photon Dragon - Photon Howling
+  artwork: {fileID: 0}
+  artFile: CardArt/Neo Galaxy-Eyes Photon Dragon - Photon Howling_28331069.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: '3 Level 8 monsters
+
+    Once per turn, you can also Xyz Summon "Neo
+    Galaxy-Eyes Photon Dragon - Photon Howling" by using 1 Rank 8 Xyz Monster you
+    control (transfer its materials). If this card is Xyz Summoned: You can take
+    1 "Photon" monster from your Deck, and either Special Summon it in Defense Position
+    or attach it to this card as material. (Quick Effect): You can detach 3 materials
+    from this card; Tribute 1 other Xyz Monster, and if you do, negate the effects
+    of all other face-up cards currently on the field until the end of this turn.'
+  fusionGroup: Galaxy
+  monsterType: 0
+  baseAtk: 4500
+  baseDef: 3000
+  stars: 8
+  starA: 0
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

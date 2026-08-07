@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Elemental HERO Divine Neos_31111109
+  m_EditorClassIdentifier: 
+  cardId: 31111109
+  cardName: Elemental HERO Divine Neos
+  artwork: {fileID: 0}
+  artFile: CardArt/Elemental HERO Divine Neos_31111109.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: 'Must be Fusion Summoned using any 5 "Neos", "Neo Space", "Neo-Spacian",
+    or "HERO" monsters, including at least 1 "Neos" or "Neo Space" monster, 1 "Neo-Spacian"
+    monster, and 1 "HERO" monster, and cannot be Special Summoned by other ways.
+    Once per turn: You can banish 1 "Neos", "Neo Space", "Neo-Spacian", or "HERO"
+    monster from your Graveyard; this card gains 500 ATK, and until the End Phase
+    it also gains the banished monster''s effects.'
+  fusionGroup: Elemental HERO
+  monsterType: 12
+  baseAtk: 2500
+  baseDef: 2500
+  stars: 12
+  starA: 0
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

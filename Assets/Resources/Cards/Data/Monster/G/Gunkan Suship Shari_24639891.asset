@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Gunkan Suship Shari_24639891
+  m_EditorClassIdentifier: 
+  cardId: 24639891
+  cardName: Gunkan Suship Shari
+  artwork: {fileID: 0}
+  artFile: CardArt/Gunkan Suship Shari_24639891.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 2
+  description: '"Finally got to visit that harbor specializing in Gunkan Suships
+    that I''ve been curious about for a while! The premium "Shari" here is limited
+    to 2000 Suships a year, and uses specially developed smooth aged rice, giving
+    it extra boldness not found anywhere else. The classy atmosphere made my heart
+    sing, too. The Gunkan Suship served had a perfect balance of vinegar, nigiri,
+    shine, and shape, demonstrating exquisite artisanship. The owner told me, "We
+    are introducing rich yet mellow scented EDO-FRONT red vinegar in the near future,"
+    which I''m really looking forward to. However, I was disappointed the surrounding
+    seas were a little noisy... so, giving it 4 stars with hope for improvements
+    in the future."'
+  fusionGroup: Gunkan
+  monsterType: 7
+  baseAtk: 2000
+  baseDef: 0
+  stars: 4
+  starA: 4
+  starB: 8
+  favoriteTerrain: 3
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

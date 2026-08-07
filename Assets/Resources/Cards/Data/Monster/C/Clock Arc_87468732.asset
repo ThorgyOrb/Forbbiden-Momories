@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Clock Arc_87468732
+  m_EditorClassIdentifier: 
+  cardId: 87468732
+  cardName: Clock Arc
+  artwork: {fileID: 0}
+  artFile: CardArt/Clock Arc_87468732.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: "[ Pendulum Effect ] \nIf you control no monsters, or only Pendulum
+    Monsters, apply this effect, based on this card's Pendulum Zone.\r\n\u25CF Left:
+    Reduce its Pendulum Scale by 3.\r\n\u25CF Right: Increase its Pendulum Scale
+    by 4.\r\nDuring your opponent's Standby Phase: You can Special Summon this card.\n\n[
+    Monster Effect ] \nIf this card is Special Summoned to a zone that is not the
+    center Main Monster Zone, destroy it. Cannot be destroyed by battle. Once per
+    turn, during your opponent's End Phase: You can target 1 card in your Pendulum
+    Zone; destroy it, and if you do, place this card in your Pendulum Zone."
+  fusionGroup: 
+  monsterType: 13
+  baseAtk: 600
+  baseDef: 1200
+  stars: 4
+  starA: 1
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

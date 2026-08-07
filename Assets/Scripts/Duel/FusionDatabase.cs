@@ -23,7 +23,12 @@ public class FusionDatabase : ScriptableObject
     [Header("Recetas específicas (carta + carta = resultado exacto)")]
     public List<FusionRecipe> recipes = new();
 
-    [Header("Recetas por categoría (fusionGroup + fusionGroup = resultado)")]
+    [Header("Recetas por CATEGORÍA con reglas (atributo + ATK/DEF + …)")]
+    [Tooltip("Se comprueban antes que las de fusionGroup. Mayor prioridad = se evalúa antes, " +
+             "para que una regla estrecha gane a otra que la engloba.")]
+    public List<FusionCategoryRecipe> categoryFusions = new();
+
+    [Header("Recetas por fusionGroup (legado: etiqueta + etiqueta = resultado)")]
     public List<CategoryFusionRecipe> categoryRecipes = new();
 
     // ────────────────────────────────────────────────────────────────────
@@ -44,6 +49,27 @@ public class FusionDatabase : ScriptableObject
             if (match) return recipe.result;
         }
         return null;
+    }
+
+    /// <summary>
+    /// Intenta resolver el par (a, b) con las categorías POR REGLAS
+    /// (<see cref="FusionCategory"/>: atributo, tipo, rangos de ATK/DEF, nivel…).
+    /// El orden de los materiales no importa.
+    ///
+    /// Se evalúan de MAYOR a MENOR <see cref="FusionCategoryRecipe.priority"/>: dos reglas
+    /// pueden solaparse (p. ej. "OSCURO ≤1500" y "OSCURO cualquiera") y la prioridad es lo
+    /// que decide cuál gana. A igual prioridad manda el orden de la lista.
+    /// </summary>
+    public CardData TryFuseByRuleCategory(CardData a, CardData b)
+    {
+        FusionCategoryRecipe best = null;
+        foreach (var recipe in categoryFusions)
+        {
+            if (recipe == null || recipe.result == null) continue;
+            if (!recipe.Matches(a, b)) continue;
+            if (best == null || recipe.priority > best.priority) best = recipe;
+        }
+        return best?.result;
     }
 
     /// <summary>
@@ -77,7 +103,14 @@ public class FusionDatabase : ScriptableObject
         if (specific != null)
             return new FusionStepResult(specific, FusionStepType.Specific);
 
-        // 2. Receta por categoría
+        // 2a. Categoría POR REGLAS (atributo + rangos de ATK/DEF, etc.). Va antes que la
+        //     de fusionGroup porque es la que puede expresar condiciones estrechas; dejar
+        //     ganar a la etiqueta genérica haría inútiles los rangos.
+        var byRule = TryFuseByRuleCategory(current, next);
+        if (byRule != null)
+            return new FusionStepResult(byRule, FusionStepType.Category);
+
+        // 2b. Receta por fusionGroup (legado)
         var byCategory = TryFuseByCategory(current, next);
         if (byCategory != null)
             return new FusionStepResult(byCategory, FusionStepType.Category);
@@ -174,6 +207,10 @@ public class FusionDatabase : ScriptableObject
     {
         var specific = TryFuseSpecific(a, b);
         if (specific != null) return specific;
+
+        var byRule = TryFuseByRuleCategory(a, b);
+        if (byRule != null) return byRule;
+
         return TryFuseByCategory(a, b);
     }
 
@@ -244,6 +281,35 @@ public class FusionRecipe
     public CardData materialA;
     public CardData materialB;
     public CardData result;
+}
+
+/// <summary>
+/// Receta entre dos <see cref="FusionCategory"/>: cualquier carta que pertenezca a
+/// <see cref="categoryA"/> combinada con cualquiera de <see cref="categoryB"/> (en cualquier
+/// orden) produce <see cref="result"/>.
+///
+/// Ejemplo de lo que el modelo viejo no podía expresar:
+///   A = "OSCURO con ATK ≤ 1500", B = "LUZ con ATK ≤ 1500" → result = Guerrero del Alba.
+/// La misma pareja de atributos con monstruos fuertes no dispararía esta receta.
+/// </summary>
+[System.Serializable]
+public class FusionCategoryRecipe
+{
+    public FusionCategory categoryA;
+    public FusionCategory categoryB;
+    public CardData result;
+
+    [Tooltip("Mayor gana cuando varias recetas encajan con el mismo par. Sube la prioridad " +
+             "de las reglas MÁS ESTRECHAS para que no las tape una más general.")]
+    public int priority;
+
+    /// <summary>¿Encaja el par (a, b) en esta receta, en cualquier orden?</summary>
+    public bool Matches(CardData a, CardData b)
+    {
+        if (categoryA == null || categoryB == null) return false;
+        return (categoryA.Matches(a) && categoryB.Matches(b))
+            || (categoryA.Matches(b) && categoryB.Matches(a));
+    }
 }
 
 /// <summary>

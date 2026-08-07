@@ -99,7 +99,17 @@ public class Duel3DCardView : MonoBehaviour
 
     public void SetHighlight(bool on)
     {
-        if (highlight != null) highlight.SetActive(on);
+        if (highlight == null) return;
+        highlight.SetActive(on);
+        if (on) SetHighlightAlpha(0.55f);   // opacidad base del resaltado
+    }
+
+    /// <summary>Ajusta la opacidad del resaltado (para PULSARLO al seleccionar en batalla).</summary>
+    public void SetHighlightAlpha(float a)
+    {
+        if (highlight == null) return;
+        var r = highlight.GetComponent<Renderer>();
+        if (r != null) { var c = r.material.color; c.a = a; r.material.color = c; }
     }
 
     public CanvasGroup CanvasGroup => canvasGroup;

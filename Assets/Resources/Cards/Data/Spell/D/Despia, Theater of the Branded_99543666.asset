@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Despia, Theater of the Branded_99543666
+  m_EditorClassIdentifier: 
+  cardId: 99543666
+  cardName: Despia, Theater of the Branded
+  artwork: {fileID: 0}
+  artFile: CardArt/Despia, Theater of the Branded_99543666.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: 'During your Main Phase: You can Fusion Summon 1 Level 8 or higher
+    Fusion Monster from your Extra Deck, using monsters from your hand or field as
+    Fusion Material. If a face-up non-Fusion Fairy monster you control leaves the
+    field by an opponent''s card effect, or is destroyed by battle: You can target
+    1 Level 8 or higher Fusion Monster in your GY; Special Summon it. You can only
+    use each effect of "Despia, Theater of the Branded" once per turn.'
+  fusionGroup: Despia
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

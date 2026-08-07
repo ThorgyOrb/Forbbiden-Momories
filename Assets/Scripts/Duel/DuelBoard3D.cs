@@ -445,12 +445,106 @@ public class DuelBoard3D : MonoBehaviour
 
     public void ClearHighlights()
     {
+        DeselectCurrent();   // baja la carta elevada y detiene su pulso
         for (int i = 0; i < 5; i++)
         {
             SetPlayerMonsterHighlight(i, false);
             SetOpponentMonsterHighlight(i, false);
             SetPlayerSpellHighlight(i, false);
         }
+    }
+
+    /// <summary>Apaga solo los resaltados de la fila de MAGIAS/TRAMPAS (ambos lados).</summary>
+    public void ClearSpellHighlights()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            SetPlayerSpellHighlight(i, false);
+            if (_opponentSpells[i] != null) _opponentSpells[i].SetHighlight(false);
+        }
+    }
+
+    // ── Selección animada de monstruo (fase de batalla): la carta se ELEVA,
+    //    flota suavemente y su resaltado PULSA; al cambiar de carta, la anterior
+    //    se asienta de vuelta. Mucho más fluido que encender/apagar un quad. ─────
+    private Duel3DCardView _selView;
+    private Coroutine _selAnim;
+    private Vector3 _selBasePos;
+
+    /// <summary>Selecciona (eleva + pulsa) el monstruo indicado. No-op si ya lo estaba.</summary>
+    public void SelectMonster(bool playerSide, int slot)
+    {
+        var views = playerSide ? _playerMonsters : _opponentMonsters;
+        var anchors = playerSide ? playerMonsterAnchors : opponentMonsterAnchors;
+        var view = (slot >= 0 && slot < 5) ? views[slot] : null;
+        if (view == _selView) return;
+
+        DeselectCurrent();
+        if (view == null) return;
+
+        _selView = view;
+        _selBasePos = SlotPos(anchors[slot]);
+        view.SetHighlight(true);
+        _selAnim = StartCoroutine(SelectPulse(view, _selBasePos));
+    }
+
+    /// <summary>Deja de resaltar/elevar y asienta la carta seleccionada (si la hay).</summary>
+    public void ClearSelectionAnim() => DeselectCurrent();
+
+    private void DeselectCurrent()
+    {
+        if (_selAnim != null) { StopCoroutine(_selAnim); _selAnim = null; }
+        if (_selView != null)
+        {
+            var v = _selView;
+            v.SetHighlight(false);
+            _selView = null;
+            StartCoroutine(SettleBack(v, _selBasePos));
+        }
+    }
+
+    private IEnumerator SelectPulse(Duel3DCardView v, Vector3 basePos)
+    {
+        Vector3 lifted = basePos + Vector3.up * 0.4f;
+
+        // Subida rápida y suave, con un leve pop de escala.
+        const float up = 0.16f;
+        for (float e = 0f; e < up; e += Time.deltaTime)
+        {
+            if (v == null) yield break;
+            float k = Mathf.SmoothStep(0f, 1f, e / up);
+            v.transform.position = Vector3.Lerp(basePos, lifted, k);
+            v.transform.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(k * Mathf.PI));
+            yield return null;
+        }
+        if (v != null) v.transform.localScale = Vector3.one * 1.03f;
+
+        // Flotación continua + pulso del resaltado.
+        float t = 0f;
+        while (v != null)
+        {
+            t += Time.deltaTime;
+            v.transform.position = lifted + Vector3.up * (0.05f * Mathf.Sin(t * 3f));
+            v.SetHighlightAlpha(0.35f + 0.35f * (0.5f + 0.5f * Mathf.Sin(t * 4.5f)));
+            yield return null;
+        }
+    }
+
+    private IEnumerator SettleBack(Duel3DCardView v, Vector3 basePos)
+    {
+        if (v == null) yield break;
+        Vector3 from = v.transform.position;
+        Vector3 fromS = v.transform.localScale;
+        const float dur = 0.15f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            if (v == null) yield break;
+            float k = Mathf.SmoothStep(0f, 1f, e / dur);
+            v.transform.position = Vector3.Lerp(from, basePos, k);
+            v.transform.localScale = Vector3.Lerp(fromS, Vector3.one, k);
+            yield return null;
+        }
+        if (v != null) { v.transform.position = basePos; v.transform.localScale = Vector3.one; }
     }
 
     // ── Cursor de casilla (selección por teclado) ────────────────────────
@@ -977,6 +1071,33 @@ public class DuelBoard3D : MonoBehaviour
         yield return LandOnSlot(view, anchors[slot].position);
 
         view.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
+    }
+
+    /// <summary>
+    /// Equipa un monstruo YA colocado en el campo: la carta de equipo aparece junto a él
+    /// y se ABSORBE con la misma coreografía espectacular de la fusión de equipo (carga →
+    /// cometa → clímax con aura), y el ATK/DEF del monstruo SUBE (conteo) hasta el total.
+    /// El estado lógico (MonsterCurrentAtk/Def) ya debe estar aplicado por el llamador.
+    /// </summary>
+    public IEnumerator AnimateFieldEquip(bool playerSide, int slot, CardData equipCard,
+                                         int fromAtk, int toAtk, int fromDef, int toDef)
+    {
+        var views = playerSide ? _playerMonsters : _opponentMonsters;
+        if (slot < 0 || slot >= views.Length || views[slot] == null) yield break;
+        var monster = views[slot];
+
+        var spawn = playerSide ? playerSpawnPoint : opponentSpawnPoint;
+        Vector3 start = (spawn != null) ? spawn.position : monster.transform.position + Vector3.up * 2f;
+        var equipView = SpawnView(start);
+        equipView.Show(equipCard, CardPosition.FaceUpAttack);
+        equipView.SetTableYaw(_boardYaw);
+        equipView.transform.localScale = Vector3.one * fusionCardScale;
+        FaceCamera(equipView, start);
+
+        yield return EquipAbsorb(equipView, monster, fromAtk, toAtk, fromDef, toDef);
+
+        if (equipView != null) Destroy(equipView.gameObject);
+        monster.SetCurrentStats(toAtk, toDef);
     }
 
     // ── Showcase 3D de UNA carta (invocación simple) ─────────────────────

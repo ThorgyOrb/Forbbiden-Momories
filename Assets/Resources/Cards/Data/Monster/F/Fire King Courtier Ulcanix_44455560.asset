@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Fire King Courtier Ulcanix_44455560
+  m_EditorClassIdentifier: 
+  cardId: 44455560
+  cardName: Fire King Courtier Ulcanix
+  artwork: {fileID: 0}
+  artFile: CardArt/Fire King Courtier Ulcanix_44455560.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 2
+  description: 'If this card is Normal or Special Summoned: You can destroy 1 other
+    FIRE monster in your hand or face-up field, and if you do, add 1 FIRE Beast,
+    Beast-Warrior, or Winged Beast monster from your Deck to your hand, except "Fire
+    King Courtier Ulcanix", then you can make this card''s Level become that added
+    monster''s. If this card is destroyed and sent to the GY: You can Special Summon
+    1 "Fire King High Avatar Garunix" from your Deck in Defense Position. You can
+    only use each effect of "Fire King Courtier Ulcanix" once per turn.'
+  fusionGroup: Fire King
+  monsterType: 11
+  baseAtk: 800
+  baseDef: 2000
+  stars: 4
+  starA: 4
+  starB: 5
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

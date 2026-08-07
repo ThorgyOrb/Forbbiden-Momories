@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Jain, Twilightsworn General_84673417
+  m_EditorClassIdentifier: 
+  cardId: 84673417
+  cardName: Jain, Twilightsworn General
+  artwork: {fileID: 0}
+  artFile: CardArt/Jain, Twilightsworn General_84673417.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 0
+  description: 'Once per turn: You can banish 1 "Lightsworn" monster from your hand
+    or GY, then target 1 face-up monster on the field; it loses ATK and DEF equal
+    to the banished monster''s Level x 300, until the end of this turn. Once per
+    turn, if your other "Lightsworn" monster''s effect is activated: Send the top
+    2 cards of your Deck to the GY.'
+  fusionGroup: Lightsworn
+  monsterType: 12
+  baseAtk: 1800
+  baseDef: 1200
+  stars: 4
+  starA: 1
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

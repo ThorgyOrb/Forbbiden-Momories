@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Ancient Warriors Saga - Sun-Liu Alliance_58116537
+  m_EditorClassIdentifier: 
+  cardId: 58116537
+  cardName: Ancient Warriors Saga - Sun-Liu Alliance
+  artwork: {fileID: 0}
+  artFile: CardArt/Ancient Warriors Saga - Sun-Liu Alliance_58116537.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: 'If you control "Ancient Warriors" monsters with 2 or more different
+    Attributes: You can declare 1 Attribute; your opponent cannot activate the effects
+    of monsters they currently control with that Attribute, until the end of this
+    turn (even if this card leaves the field). If your opponent Special Summons a
+    monster(s), or you activate an "Ancient Warriors" monster''s effect (except during
+    the Damage Step): You can make all "Ancient Warriors" monsters you control gain
+    300 ATK for each "Ancient Warriors" monster you control until the end of this
+    turn (even if this card leaves the field). You can only use each effect of "Ancient
+    Warriors Saga - Sun-Liu Alliance" once per turn.'
+  fusionGroup: Ancient Warriors
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 3
+  spellValue: 300
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

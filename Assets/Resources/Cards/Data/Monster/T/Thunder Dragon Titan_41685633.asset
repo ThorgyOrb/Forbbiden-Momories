@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Thunder Dragon Titan_41685633
+  m_EditorClassIdentifier: 
+  cardId: 41685633
+  cardName: Thunder Dragon Titan
+  artwork: {fileID: 0}
+  artFile: CardArt/Thunder Dragon Titan_41685633.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: '3 "Thunder Dragon" monsters
+
+    Must be either Fusion Summoned,
+    or Special Summoned by banishing 1 Thunder monster from your hand and 1 Thunder
+    Fusion Monster you control, except "Thunder Dragon Titan" (in which case you
+    do not use "Polymerization"). When a Thunder monster''s effect is activated in
+    the hand, even during the Damage Step (Quick Effect): You can destroy 1 card
+    on the field. If this card would be destroyed by card effect, you can banish
+    2 cards from your GY instead.'
+  fusionGroup: Thunder Dragon
+  monsterType: 14
+  baseAtk: 3200
+  baseDef: 3200
+  stars: 10
+  starA: 0
+  starB: 5
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

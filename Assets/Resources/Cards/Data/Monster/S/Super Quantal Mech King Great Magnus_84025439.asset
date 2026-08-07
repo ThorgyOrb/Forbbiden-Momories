@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Super Quantal Mech King Great Magnus_84025439
+  m_EditorClassIdentifier: 
+  cardId: 84025439
+  cardName: Super Quantal Mech King Great Magnus
+  artwork: {fileID: 0}
+  artFile: CardArt/Super Quantal Mech King Great Magnus_84025439.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: "3 Level 12 monsters\r\nIf this card is sent to the GY: You can Special
+    Summon 3 \"Super Quantal Mech Beast\" Xyz Monsters with different names from
+    your GY. This card gains these effects, based on the number of materials with
+    different names attached to it. \u25CF 2+: Once per turn, during the Main Phase
+    (Quick Effect): You can detach 1 material from this card; shuffle 1 card on the
+    field into the Deck. \u25CF 4+: It is unaffected by card effects, except \"Super
+    Quant\" cards. \u25CF 6+: Your opponent cannot add cards from the Deck to the
+    hand by card effects."
+  fusionGroup: Super Quant
+  monsterType: 13
+  baseAtk: 3600
+  baseDef: 3200
+  stars: 12
+  starA: 0
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

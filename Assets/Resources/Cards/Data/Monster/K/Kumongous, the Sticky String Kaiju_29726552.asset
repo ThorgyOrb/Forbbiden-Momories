@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Kumongous, the Sticky String Kaiju_29726552
+  m_EditorClassIdentifier: 
+  cardId: 29726552
+  cardName: Kumongous, the Sticky String Kaiju
+  artwork: {fileID: 0}
+  artFile: CardArt/Kumongous, the Sticky String Kaiju_29726552.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 4
+  description: 'You can Special Summon this card (from your hand) to your opponent''s
+    field in Attack Position, by Tributing 1 monster they control. If your opponent
+    controls a "Kaiju" monster, you can Special Summon this card (from your hand)
+    in Attack Position. You can only control 1 "Kaiju" monster. When your opponent
+    Normal or Special Summons a monster(s): You can remove 2 Kaiju Counters from
+    anywhere on the field; until the end of the next turn, that monster(s) cannot
+    attack and it has its effects negated.'
+  fusionGroup: Kaiju
+  monsterType: 4
+  baseAtk: 2400
+  baseDef: 2500
+  stars: 7
+  starA: 7
+  starB: 2
+  favoriteTerrain: 1
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

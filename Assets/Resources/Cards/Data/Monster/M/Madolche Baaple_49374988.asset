@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Madolche Baaple_49374988
+  m_EditorClassIdentifier: 
+  cardId: 49374988
+  cardName: Madolche Baaple
+  artwork: {fileID: 0}
+  artFile: CardArt/Madolche Baaple_49374988.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 4
+  description: 'If this card in your possession is destroyed by your opponent''s
+    card (by battle or card effect) and sent to your Graveyard: Shuffle this card
+    into your Deck. Once per turn: You can target 1 Attack Position "Madolche" monster
+    you control and 1 face-up Attack Position monster your opponent controls; if
+    both monsters are still on the field, change them to face-up Defense Position,
+    and if you do, the ones changed by this effect cannot have their battle positions
+    changed until the end of your opponent''s next turn.'
+  fusionGroup: Madolche
+  monsterType: 3
+  baseAtk: 0
+  baseDef: 1800
+  stars: 3
+  starA: 7
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

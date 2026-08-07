@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Thunder Dragons' Hundred Thunders_82045034
+  m_EditorClassIdentifier: 
+  cardId: 82045034
+  cardName: Thunder Dragons' Hundred Thunders
+  artwork: {fileID: 0}
+  artFile: CardArt/Thunder Dragons' Hundred Thunders_82045034.jpg
+  rarity: 0
+  cardCategory: 5
+  attribute: 7
+  description: Target 1 Thunder monster in your GY; Special Summon it, then you can
+    Special Summon as many monsters with that same name as possible from your GY.
+    The monster(s) Special Summoned by this effect are banished when they leave the
+    field, also while they are face-up on the field, you cannot Special Summon monsters,
+    except Thunder monsters. You can only activate 1 "Thunder Dragons' Hundred Thunders"
+    per turn.
+  fusionGroup: Thunder Dragon
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

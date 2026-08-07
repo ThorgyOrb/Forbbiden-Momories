@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Nekroz of Clausolas_99185129
+  m_EditorClassIdentifier: 
+  cardId: 99185129
+  cardName: Nekroz of Clausolas
+  artwork: {fileID: 0}
+  artFile: CardArt/Nekroz of Clausolas_99185129.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: "You can Ritual Summon this card with any \"Nekroz\" Ritual Spell.
+    Must be Ritual Summoned. You can only use each of these effects of \"Nekroz of
+    Clausolas\" once per turn.\r\n\u25CF You can discard this card; add 1 \"Nekroz\"
+    Spell/Trap from your Deck to your hand.\r\n\u25CF (Quick Effect): You can target
+    1 face-up monster on the field that was Special Summoned from the Extra Deck;
+    until the end of this turn, that target's ATK becomes 0, also that target's effects
+    are negated."
+  fusionGroup: Nekroz
+  monsterType: 12
+  baseAtk: 1200
+  baseDef: 2300
+  stars: 3
+  starA: 8
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

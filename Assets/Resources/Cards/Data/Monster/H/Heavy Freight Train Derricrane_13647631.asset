@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Heavy Freight Train Derricrane_13647631
+  m_EditorClassIdentifier: 
+  cardId: 13647631
+  cardName: Heavy Freight Train Derricrane
+  artwork: {fileID: 0}
+  artFile: CardArt/Heavy Freight Train Derricrane_13647631.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 4
+  description: 'If an EARTH Machine monster(s) is Normal or Special Summoned to your
+    field (except during the Damage Step): You can Special Summon this card from
+    your hand, but its original ATK/DEF become halved. You can only use this effect
+    of "Heavy Freight Train Derricrane" once per turn. If this card is detached from
+    an Xyz Monster and sent to the GY to activate that monster''s effect: You can
+    target 1 card your opponent controls; destroy it.'
+  fusionGroup: Train
+  monsterType: 13
+  baseAtk: 2800
+  baseDef: 2000
+  stars: 10
+  starA: 7
+  starB: 8
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

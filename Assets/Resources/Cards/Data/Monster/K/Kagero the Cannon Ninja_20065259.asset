@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Kagero the Cannon Ninja_20065259
+  m_EditorClassIdentifier: 
+  cardId: 20065259
+  cardName: Kagero the Cannon Ninja
+  artwork: {fileID: 0}
+  artFile: CardArt/Kagero the Cannon Ninja_20065259.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 2
+  description: 'If this card is Normal Summoned, Special Summoned, or flipped face-up:
+    You can Special Summon 1 "Ninja" monster from your hand or GY in face-down Defense
+    Position, except "Kagero the Cannon Ninja". When your opponent activates a card
+    or effect that targets exactly 1 "Ninja" card or exactly 1 face-down Defense
+    Position monster you control, while this card is in your GY (Quick Effect): You
+    can Special Summon this card in face-down Defense Position, and if you do, return
+    that targeted card to the hand. You can only use each effect of "Kagero the Cannon
+    Ninja" once per turn.'
+  fusionGroup: Ninja
+  monsterType: 12
+  baseAtk: 1600
+  baseDef: 2000
+  stars: 4
+  starA: 4
+  starB: 5
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

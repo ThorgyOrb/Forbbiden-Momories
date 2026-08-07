@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Hazy Flame Peryton_37803172
+  m_EditorClassIdentifier: 
+  cardId: 37803172
+  cardName: Hazy Flame Peryton
+  artwork: {fileID: 0}
+  artFile: CardArt/Hazy Flame Peryton_37803172.jpg
+  rarity: 1
+  cardCategory: 0
+  attribute: 2
+  description: Cannot be Special Summoned, except by a "Hazy Flame" monster's effect.
+    Your opponent cannot target this card with card effects. You can send 1 FIRE
+    monster from your hand to the Graveyard and Tribute this card; Special Summon
+    2 "Hazy Flame" monsters from your Deck. You can only use this effect of "Hazy
+    Flame Peryton" once per turn.
+  fusionGroup: Hazy
+  monsterType: 18
+  baseAtk: 1600
+  baseDef: 1700
+  stars: 6
+  starA: 4
+  starB: 5
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

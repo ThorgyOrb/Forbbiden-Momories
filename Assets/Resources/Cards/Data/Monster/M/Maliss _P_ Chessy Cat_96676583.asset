@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Maliss _P_ Chessy Cat_96676583
+  m_EditorClassIdentifier: 
+  cardId: 96676583
+  cardName: Maliss <P> Chessy Cat
+  artwork: {fileID: 0}
+  artFile: CardArt/Maliss P Chessy Cat_96676583.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: 'Any monster destroyed by battle with a "Maliss" Link Monster that
+    points to this card is banished. You can only use each of the following effects
+    of "Maliss Chessy Cat" once per turn. During your Main Phase: You can banish
+    1 "Maliss" card from your hand, then you can draw 2 cards. If this card is banished:
+    You can pay 300 LP; Special Summon it, also you cannot Special Summon from the
+    Extra Deck for the rest of this turn, except Link Monsters.'
+  fusionGroup: Maliss
+  monsterType: 22
+  baseAtk: 1500
+  baseDef: 300
+  stars: 3
+  starA: 1
+  starB: 7
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

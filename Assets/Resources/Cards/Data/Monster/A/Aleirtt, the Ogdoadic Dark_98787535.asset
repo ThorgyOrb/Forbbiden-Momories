@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Aleirtt, the Ogdoadic Dark_98787535
+  m_EditorClassIdentifier: 
+  cardId: 98787535
+  cardName: Aleirtt, the Ogdoadic Dark
+  artwork: {fileID: 0}
+  artFile: CardArt/Aleirtt, the Ogdoadic Dark_98787535.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: 'If this card is in your GY: You can Tribute 1 monster; Special Summon
+    this card, then your opponent can add 1 monster from their GY to their hand.
+    If this card is Special Summoned: You can target 2 of your banished monsters,
+    including a Reptile monster; return them to the GY. You can only use each effect
+    of "Aleirtt, the Ogdoadic Dark" once per turn.'
+  fusionGroup: Ogdoadic
+  monsterType: 16
+  baseAtk: 2000
+  baseDef: 800
+  stars: 8
+  starA: 1
+  starB: 6
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

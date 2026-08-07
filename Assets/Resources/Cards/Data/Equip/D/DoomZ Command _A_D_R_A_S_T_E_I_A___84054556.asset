@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: DoomZ Command _A_D_R_A_S_T_E_I_A___84054556
+  m_EditorClassIdentifier: 
+  cardId: 84054556
+  cardName: DoomZ Command "A.D.R.A.S.T.E.I.A."
+  artwork: {fileID: 0}
+  artFile: CardArt/DoomZ Command A.D.R.A.S.T.E.I.A._84054556.jpg
+  rarity: 0
+  cardCategory: 2
+  attribute: 7
+  description: 'The first time the equipped monster would be destroyed by battle
+    each turn, it is not destroyed. You can only use each of the following effects
+    of "DoomZ Command "A.D.R.A.S.T.E.I.A." once per turn. During your Main Phase:
+    You can destroy the equipped monster, and if you do, Special Summon 1 "DoomZ"
+    monster in Defense Position, except the destroyed monster, from your hand, GY,
+    or banishment. If this card is in your GY: You can target 1 face-up monster you
+    control; equip it with this card, then take damage equal to the equipped monster''s
+    Level/Rank x 100.'
+  fusionGroup: DoomZ
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

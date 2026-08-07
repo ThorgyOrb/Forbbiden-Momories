@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Charming Resort Staff_64753157
+  m_EditorClassIdentifier: 
+  cardId: 64753157
+  cardName: Charming Resort Staff
+  artwork: {fileID: 0}
+  artFile: CardArt/Charming Resort Staff_64753157.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: 'When an attack is declared involving a "SPYRAL Super Agent" you control
+    and an opponent''s face-up monster: You can change the ATK of the opponent''s
+    monster to 0. If this card is destroyed by battle or card effect: You can Special
+    Summon 1 "SPYRAL Super Agent" from your Deck. If a "SPYRAL Super Agent" you control
+    is destroyed by battle or sent to the Graveyard while this card is in your Graveyard:
+    You can banish this card from your Graveyard; return 1 "SPYRAL Super Agent" from
+    your Graveyard to your hand.'
+  fusionGroup: SPYRAL
+  monsterType: 15
+  baseAtk: 300
+  baseDef: 200
+  stars: 3
+  starA: 0
+  starB: 1
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

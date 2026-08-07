@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: The Abyss Dragon Swordsoul_5141117
+  m_EditorClassIdentifier: 
+  cardId: 5141117
+  cardName: The Abyss Dragon Swordsoul
+  artwork: {fileID: 0}
+  artFile: CardArt/The Abyss Dragon Swordsoul_5141117.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 2
+  description: 'Cannot be Normal Summoned/Set. Must be Special Summoned by a Wyrm
+    monster''s effect. If a monster is banished by card effect (except during the
+    Damage Step): You can Special Summon this card from the GY (if it was there when
+    the monster was banished) or hand (even if not), but banish it when it leaves
+    the field. If this card is Special Summoned: You can target 1 card in the Field
+    Zone and 1 monster your opponent controls or in their GY; banish them. You can
+    only use each effect of "The Abyss Dragon Swordsoul" once per turn.'
+  fusionGroup: Swordsoul
+  monsterType: 21
+  baseAtk: 3000
+  baseDef: 2900
+  stars: 8
+  starA: 4
+  starB: 5
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

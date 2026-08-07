@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Flint Lock_83812099
+  m_EditorClassIdentifier: 
+  cardId: 83812099
+  cardName: Flint Lock
+  artwork: {fileID: 0}
+  artFile: CardArt/Flint Lock_83812099.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: 'Once per turn: You can target 1 "Flint" in the Spell & Trap Zone;
+    equip it to this card. During your Main Phase: You can target 1 "Flint" equipped
+    to this card, and 1 face-up monster on the field, except this card; equip that
+    "Flint" to that targeted monster. This card can only be equipped with 1 "Flint".
+    While equipped with "Flint", this card is unaffected by the effect of "Flint",
+    and cannot be destroyed by battle.'
+  fusionGroup: 
+  monsterType: 13
+  baseAtk: 1500
+  baseDef: 800
+  stars: 4
+  starA: 0
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

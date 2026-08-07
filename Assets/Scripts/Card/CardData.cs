@@ -21,7 +21,14 @@ public class CardData : ScriptableObject
     [Header("Identidad (todas las cartas)")]
     public int cardId;
     public string cardName;
+    [Tooltip("Arte como asset de Unity. Las cartas hechas a mano usan este campo; las " +
+             "importadas lo dejan vacío y usan 'artFile'. Lee siempre por 'Artwork'.")]
     public Sprite artwork;
+
+    [Tooltip("Ruta del arte relativa a StreamingAssets (p. ej. \"CardArt/Dark Magician_46986414.jpg\"). " +
+             "Se carga bajo demanda vía CardArtLoader; solo se usa si 'artwork' está vacío.")]
+    public string artFile = "";
+
     public CardRarity rarity;
     public CardCategory cardCategory = CardCategory.Monster;
 
@@ -80,8 +87,14 @@ public class CardData : ScriptableObject
     public int equipAtkBonus = 0;
     public int equipDefBonus = 0;
 
-    [Tooltip("Si está activo, el equipo SOLO puede aplicarse a monstruos del tipo indicado " +
-             "(p. ej. Dragón). Si está desactivado, aplica a cualquier monstruo.")]
+    [Tooltip("Regla que decide a QUÉ monstruos puede equiparse: por atributo, nivel, tipo, " +
+             "rangos de ATK/DEF, monstruos de Ritual, o una lista concreta de cartas. " +
+             "Si se asigna, MANDA sobre equipRestrictToType/equipMonsterType. " +
+             "Créala en el Banco de fusiones (YGO ▸ Cartas).")]
+    public FusionCategory equipTargets;
+
+    [Tooltip("(Legado) Si está activo, el equipo SOLO puede aplicarse a monstruos del tipo " +
+             "indicado. Se ignora si hay una regla en equipTargets.")]
     public bool equipRestrictToType = false;
 
     [Tooltip("Tipo de monstruo al que se restringe el equipo (solo si equipRestrictToType).")]
@@ -122,6 +135,27 @@ public class CardData : ScriptableObject
     public List<CardSourceEntry> sources = new();
 
     // ── Helpers ──────────────────────────────────────────────────────────
+
+    [System.NonSerialized] private Sprite _lazyArt;
+
+    /// <summary>
+    /// Arte de la carta: el asset <see cref="artwork"/> si lo tiene, o si no el archivo
+    /// de <see cref="artFile"/> cargado bajo demanda desde StreamingAssets. Usa SIEMPRE
+    /// esta propiedad en la UI — leer <c>artwork</c> a pelo deja sin imagen a las ~14.000
+    /// cartas importadas.
+    /// </summary>
+    public Sprite Artwork
+    {
+        get
+        {
+            if (artwork != null) return artwork;
+            if (string.IsNullOrEmpty(artFile)) return null;
+            // Si la caché LRU ya lo desalojó, _lazyArt está destruido (== null) y se recarga.
+            if (_lazyArt == null) _lazyArt = CardArtLoader.Load(artFile);
+            return _lazyArt;
+        }
+    }
+
     public bool IsMonster => cardCategory == CardCategory.Monster;
     public bool IsSpell => cardCategory == CardCategory.Spell;
     public bool IsEquip => cardCategory == CardCategory.Equip;
@@ -134,14 +168,24 @@ public class CardData : ScriptableObject
 
     /// <summary>
     /// ¿Este EQUIPO puede aplicarse al monstruo <paramref name="target"/>?
-    /// Un equipo sin restricción aplica a cualquier monstruo; con restricción,
-    /// solo a los del <see cref="equipMonsterType"/> indicado (p. ej. Dragón).
+    ///
+    /// Prioridad:
+    ///   1. <see cref="equipTargets"/> — regla completa (atributo, nivel, ATK/DEF, monstruos
+    ///      de Ritual, lista concreta de cartas…). Si está asignada, decide ella sola.
+    ///   2. <see cref="equipRestrictToType"/> — el modelo antiguo, solo por tipo.
+    ///   3. Sin nada de lo anterior: vale cualquier monstruo.
+    ///
+    /// En todos los casos el objetivo tiene que ser un MONSTRUO: equipar una magia o una
+    /// trampa no significa nada en el duelo.
     /// </summary>
     public bool EquipAppliesTo(CardData target)
     {
         if (!IsEquip) return false;
+        if (target == null || !target.IsMonster) return false;
+
+        if (equipTargets != null) return equipTargets.Matches(target);
         if (!equipRestrictToType) return true;
-        return target != null && target.IsMonster && target.monsterType == equipMonsterType;
+        return target.monsterType == equipMonsterType;
     }
 
     /// <summary>Texto descriptivo preferente: 'description', o el legado 'spellDescription'.</summary>
@@ -195,7 +239,11 @@ public enum MonsterType
     Plant, Fish, Aqua, SeaSerpent, Zombie,
     Dinosaur, WingedBeast, Warrior, Machine, Thunder,
     // ── Añadidos ──
-    Fairy, Reptile, Rock, Pyro
+    Fairy, Reptile, Rock, Pyro,
+    // ── Añadidos por la importación del set de Yu-Gi-Oh ──
+    BeastWarrior, Psychic, Wyrm, Cyberse, DivineBeast, Illusion, CreatorGod,
+    /// <summary>Tipo no reconocido al importar (o carta sin tipo).</summary>
+    Unknown
 }
 
 public enum GuardianStar
@@ -219,7 +267,11 @@ public enum CardPosition
 
 public enum CardAttribute
 {
-    Dark, Light, Fire, Water, Earth, Wind
+    Dark, Light, Fire, Water, Earth, Wind,
+    // ── Añadidos por la importación del set de Yu-Gi-Oh ──
+    Divine,
+    /// <summary>Sin atributo (magias, trampas, skills).</summary>
+    None
 }
 
 /// <summary>

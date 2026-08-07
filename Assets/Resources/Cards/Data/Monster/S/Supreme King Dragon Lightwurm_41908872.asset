@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Supreme King Dragon Lightwurm_41908872
+  m_EditorClassIdentifier: 
+  cardId: 41908872
+  cardName: Supreme King Dragon Lightwurm
+  artwork: {fileID: 0}
+  artFile: CardArt/Supreme King Dragon Lightwurm_41908872.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: "[ Pendulum Effect ] \nIf a monster(s) is Special Summoned and you
+    control \"Supreme King Z-ARC\" and another Pendulum Monster (except during the
+    Damage Step): You can Special Summon this card, then you can make the Level and
+    Attribute of either this card or 1 Pendulum Monster you control become the same
+    Level and Attribute as the other. You can only use this effect of \"Supreme King
+    Dragon Lightwurm\" once per turn.\n\n[ Monster Effect ] \nIf this card is Normal
+    or Special Summoned: You can add 1 face-up \"Supreme King Dragon\" or \"Supreme
+    King Gate\" Pendulum Monster from your Extra Deck to your hand, then, immediately
+    after this effect resolves, you can Synchro or Xyz Summon 1 \"Supreme King Dragon\"
+    monster. If a face-up Pendulum Monster(s) you control is destroyed by battle
+    or card effect, while this card is face-up in your Extra Deck: You can add this
+    card to your hand. You can only use each effect of \"Supreme King Dragon Lightwurm\"
+    once per turn."
+  fusionGroup: Supreme King
+  monsterType: 0
+  baseAtk: 1200
+  baseDef: 1800
+  stars: 4
+  starA: 0
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

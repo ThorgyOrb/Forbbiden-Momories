@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Chaos Zone_94243005
+  m_EditorClassIdentifier: 
+  cardId: 94243005
+  cardName: Chaos Zone
+  artwork: {fileID: 0}
+  artFile: CardArt/Chaos Zone_94243005.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: 'Each time a monster(s) is banished, place 1 Chaos Counter on this
+    card for each of those monsters. Once per turn: You can remove 4 or more Chaos
+    Counters from your field, then target 1 banished monster with a Level equal to
+    the number removed; Special Summon that target. When this card on the field is
+    sent to the GY by your opponent''s card effect: You can add 1 LIGHT or DARK monster
+    from your Deck to your hand, whose Level is less than or equal to the number
+    of Chaos Counters that were on this card.'
+  fusionGroup: Chaos
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Xyz Armor Torpedo_94151981
+  m_EditorClassIdentifier: 
+  cardId: 94151981
+  cardName: Xyz Armor Torpedo
+  artwork: {fileID: 0}
+  artFile: CardArt/Xyz Armor Torpedo_94151981.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: "2 Level 3 monsters\r\nCannot attack unless it has material. You can
+    detach 2 materials from this card; draw 1 card. You can only use this effect
+    of \"Xyz Armor Torpedo\" once per turn. Apply these effects while this card is
+    equipped to a monster.\r\n\u25CF If the equipped monster battles, until the end
+    of the Damage Step, your opponent cannot activate cards or effects, also negate
+    the effects of all face-up monsters they control.\r\n\u25CF If the equipped monster
+    is an Xyz Monster, your opponent cannot target it with card effects."
+  fusionGroup: Xyz
+  monsterType: 12
+  baseAtk: 2500
+  baseDef: 800
+  stars: 3
+  starA: 8
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

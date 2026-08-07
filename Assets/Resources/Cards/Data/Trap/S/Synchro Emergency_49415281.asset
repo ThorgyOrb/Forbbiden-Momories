@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Synchro Emergency_49415281
+  m_EditorClassIdentifier: 
+  cardId: 49415281
+  cardName: Synchro Emergency
+  artwork: {fileID: 0}
+  artFile: CardArt/Synchro Emergency_49415281.jpg
+  rarity: 0
+  cardCategory: 5
+  attribute: 7
+  description: If only your opponent controls a monster, you can activate this card
+    from your hand. Special Summon 1 monster from your hand (but negate its effects),
+    then if your opponent controls a monster Special Summoned from the Extra Deck,
+    you can Special Summon 1 "Synchron" monster from your Deck. Until the end of
+    the next turn after this card resolves, you cannot Special Summon from the Extra
+    Deck, except Synchro Monsters. You can banish this card from your GY; immediately
+    after this effect resolves, Synchro Summon 1 Synchro Monster. You can only activate
+    1 "Synchro Emergency" per turn.
+  fusionGroup: Synchro
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

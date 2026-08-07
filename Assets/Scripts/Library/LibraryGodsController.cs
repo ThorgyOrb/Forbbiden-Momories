@@ -70,9 +70,27 @@ public class LibraryGodsController : MonoBehaviour
     [Header("Resaltado de selección (aura violeta suave)")]
     [SerializeField] private Color selectionLightColor = new Color(0.60f, 0.40f, 1f);
 
+    [Header("Paginación de la grilla")]
+    [SerializeField] private Button prevPageButton;
+    [SerializeField] private Button nextPageButton;
+    [SerializeField] private TMP_Text pageLabel;
+    [Tooltip("Cartas por página. Con el catálogo completo (14.000+) es lo que hace que la " +
+             "escena abra al instante: solo se instancian estas.")]
+    [SerializeField] private int pageSize = 48;
+
     private Tab _tab = Tab.All;
     private string _search = "";
     private readonly List<GameObject> _slots = new();
+    private List<LibraryEntry> _entries = new();   // resultado del filtro+orden actual
+    private int _page;
+
+    /// <summary>
+    /// Catálogo + progreso, construido UNA vez. <see cref="LibraryQueryService.BuildAllEntries"/>
+    /// crea un LibraryEntry por carta: con 14.651 cartas, llamarlo en cada refresco (y estaba
+    /// llamándose 4 veces solo al arrancar, más 2 por cada tecla del buscador) era el grueso
+    /// del tirón de esta escena.
+    /// </summary>
+    private List<LibraryEntry> _allEntries;
     private LibraryEntry _selected;
     private GameObject _selectionFx; // focos de luz, reparentados bajo el slot elegido
 
@@ -116,6 +134,9 @@ public class LibraryGodsController : MonoBehaviour
 
         if (view3DButton != null) view3DButton.onClick.AddListener(OnView3D);
 
+        if (prevPageButton != null) prevPageButton.onClick.AddListener(() => GoToPage(_page - 1));
+        if (nextPageButton != null) nextPageButton.onClick.AddListener(() => GoToPage(_page + 1));
+
         RefreshGrid();
         UpdateHeaderAndSidebar();
         SelectFirst();
@@ -146,10 +167,27 @@ public class LibraryGodsController : MonoBehaviour
     }
 
     // ── Consulta / grilla ────────────────────────────────────────────────
+    /// <summary>
+    /// Rehace la caché de entradas. Llamar solo si cambia el progreso del jugador
+    /// (obtener cartas, marcar favoritas); filtrar, ordenar y paginar NO la necesitan.
+    /// </summary>
+    public void InvalidateEntries()
+    {
+        _allEntries = LibraryQueryService.BuildAllEntries();
+    }
+
+    private List<LibraryEntry> AllEntries
+    {
+        get
+        {
+            if (_allEntries == null) InvalidateEntries();
+            return _allEntries;
+        }
+    }
+
     private IEnumerable<LibraryEntry> QueryEntries()
     {
-        var all = LibraryQueryService.BuildAllEntries();
-        IEnumerable<LibraryEntry> q = all.Where(MatchesTab);
+        IEnumerable<LibraryEntry> q = AllEntries.Where(MatchesTab);
 
         if (!string.IsNullOrWhiteSpace(_search))
         {
@@ -183,30 +221,87 @@ public class LibraryGodsController : MonoBehaviour
         _ => true
     };
 
+    /// <summary>Rehace filtro y orden, y vuelve a la primera página.</summary>
     private void RefreshGrid()
+    {
+        _entries = QueryEntries().ToList();
+        _page = 0;
+        RefreshPage();
+    }
+
+    /// <summary>Número de páginas (mínimo 1, aunque no haya resultados).</summary>
+    private int PageCount => Mathf.Max(1, Mathf.CeilToInt(_entries.Count / (float)PageSizeSafe));
+
+    private int PageSizeSafe => Mathf.Max(1, pageSize);
+
+    /// <summary>
+    /// Instancia SOLO las cartas de la página actual. Antes se creaba un slot por entrada:
+    /// con el catálogo completo eran 14.651 copias del prefab de carta (y 14.651 JPG
+    /// decodificados), que es lo que colgaba la escena.
+    /// </summary>
+    private void RefreshPage()
     {
         foreach (var go in _slots) if (go != null) Destroy(go);
         _slots.Clear();
 
         if (gridContent == null || cardSlotPrefab == null) return;
 
-        foreach (var entry in QueryEntries())
+        _page = Mathf.Clamp(_page, 0, PageCount - 1);
+
+        int from = _page * PageSizeSafe;
+        int to = Mathf.Min(from + PageSizeSafe, _entries.Count);
+
+        for (int i = from; i < to; i++)
         {
+            var entry = _entries[i];
             var go = Instantiate(cardSlotPrefab, gridContent);
             var slot = go.GetComponent<LibraryCardSlot>();
             if (slot != null) slot.Setup(entry, (en, _) => SelectCard(en, go));
             _slots.Add(go);
         }
+
+        // Cada página empieza arriba; si no, se hereda el scroll de la anterior.
+        var scroll = gridContent.GetComponentInParent<ScrollRect>();
+        if (scroll != null) scroll.verticalNormalizedPosition = 1f;
+
+        UpdatePagerUI();
     }
 
-    private void SelectFirst()
+    private void GoToPage(int page)
     {
-        // El slot que corresponde a la primera carta seleccionable (para el brillo).
-        var q = QueryEntries().ToList();
-        int idx = q.FindIndex(e => e.state != CardState.Locked);
-        if (idx < 0) return;
-        GameObject slotGO = idx < _slots.Count ? _slots[idx] : null;
-        SelectCard(q[idx], slotGO);
+        int clamped = Mathf.Clamp(page, 0, PageCount - 1);
+        if (clamped == _page) return;
+        _page = clamped;
+        RefreshPage();
+        SelectFirstOnPage();
+    }
+
+    private void UpdatePagerUI()
+    {
+        if (pageLabel != null)
+        {
+            pageLabel.text = _entries.Count == 0
+                ? "SIN RESULTADOS"
+                : $"PÁGINA {_page + 1} / {PageCount}   ·   {_entries.Count} CARTAS";
+        }
+
+        if (prevPageButton != null) prevPageButton.interactable = _page > 0;
+        if (nextPageButton != null) nextPageButton.interactable = _page < PageCount - 1;
+    }
+
+    private void SelectFirst() => SelectFirstOnPage();
+
+    /// <summary>Selecciona la primera carta no bloqueada DE LA PÁGINA visible.</summary>
+    private void SelectFirstOnPage()
+    {
+        int from = _page * PageSizeSafe;
+        for (int i = from; i < _entries.Count && i < from + PageSizeSafe; i++)
+        {
+            if (_entries[i].state == CardState.Locked) continue;
+            GameObject slotGO = (i - from) < _slots.Count ? _slots[i - from] : null;
+            SelectCard(_entries[i], slotGO);
+            return;
+        }
     }
 
     // ── Selección / panel derecho ────────────────────────────────────────
@@ -297,23 +392,51 @@ public class LibraryGodsController : MonoBehaviour
     // ── Encabezado + sidebar ─────────────────────────────────────────────
     private void UpdateHeaderAndSidebar()
     {
-        var (total, discovered, owned, completion) = LibraryQueryService.GetGlobalStats();
+        // UNA sola pasada. Antes esto reconstruía el catálogo entero dos veces
+        // (GetGlobalStats + BuildAllEntries) y luego BuildCollections lo recorría dos veces
+        // más por cada tipo de monstruo: 56 pasadas sobre 14.651 entradas por refresco.
+        var all = AllEntries;
+
+        int total = all.Count, discovered = 0, owned = 0;
+        var byRarity = new Dictionary<CardRarity, int>();
+        var typeTotal = new Dictionary<MonsterType, int>();
+        var typeOwned = new Dictionary<MonsterType, int>();
+
+        foreach (var e in all)
+        {
+            bool isOwned = e.state == CardState.Owned;
+            if (e.state != CardState.Locked) discovered++;
+            if (isOwned) owned++;
+
+            byRarity.TryGetValue(e.card.rarity, out int r);
+            byRarity[e.card.rarity] = r + 1;
+
+            if (!e.card.IsMonster) continue;
+            var t = e.card.monsterType;
+            typeTotal.TryGetValue(t, out int tt);
+            typeTotal[t] = tt + 1;
+            if (isOwned)
+            {
+                typeOwned.TryGetValue(t, out int to);
+                typeOwned[t] = to + 1;
+            }
+        }
+
+        float completion = total > 0 ? (discovered / (float)total) * 100f : 0f;
         Set(totalText, total.ToString());
         Set(discoveredText, discovered.ToString());
         Set(ownedText, owned.ToString());
         Set(completionText, completion.ToString("0.0") + "%");
         if (completionRing != null) completionRing.fillAmount = completion / 100f;
 
-        var all = LibraryQueryService.BuildAllEntries();
-
         if (rarityCountTexts != null)
         {
             CardRarity[] order = { CardRarity.Legendary, CardRarity.Epic, CardRarity.Rare, CardRarity.Common };
             for (int i = 0; i < order.Length && i < rarityCountTexts.Length; i++)
-                Set(rarityCountTexts[i], all.Count(e => e.card.rarity == order[i]).ToString());
+                Set(rarityCountTexts[i], byRarity.TryGetValue(order[i], out int n) ? n.ToString() : "0");
         }
 
-        BuildCollections(all);
+        BuildCollections(typeTotal, typeOwned);
     }
 
     /// <summary>
@@ -321,7 +444,8 @@ public class LibraryGodsController : MonoBehaviour
     /// (owned/total), con su icono. Crece solo al definir tipos nuevos; no hay que
     /// mantener una lista fija. Va en un contenedor con VerticalLayoutGroup.
     /// </summary>
-    private void BuildCollections(List<LibraryEntry> all)
+    private void BuildCollections(Dictionary<MonsterType, int> typeTotal,
+                                  Dictionary<MonsterType, int> typeOwned)
     {
         if (collectionsContainer == null) return;
 
@@ -330,9 +454,9 @@ public class LibraryGodsController : MonoBehaviour
 
         foreach (MonsterType type in System.Enum.GetValues(typeof(MonsterType)))
         {
-            int totalT = all.Count(e => e.card.IsMonster && e.card.monsterType == type);
-            if (totalT == 0) continue; // aún sin cartas de ese tipo → no se muestra
-            int ownedT = all.Count(e => e.card.IsMonster && e.card.monsterType == type && e.state == CardState.Owned);
+            if (!typeTotal.TryGetValue(type, out int totalT) || totalT == 0)
+                continue;   // aún sin cartas de ese tipo → no se muestra
+            typeOwned.TryGetValue(type, out int ownedT);
             BuildCollectionRow(type, ownedT, totalT);
         }
     }

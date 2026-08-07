@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Powercode Talker_15844566
+  m_EditorClassIdentifier: 
+  cardId: 15844566
+  cardName: Powercode Talker
+  artwork: {fileID: 0}
+  artFile: CardArt/Powercode Talker_15844566.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 2
+  description: '3 monsters
+
+    Once per turn: You can target 1 face-up monster
+    on the field; negate that target''s effects until the end of this turn. Once
+    per turn, if this card battles an opponent''s monster, during damage calculation
+    (Quick Effect): You can Tribute 1 monster this card points to; this card''s ATK
+    becomes double its original ATK during that damage calculation only.'
+  fusionGroup: Code Talker
+  monsterType: 22
+  baseAtk: 2300
+  baseDef: 0
+  stars: 0
+  starA: 4
+  starB: 7
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

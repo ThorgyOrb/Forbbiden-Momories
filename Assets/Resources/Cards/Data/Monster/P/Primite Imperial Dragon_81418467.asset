@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Primite Imperial Dragon_81418467
+  m_EditorClassIdentifier: 
+  cardId: 81418467
+  cardName: Primite Imperial Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Primite Imperial Dragon_81418467.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 4
+  description: "Cannot be Normal Summoned, except by Tributing 1 Normal Monster (but
+    can be Normal Set). During your opponent's Main Phase (Quick Effect): You can
+    reveal this card in your hand; immediately after this effect resolves, Normal
+    Summon 1 \"Primite\" monster. You can only use this effect of \"Primite Imperial
+    Dragon\" once per turn. If this card is Tribute Summoned: You can apply these
+    effects in sequence.\r\n\u25CF Negate the effects of all face-up monsters your
+    opponent currently controls.\r\n\u25CF Banish all monsters your opponent controls
+    with the same Type or Attribute as a Normal Monster in your GY."
+  fusionGroup: Primite
+  monsterType: 0
+  baseAtk: 2600
+  baseDef: 0
+  stars: 6
+  starA: 7
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

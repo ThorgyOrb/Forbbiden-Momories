@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Ancient Warriors - Virtuous Liu Xuan_40428851
+  m_EditorClassIdentifier: 
+  cardId: 40428851
+  cardName: Ancient Warriors - Virtuous Liu Xuan
+  artwork: {fileID: 0}
+  artFile: CardArt/Ancient Warriors - Virtuous Liu Xuan_40428851.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: "While you control another \"Ancient Warriors\" monster, your opponent's
+    monsters cannot target this card for attacks. You can only use each of the following
+    effects of \"Ancient Warriors - Virtuous Liu Xuan\" once per turn.\r\n\u25CF
+    If your opponent controls more monsters than you do: You can send 1 card from
+    your hand or field to the GY; Special Summon 1 \"Ancient Warriors\" monster from
+    your Deck, except \"Ancient Warriors - Virtuous Liu Xuan\". \u25CF When an attack
+    is declared involving another \"Ancient Warriors\" monster you control: You can
+    draw 1 card."
+  fusionGroup: Ancient Warriors
+  monsterType: 19
+  baseAtk: 1400
+  baseDef: 1200
+  stars: 4
+  starA: 5
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

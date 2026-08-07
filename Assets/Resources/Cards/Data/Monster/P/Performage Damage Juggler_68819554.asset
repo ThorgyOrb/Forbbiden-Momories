@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Performage Damage Juggler_68819554
+  m_EditorClassIdentifier: 
+  cardId: 68819554
+  cardName: Performage Damage Juggler
+  artwork: {fileID: 0}
+  artFile: CardArt/Performage Damage Juggler_68819554.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: 'When a card or effect is activated that would inflict damage to you
+    (Quick Effect): You can discard this card; negate the activation, and if you
+    do, destroy that card. During the Battle Phase (Quick Effect): You can discard
+    this card; reduce the next battle damage you would take this turn to 0. You can
+    banish this card from your GY; add 1 "Performage" monster from your Deck to your
+    hand, except "Performage Damage Juggler". You can only use this effect of "Performage
+    Damage Juggler" once per turn.'
+  fusionGroup: Performage
+  monsterType: 1
+  baseAtk: 1500
+  baseDef: 1000
+  stars: 4
+  starA: 0
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Backup Supervisor_97677329
+  m_EditorClassIdentifier: 
+  cardId: 97677329
+  cardName: Backup Supervisor
+  artwork: {fileID: 0}
+  artFile: CardArt/Backup Supervisor_97677329.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: '2 monsters
+
+    If this card was Link Summoned using "Backup Secretary"
+    as material, and your monster this card points to battled an opponent''s monster,
+    at the end of the Damage Step: You can Special Summon 1 Cyberse monster from
+    your hand. If this card is destroyed by battle, or if this card in its owner''s
+    possession is destroyed by an opponent''s card effect: You can Special Summon
+    1 "Backup Secretary" from your hand, Deck, or GY. You can only use each effect
+    of "Backup Supervisor" once per turn.'
+  fusionGroup: 
+  monsterType: 22
+  baseAtk: 1200
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 7
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

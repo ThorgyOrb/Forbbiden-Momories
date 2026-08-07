@@ -31,8 +31,8 @@ public class DeckCardView : MonoBehaviour
 
         if (art != null)
         {
-            art.sprite = card.artwork;
-            art.enabled = card.artwork != null;
+            art.sprite = card.Artwork;
+            art.enabled = art.sprite != null;
         }
 
         if (categoryAccent != null)

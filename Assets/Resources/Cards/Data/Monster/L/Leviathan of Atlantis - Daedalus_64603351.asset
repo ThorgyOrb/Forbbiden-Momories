@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Leviathan of Atlantis - Daedalus_64603351
+  m_EditorClassIdentifier: 
+  cardId: 64603351
+  cardName: Leviathan of Atlantis - Daedalus
+  artwork: {fileID: 0}
+  artFile: 
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: 'This card''s name becomes "Umi" while in the Monster Zone. You can
+    only use each of the following effects of "Leviathan of Atlantis - Daedalus"
+    once per turn. If you control "Atlantis, City of the Sea Dragon" or "Umi": You
+    can Special Summon this card from your hand. You can send up to 3 face-up "Umi"
+    you control to the GY; add that many cards that mention "Atlantis, City of the
+    Sea Dragon" from your Deck to your hand, except Level 7 monsters, then you can
+    send 1 card on the field to the GY.'
+  fusionGroup: Daedalus
+  monsterType: 8
+  baseAtk: 2600
+  baseDef: 1500
+  stars: 7
+  starA: 8
+  starB: 9
+  favoriteTerrain: 3
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Oracle of Zefra_32354768
+  m_EditorClassIdentifier: 
+  cardId: 32354768
+  cardName: Oracle of Zefra
+  artwork: {fileID: 0}
+  artFile: CardArt/Oracle of Zefra_32354768.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: "When this card is activated: Add 1 \"Zefra\" monster from your Deck
+    to your hand. When you Ritual Summon using a \"Zefra\" monster, or Special Summon
+    using a \"Zefra\" monster as Material, you can activate these effects depending
+    on the monster Summoned, once per turn per effect:\n\u25CF Ritual: Shuffle 1
+    monster on the field into the Deck.\n\u25CF Fusion: Special Summon 1 monster
+    from your hand.\n\u25CF Synchro: Choose 1 monster from your Deck and place it
+    on top of your Deck.\n\u25CF Xyz: Draw 1 card, then discard 1 card.\nYou can
+    only activate 1 \"Oracle of Zefra\" per turn."
+  fusionGroup: Zefra
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

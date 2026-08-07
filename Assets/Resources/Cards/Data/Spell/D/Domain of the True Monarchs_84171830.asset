@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Domain of the True Monarchs_84171830
+  m_EditorClassIdentifier: 
+  cardId: 84171830
+  cardName: Domain of the True Monarchs
+  artwork: {fileID: 0}
+  artFile: CardArt/Domain of the True Monarchs_84171830.jpg
+  rarity: 1
+  cardCategory: 1
+  attribute: 7
+  description: 'While you have no cards in your Extra Deck and you are the only player
+    that controls a Tribute Summoned monster, your opponent cannot Special Summon
+    monsters from the Extra Deck. If a Tribute Summoned monster you control attacks
+    an opponent''s monster, it gains 800 ATK during damage calculation only. Once
+    per turn: You can reduce the Level of 1 monster with 2800 ATK and 1000 DEF in
+    your hand by 2 until the end of this turn (even after they are Summoned/Set,
+    and even if this card leaves the field).'
+  fusionGroup: Monarch
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 1
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Blackwing - Vata the Emblem of Wandering_71187462
+  m_EditorClassIdentifier: 
+  cardId: 71187462
+  cardName: Blackwing - Vata the Emblem of Wandering
+  artwork: {fileID: 0}
+  artFile: CardArt/Blackwing - Vata the Emblem of Wandering_71187462.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 0
+  description: 'If you control a "Blackwing" monster other than "Blackwing - Vata
+    the Emblem of Wandering", you can Special Summon this card (from your hand).
+    You can only Special Summon "Blackwing - Vata the Emblem of Wandering" once per
+    turn this way. During your Main Phase: You can send this card on the field to
+    the GY along with 1 or more non-Tuner "Blackwing" monsters from your Deck, so
+    that the total Levels sent equal exactly 8, and if you do, Special Summon 1 "Black-Winged
+    Dragon" from your Extra Deck, also you cannot Special Summon monsters from the
+    Extra Deck for the rest of this turn, except DARK monsters. You can only use
+    this effect of "Blackwing - Vata the Emblem of Wandering" once per turn.'
+  fusionGroup: Blackwing
+  monsterType: 11
+  baseAtk: 800
+  baseDef: 0
+  stars: 2
+  starA: 1
+  starB: 5
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

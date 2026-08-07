@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Shiranui Spiritmaster_99423156
+  m_EditorClassIdentifier: 
+  cardId: 99423156
+  cardName: Shiranui Spiritmaster
+  artwork: {fileID: 0}
+  artFile: CardArt/Shiranui Spiritmaster_99423156.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 2
+  description: 'When this card is Normal Summoned: You can Special Summon 1 "Shiranui"
+    monster from your hand or GY, except "Shiranui Spiritmaster", but banish it when
+    it leaves the field. If this card is banished: You can target 1 face-up card
+    your opponent controls; destroy it. You can only use this effect of "Shiranui
+    Spiritmaster" once per turn.'
+  fusionGroup: Shiranui
+  monsterType: 9
+  baseAtk: 1500
+  baseDef: 0
+  stars: 4
+  starA: 4
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

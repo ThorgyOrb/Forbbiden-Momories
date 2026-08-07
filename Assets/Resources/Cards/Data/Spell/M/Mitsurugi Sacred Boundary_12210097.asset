@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Mitsurugi Sacred Boundary_12210097
+  m_EditorClassIdentifier: 
+  cardId: 12210097
+  cardName: Mitsurugi Sacred Boundary
+  artwork: {fileID: 0}
+  artFile: CardArt/Mitsurugi Sacred Boundary_12210097.jpg
+  rarity: 0
+  cardCategory: 1
+  attribute: 7
+  description: Your opponent cannot target "Mitsurugi" Ritual Monsters you control
+    with effects of monsters that were Special Summoned from the Extra Deck. You
+    can target 4 "Mitsurugi" cards in your GY, except "Mitsurugi Sacred Boundary";
+    shuffle them into the Deck, then if your opponent controls a monster, make them
+    Tribute 1 monster they control (their choice). You can only use this effect of
+    "Mitsurugi Sacred Boundary" once per turn.
+  fusionGroup: Mitsurugi
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Malefic Paradigm Dragon_16958382
+  m_EditorClassIdentifier: 
+  cardId: 16958382
+  cardName: Malefic Paradigm Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Malefic Paradigm Dragon_16958382.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: 'Cannot be Normal Summoned/Set. Must be Special Summoned (from your
+    hand) by banishing 1 "Malefic" monster from your Extra Deck while "Malefic Paradigm
+    Dragon" is not on the field. If "Malefic World" is not on the field, destroy
+    this card. Once per turn: You can send 1 "Malefic" card from your Deck to the
+    GY; return 1 of your banished Level 8 Synchro Monsters to the Extra Deck, then
+    you can Special Summon that monster from the Extra Deck, also you can only attack
+    with "Malefic" monsters for the rest of this turn.'
+  fusionGroup: Malefic
+  monsterType: 0
+  baseAtk: 4000
+  baseDef: 4000
+  stars: 10
+  starA: 1
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

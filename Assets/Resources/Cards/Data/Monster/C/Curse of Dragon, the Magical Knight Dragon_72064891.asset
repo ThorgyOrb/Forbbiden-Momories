@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Curse of Dragon, the Magical Knight Dragon_72064891
+  m_EditorClassIdentifier: 
+  cardId: 72064891
+  cardName: Curse of Dragon, the Magical Knight Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Curse of Dragon, the Magical Knight Dragon_72064891.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: '1 Warrior monster + 1 Level 5 or higher Dragon monster
+
+    If you
+    Fusion Summon a Level 7 Dragon Fusion Monster, you can also banish monsters from
+    your GY as material. If this card is Fusion Summoned: You can target 1 Spell/Trap
+    in your GY that mentions "Gaia the Dragon Champion"; add it to your hand. You
+    can only use this effect of "Curse of Dragon, the Magical Knight Dragon" once
+    per turn.'
+  fusionGroup: Curse of Dragon
+  monsterType: 0
+  baseAtk: 2000
+  baseDef: 1500
+  stars: 5
+  starA: 1
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

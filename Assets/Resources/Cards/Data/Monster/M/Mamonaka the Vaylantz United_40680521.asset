@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Mamonaka the Vaylantz United_40680521
+  m_EditorClassIdentifier: 
+  cardId: 40680521
+  cardName: Mamonaka the Vaylantz United
+  artwork: {fileID: 0}
+  artFile: CardArt/Mamonaka the Vaylantz United_40680521.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 3
+  description: "[ Pendulum Effect ] \nYou can activate 1 of these effects;\r\n\u25CF
+    Special Summon this card to your Main Monster Zone in its same column.\r\n\u25CF
+    Move 1 monster in your Main Monster Zone to an adjacent (horizontal) Monster
+    Zone.\r\nYou can only use this effect of \"Mamonaka the Vaylantz United\" once
+    per turn.\n\n[ Monster Effect ] \n3 \"Vaylantz\" monsters\r\nDuring the Main
+    Phase (Quick Effect): You can target 1 Effect Monster in your opponent's Main
+    Monster Zone; place that opponent's monster face-up as a Continuous Spell in
+    their Spell & Trap Zone in its same column. (If the zone is occupied, destroy
+    the occupying card, and if it is a Monster Card, your opponent loses LP equal
+    to its ATK). You can only use this effect of \"Mamonaka the Vaylantz United\"
+    once per turn. If this Special Summoned card you control is destroyed by your
+    opponent's card effect: You can place this card in your Pendulum Zone."
+  fusionGroup: Vaylantz
+  monsterType: 1
+  baseAtk: 2800
+  baseDef: 2800
+  stars: 10
+  starA: 8
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

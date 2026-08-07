@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Prior of the Ice Barrier_50088247
+  m_EditorClassIdentifier: 
+  cardId: 50088247
+  cardName: Prior of the Ice Barrier
+  artwork: {fileID: 0}
+  artFile: CardArt/Prior of the Ice Barrier_50088247.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 3
+  description: If you control a face-up "Ice Barrier" monster, you can Special Summon
+    this card (from your hand). You cannot Special Summon any Level 5 or higher monsters
+    the turn you use this effect. You can Tribute this card to target 1 "Ice Barrier"
+    monster in your Graveyard, except "Prior of the Ice Barrier"; Special Summon
+    that target.
+  fusionGroup: Ice Barrier
+  monsterType: 7
+  baseAtk: 1000
+  baseDef: 400
+  stars: 2
+  starA: 8
+  starB: 9
+  favoriteTerrain: 3
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

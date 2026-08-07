@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Fiendsmith's Agnumday_32991300
+  m_EditorClassIdentifier: 
+  cardId: 32991300
+  cardName: Fiendsmith's Agnumday
+  artwork: {fileID: 0}
+  artFile: CardArt/Fiendsmith's Agnumday_32991300.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 1
+  description: "2+ monsters, including a LIGHT Fiend monster\r\nOnce per turn (Quick
+    Effect): You can target 1 LIGHT non-Link Fiend monster in your GY; Special Summon
+    it, and if you do, equip this card you control to that monster as an Equip Spell
+    with the following effects.\r\n\u25CF The equipped monster gains ATK equal to
+    the total Link Rating of Link Monsters equipped to it x 600.\r\n\u25CF If the
+    equipped monster attacks a Defense Position monster, inflict piercing battle
+    damage to your opponent."
+  fusionGroup: Fiendsmith
+  monsterType: 2
+  baseAtk: 1800
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

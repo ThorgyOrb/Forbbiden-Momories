@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Emperor Charles the Great_97864322
+  m_EditorClassIdentifier: 
+  cardId: 97864322
+  cardName: Emperor Charles the Great
+  artwork: {fileID: 0}
+  artFile: CardArt/Emperor Charles the Great_97864322.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 2
+  description: '1 Level 9 "Infernoble Knight Emperor Charles" equipped with an Equip
+    Card(s)
+
+    If this card is Link Summoned: You can target 1 "Infernoble Knight
+    Emperor Charles" in your GY; this card''s name becomes that target''s original
+    name, and it gains that target''s original effects, then equip that target to
+    this card as an Equip Spell that gives it 500 ATK. Once per turn, when a Spell/Trap
+    Card or effect is activated (Quick Effect): You can send 1 Equip Spell from your
+    hand or face-up field to the GY; negate the activation, and if you do, destroy
+    that card.'
+  fusionGroup: Noble Knight
+  monsterType: 12
+  baseAtk: 3000
+  baseDef: 0
+  stars: 0
+  starA: 4
+  starB: 5
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

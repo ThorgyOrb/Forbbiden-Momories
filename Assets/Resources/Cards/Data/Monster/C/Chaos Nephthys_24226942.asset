@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Chaos Nephthys_24226942
+  m_EditorClassIdentifier: 
+  cardId: 24226942
+  cardName: Chaos Nephthys
+  artwork: {fileID: 0}
+  artFile: CardArt/Chaos Nephthys_24226942.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 0
+  description: 'Cannot be Normal Summoned/Set. Must be Special Summoned by its own
+    effect. If a card(s) on the field is destroyed by a card effect: You can banish
+    1 LIGHT and 1 DARK monster from your GY, except "Chaos Nephthys"; Special Summon
+    this card from the GY (if it was there when the card was destroyed) or hand (even
+    if not). You can only use this effect of "Chaos Nephthys" once per turn. If this
+    card is Special Summoned: You can target 1 card your opponent controls and 2
+    cards in their GY; banish them.'
+  fusionGroup: Chaos
+  monsterType: 11
+  baseAtk: 2400
+  baseDef: 1600
+  stars: 8
+  starA: 1
+  starB: 5
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

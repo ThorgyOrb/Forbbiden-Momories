@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Gold Pride - Better Luck Next Time!_54670997
+  m_EditorClassIdentifier: 
+  cardId: 54670997
+  cardName: Gold Pride - Better Luck Next Time!
+  artwork: {fileID: 0}
+  artFile: CardArt/Gold Pride - Better Luck Next Time!_54670997.jpg
+  rarity: 0
+  cardCategory: 1
+  attribute: 7
+  description: 'When this card is activated: You can add 1 "Gold Pride" monster from
+    your Deck to your hand, and if you do, lose LP equal to its ATK. If a face-up
+    "Gold Pride" monster(s) you control that was Special Summoned from the Extra
+    Deck returns to the Extra Deck (except during the Damage Step): You can draw
+    1 card. You can only use this effect of "Gold Pride - Better Luck Next Time!"
+    once per turn. You can only activate 1 "Gold Pride - Better Luck Next Time!"
+    per turn.'
+  fusionGroup: Gold Pride
+  monsterType: 0
+  baseAtk: 0
+  baseDef: 0
+  stars: 0
+  starA: 0
+  starB: 0
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

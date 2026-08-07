@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Arcana Force XII - The Hangman_72321198
+  m_EditorClassIdentifier: 
+  cardId: 72321198
+  cardName: Arcana Force XII - The Hangman
+  artwork: {fileID: 0}
+  artFile: 
+  rarity: 1
+  cardCategory: 0
+  attribute: 1
+  description: "When a card or effect is activated (Quick Effect): You can reveal
+    this card in your hand; Special Summon 1 \"Arcana Force\" monster from your hand
+    in Defense Position. You can only use this effect of \"Arcana Force XII - The
+    Hangman\" once per turn. If this card is Summoned: Toss a coin.\r\n\u25CF Heads:
+    Destroy 1 monster you control, and if you do, take damage equal to its original
+    ATK.\r\n\u25CF Tails: Destroy 1 monster your opponent controls, and if you do,
+    inflict damage to your opponent equal to its original ATK."
+  fusionGroup: Arcana Force
+  monsterType: 15
+  baseAtk: 2200
+  baseDef: 2200
+  stars: 6
+  starA: 0
+  starB: 1
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

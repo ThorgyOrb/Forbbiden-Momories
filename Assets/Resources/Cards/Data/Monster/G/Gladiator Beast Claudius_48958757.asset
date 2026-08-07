@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Gladiator Beast Claudius_48958757
+  m_EditorClassIdentifier: 
+  cardId: 48958757
+  cardName: Gladiator Beast Claudius
+  artwork: {fileID: 0}
+  artFile: CardArt/Gladiator Beast Claudius_48958757.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: "5 \"Gladiator Beast\" monsters\r\nMust first be Special Summoned
+    (from your Extra Deck) by shuffling the above cards from your field and/or GY
+    into the Deck/Extra Deck. If Summoned this way: You can conduct your next Battle
+    Phase twice. Once per turn, if your opponent activates a monster effect (except
+    during the Damage Step): You can activate the following effect depending on whose
+    turn it is;\r\n\u25CF Yours: Special Summon 1 \"Gladiator Beast\" monster from
+    your Deck.\r\n\u25CF Opponent's: Special Summon 1 Level 11 or lower \"Gladiator
+    Beast\" monster from your Extra Deck, ignoring its Summoning conditions."
+  fusionGroup: Gladiator
+  monsterType: 3
+  baseAtk: 3700
+  baseDef: 2600
+  stars: 12
+  starA: 1
+  starB: 2
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

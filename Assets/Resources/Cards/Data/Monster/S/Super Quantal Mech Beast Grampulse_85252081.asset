@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Super Quantal Mech Beast Grampulse_85252081
+  m_EditorClassIdentifier: 
+  cardId: 85252081
+  cardName: Super Quantal Mech Beast Grampulse
+  artwork: {fileID: 0}
+  artFile: CardArt/Super Quantal Mech Beast Grampulse_85252081.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: '2 Level 3 monsters
+
+    Cannot attack unless it has Xyz Material.
+    Once per turn: You can detach 1 Xyz Material from this card, then target 1 Spell/Trap
+    Card on the field; destroy it. This effect can be activated during either player''s
+    turn, if this card has "Super Quantum Blue Layer" as Xyz Material. Once per turn:
+    You can attach 1 "Super Quantum" monster from your hand or field to this card
+    as an Xyz Material.'
+  fusionGroup: Super Quant
+  monsterType: 13
+  baseAtk: 1800
+  baseDef: 2800
+  stars: 3
+  starA: 8
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

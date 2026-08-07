@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Aromage Laurel_14169843
+  m_EditorClassIdentifier: 
+  cardId: 14169843
+  cardName: Aromage Laurel
+  artwork: {fileID: 0}
+  artFile: CardArt/Aromage Laurel_14169843.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: 'If your LP are higher than your opponent''s: You can Special Summon
+    this card from your hand. If you gain LP: Target 1 non-Tuner Plant monster on
+    the field; it is treated as a Tuner this turn. If this card is sent to the GY:
+    You can gain 500 LP. You can only use each effect of "Aromage Laurel" once per
+    turn.'
+  fusionGroup: Aroma
+  monsterType: 5
+  baseAtk: 800
+  baseDef: 0
+  stars: 1
+  starA: 5
+  starB: 2
+  favoriteTerrain: 1
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

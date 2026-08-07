@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Raidraptor - Rising Rebellion Falcon_71222868
+  m_EditorClassIdentifier: 
+  cardId: 71222868
+  cardName: Raidraptor - Rising Rebellion Falcon
+  artwork: {fileID: 0}
+  artFile: CardArt/Raidraptor - Rising Rebellion Falcon_71222868.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 0
+  description: '5 Level 13 Winged Beast monsters
+
+    Unaffected by other cards''
+    effects. If this card is Xyz Summoned: You can destroy as many cards your opponent
+    controls as possible, then if this card has 3 or more "Raidraptor" Xyz Monsters
+    with different names as material, inflict damage to your opponent equal to the
+    combined original ATK of the destroyed monsters. Once per turn: You can detach
+    3 materials from this card, then target 1 "Raidraptor" Xyz Monster in your GY;
+    this card gains that monster''s effects until the End Phase.'
+  fusionGroup: Raidraptor
+  monsterType: 11
+  baseAtk: 4000
+  baseDef: 3500
+  stars: 12
+  starA: 1
+  starB: 5
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

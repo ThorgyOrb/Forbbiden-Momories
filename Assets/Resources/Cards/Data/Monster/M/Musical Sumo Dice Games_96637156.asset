@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Musical Sumo Dice Games_96637156
+  m_EditorClassIdentifier: 
+  cardId: 96637156
+  cardName: Musical Sumo Dice Games
+  artwork: {fileID: 0}
+  artFile: CardArt/Musical Sumo Dice Games_96637156.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 2
+  description: '2 Level 6 monsters
+
+    At the start of your opponent''s Battle
+    Phase: If this card is in the Main Monster Zone, roll a six-sided die and move
+    this card directly to that many (1 to 6) Main Monster Zones clockwise, and if
+    a monster is already in that zone it moves to, attach that monster to this card
+    as material. (Transfer its materials to this card.) If this effect causes this
+    monster''s number of materials to exceed 6, you win the Duel. If this card cannot
+    be moved, or the monster in the zone it moves to cannot be attached, send this
+    card to the GY.'
+  fusionGroup: 
+  monsterType: 13
+  baseAtk: 600
+  baseDef: 3000
+  stars: 6
+  starA: 4
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

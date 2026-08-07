@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Silent Swordsman LV3_1995985
+  m_EditorClassIdentifier: 
+  cardId: 1995985
+  cardName: Silent Swordsman LV3
+  artwork: {fileID: 0}
+  artFile: CardArt/Silent Swordsman LV3_1995985.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: 'Negate your opponent''s Spell effects that target this card. During
+    your Standby Phase: You can send this face-up card to the Graveyard; Special
+    Summon 1 "Silent Swordsman LV5" from your hand or Deck. You cannot activate this
+    effect the turn this card is Summoned or flipped face-up.'
+  fusionGroup: Silent Swordsman
+  monsterType: 12
+  baseAtk: 1000
+  baseDef: 1000
+  stars: 3
+  starA: 0
+  starB: 4
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

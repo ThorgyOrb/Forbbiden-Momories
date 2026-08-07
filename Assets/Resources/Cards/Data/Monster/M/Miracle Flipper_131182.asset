@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Miracle Flipper_131182
+  m_EditorClassIdentifier: 
+  cardId: 131182
+  cardName: Miracle Flipper
+  artwork: {fileID: 0}
+  artFile: CardArt/Miracle Flipper_131182.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: If you control a "Miracle Flipper", you cannot Summon this card. Your
+    opponent cannot select another face-up monster as an attack target. If this card
+    is destroyed by battle, Special Summon it to your opponent's side of the field
+    at the end of the Battle Phase. If this card is destroyed by the effect of a
+    Spell or Trap Card, destroy 1 monster your opponent controls.
+  fusionGroup: 
+  monsterType: 1
+  baseAtk: 300
+  baseDef: 500
+  stars: 2
+  starA: 0
+  starB: 3
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

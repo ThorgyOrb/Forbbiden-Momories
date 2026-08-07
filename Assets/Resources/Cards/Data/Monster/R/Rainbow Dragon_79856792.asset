@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Rainbow Dragon_79856792
+  m_EditorClassIdentifier: 
+  cardId: 79856792
+  cardName: Rainbow Dragon
+  artwork: {fileID: 0}
+  artFile: CardArt/Rainbow Dragon_79856792.jpg
+  rarity: 3
+  cardCategory: 0
+  attribute: 1
+  description: '(This card is always treated as an "Ultimate Crystal" card.)
+
+    Cannot
+    be Normal Summoned/Set. Must be Special Summoned (from your hand) by having 7
+    "Crystal Beast" cards with different names on your field and/or GY. This card
+    cannot activate the following effects the turn it is Special Summoned. (Quick
+    Effect): You can send all face-up "Crystal Beast" monsters you control to the
+    GY; this card gains 1000 ATK for each monster sent to the GY. You can banish
+    all "Crystal Beast" monsters from your GY; shuffle all cards on the field into
+    the Deck.'
+  fusionGroup: Crystal Beast
+  monsterType: 0
+  baseAtk: 4000
+  baseDef: 0
+  stars: 10
+  starA: 0
+  starB: 4
+  favoriteTerrain: 2
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

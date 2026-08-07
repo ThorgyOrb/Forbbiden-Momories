@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Duke Archfiend_85154941
+  m_EditorClassIdentifier: 
+  cardId: 85154941
+  cardName: Duke Archfiend
+  artwork: {fileID: 0}
+  artFile: CardArt/Duke Archfiend_85154941.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 3
+  description: 'Gains ATK equal to its Level x 200. You can only use each of the
+    following effects of "Duke Archfiend" once per turn. You can target 1 face-up
+    monster you control that has a Level; send 1 "Archfiend" monster from your Deck
+    to the GY, except "Duke Archfiend", and if you do, increase that monster''s Level
+    by the Level of the sent monster. When your Ritual Monster is destroyed by battle
+    while this card is in your GY: You can Special Summon this card.'
+  fusionGroup: Archfiend
+  monsterType: 2
+  baseAtk: 0
+  baseDef: 2000
+  stars: 4
+  starA: 8
+  starB: 9
+  favoriteTerrain: 7
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

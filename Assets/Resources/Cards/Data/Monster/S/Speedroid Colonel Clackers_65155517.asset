@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Speedroid Colonel Clackers_65155517
+  m_EditorClassIdentifier: 
+  cardId: 65155517
+  cardName: Speedroid Colonel Clackers
+  artwork: {fileID: 0}
+  artFile: CardArt/Speedroid Colonel Clackers_65155517.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 5
+  description: "[ Pendulum Effect ] \nYou can banish 1 \"Speedroid\" card from your
+    GY; place 1 \"Speedroid\" Pendulum Monster from your Deck in your Pendulum Zone,
+    also you cannot Special Summon for the rest of this turn, except WIND monsters.
+    You can only use this effect of \"Speedroid Colonel Clackers\" once per turn.\n\n[
+    Monster Effect ] \nIf this card on the field is destroyed by battle or card effect:
+    You can Special Summon 1 \"Speedroid Colonel Clackers\" as a Tuner from your
+    hand, Deck, or GY. During damage calculation, if your \"Clear Wing\" monster
+    battles, while this card is face-up in your Extra Deck: You can banish this card,
+    and if you do, that monster gains 700 ATK. You can only use each effect of \"Speedroid
+    Colonel Clackers\" once per turn."
+  fusionGroup: roid
+  monsterType: 13
+  baseAtk: 200
+  baseDef: 1800
+  stars: 2
+  starA: 5
+  starB: 7
+  favoriteTerrain: 5
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Kuribon the Fairy Spirit_34873741
+  m_EditorClassIdentifier: 
+  cardId: 34873741
+  cardName: Kuribon the Fairy Spirit
+  artwork: {fileID: 0}
+  artFile: CardArt/Kuribon the Fairy Spirit_34873741.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: 'If you control "Ancient Fairy Dragon" or a LIGHT monster (Beast,
+    Plant, or Fairy): You can Special Summon this card from your hand, and if you
+    do, it is treated as a Tuner. If another card(s) you control, that is "Ancient
+    Fairy Dragon" or a monster(s) that mentions it, would be destroyed by card effect,
+    you can return this card you control to the hand instead. You can only use each
+    effect of "Kuribon the Fairy Spirit" once per turn.'
+  fusionGroup: Ancient Fairy Dragon
+  monsterType: 15
+  baseAtk: 300
+  baseDef: 200
+  stars: 1
+  starA: 0
+  starB: 1
+  favoriteTerrain: 6
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

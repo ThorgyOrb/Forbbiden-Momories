@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Pitknight Filly_25919316
+  m_EditorClassIdentifier: 
+  cardId: 25919316
+  cardName: Pitknight Filly
+  artwork: {fileID: 0}
+  artFile: CardArt/Pitknight Filly_25919316.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 2
+  description: '2 Effect Monsters
+
+    If this card is Special Summoned to a zone
+    a Link Monster points to: You can target 1 monster you control with 1500 or less
+    ATK; this turn, it can make a second attack during each Battle Phase, also if
+    it battles an opponent''s monster, any battle damage it inflicts to your opponent
+    is doubled. During the Standby Phase of the next turn after this card was destroyed
+    by battle or card effect and sent to the GY: You can Special Summon this card.
+    You can only use each effect of "Pitknight Filly" once per turn.'
+  fusionGroup: 
+  monsterType: 22
+  baseAtk: 1500
+  baseDef: 0
+  stars: 0
+  starA: 4
+  starB: 7
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

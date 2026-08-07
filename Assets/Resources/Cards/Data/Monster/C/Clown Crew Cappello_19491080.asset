@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Clown Crew Cappello_19491080
+  m_EditorClassIdentifier: 
+  cardId: 19491080
+  cardName: Clown Crew Cappello
+  artwork: {fileID: 0}
+  artFile: 
+  rarity: 1
+  cardCategory: 0
+  attribute: 1
+  description: "[ Pendulum Effect ] \nDuring your Main Phase: You can send 1 \"Clown
+    Crew\" card from your Deck to your GY, except a Pendulum Monster, and if you
+    do, Special Summon this card, also you cannot activate the effects of monsters
+    Special Summoned from the Deck or Extra Deck until the end of the next turn.
+    You can only use this effect of \"Clown Crew Cappello\" once per turn.\n\n[ Monster
+    Effect ] \nMonsters your opponent controls lose 1500 DEF while you control a
+    Tribute Summoned monster. If this card is Tributed: You can activate 1 of these
+    effects (but you can only use each of these effects of \"Clown Crew Cappello\"
+    once per turn);\r\n\u25CF Shuffle all Pendulum Monsters on the field and face-up
+    in the Extra Decks into the Deck.\r\n\u25CF Special Summon 1 non-Pendulum \"Clown
+    Crew\" monster from your Deck or Extra Deck, ignoring its Summoning conditions."
+  fusionGroup: Clown Crew
+  monsterType: 19
+  baseAtk: 1900
+  baseDef: 800
+  stars: 5
+  starA: 0
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Bujin Mahitotsu_92586237
+  m_EditorClassIdentifier: 
+  cardId: 92586237
+  cardName: Bujin Mahitotsu
+  artwork: {fileID: 0}
+  artFile: CardArt/Bujin Mahitotsu_92586237.jpg
+  rarity: 0
+  cardCategory: 0
+  attribute: 1
+  description: "You can send 1 other \"Bujin\" card from your hand to the GY; Special
+    Summon this card from your hand. You can activate 1 of these effects;\r\n\u25CF
+    Send 1 \"Bujin\" monster from your hand to the GY; add 1 \"Bujin\" monster with
+    a different name from your GY to your hand.\r\n\u25CF Banish 1 \"Bujin\" monster
+    from your GY; send 1 \"Bujin\" monster with a different name from your Deck to
+    the GY.\r\nYou can only use the Summoning effect, and the other effect, of \"Bujin
+    Mahitotsu\" each once per turn."
+  fusionGroup: Bujin
+  monsterType: 19
+  baseAtk: 0
+  baseDef: 1800
+  stars: 4
+  starA: 0
+  starB: 1
+  favoriteTerrain: 0
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []

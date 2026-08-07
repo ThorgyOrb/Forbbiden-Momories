@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81dd403c413c7b34b837ae9547e7c229, type: 3}
+  m_Name: Number S37_ Spider Shark_79625003
+  m_EditorClassIdentifier: 
+  cardId: 79625003
+  cardName: 'Number S37: Spider Shark'
+  artwork: {fileID: 0}
+  artFile: CardArt/Number S37 Spider Shark_79625003.jpg
+  rarity: 2
+  cardCategory: 0
+  attribute: 3
+  description: '3 Level 5 WATER monsters
+
+    You can also Xyz Summon this card
+    by using "Number 37: Hope Woven Dragon Spider Shark" you control (transfer its
+    materials to this card). Once per turn: You can detach 1 material from this card,
+    then target 1 monster your opponent controls; banish it (until their next Standby
+    Phase), and if you do, any monsters they currently control lose 1000 ATK until
+    the end of this turn. Once per turn, during the End Phase, if this card is in
+    your GY because this Xyz Summoned card was destroyed and sent there this turn:
+    You can Special Summon it.'
+  fusionGroup: Number
+  monsterType: 8
+  baseAtk: 2600
+  baseDef: 2100
+  stars: 5
+  starA: 8
+  starB: 9
+  favoriteTerrain: 3
+  monsterModelPrefab: {fileID: 0}
+  spellKind: 0
+  spellEffect: 0
+  spellValue: 0
+  fieldTerrain: 0
+  spellDescription: 
+  equipAtkBonus: 0
+  equipDefBonus: 0
+  equipRestrictToType: 0
+  equipMonsterType: 0
+  ritualMaterials: []
+  ritualResult: {fileID: 0}
+  specialEffect: 0
+  specialValue: 0
+  trapKind: 0
+  trapTrigger: 0
+  trapEffect: 0
+  trapValue: 0
+  resolutionPriority: 0
+  sources: []
