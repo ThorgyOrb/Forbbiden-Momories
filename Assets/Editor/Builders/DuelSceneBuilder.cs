@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -40,19 +41,25 @@ public static class DuelSceneBuilder
     const float SlotSpacingX = 2.0f;                 // separación entre columnas
     const float TileSize     = 1.95f;                // lado X de la casilla (junta fina)
     const float ZScale       = 1.5f;                 // campo ALARGADO en Z (tablero 1.5× más largo)
-    const float CardWidth    = 1.5f;                 // ancho físico de una carta
+    // Ancho físico de una carta en el tablero. Se eligió para que la carta QUEPA en su
+    // zócalo en CUALQUIER orientación: en Defensa gira 90° y su lado largo (ancho×1.4)
+    // pasa a lo ancho, así que ese lado largo (1.35×1.4≈1.89) debe caber en la casilla
+    // (TileSize 1.95) y NO invadir la vecina (SlotSpacingX 2.0).
+    const float CardWidth    = 1.35f;
     // Filas: oppSpell, oppMon | (franja central) | playMon, playSpell.
     // Base {4,2,-2,-4} × ZScale → hueco central para la franja del hexagrama.
     static readonly float[] RowZ = { 4.0f * ZScale, 2.0f * ZScale, -2.0f * ZScale, -4.0f * ZScale };
 
-    // Colores de la mesa (damero dorado tipo altar de Forbidden Memories).
-    static readonly Color TileLight     = new Color(0.88f, 0.74f, 0.42f);
-    static readonly Color TileDark      = new Color(0.72f, 0.58f, 0.30f);
-    static readonly Color TableBase     = new Color(0.30f, 0.21f, 0.10f); // junta cálida bajo las casillas
-    static readonly Color Stone         = new Color(0.36f, 0.27f, 0.16f); // cuerpo del altar
-    static readonly Color StoneDark     = new Color(0.25f, 0.18f, 0.11f);
-    static readonly Color StoneEngraved = new Color(0.44f, 0.33f, 0.18f); // rieles laterales grabados
-    static readonly Color CenterGold    = new Color(0.80f, 0.66f, 0.34f); // franja central del altar
+    // Paleta de la mesa "Neo-Kemet" (Egipto futurista + cyberpunk): obsidiana
+    // pulida, oro de circuito y neón turquesa. Los colores base los pinta el
+    // builder; en juego DuelBoard3D los re-tematiza según el terreno/carta de campo.
+    static readonly Color Obsidian     = new Color(0.055f, 0.065f, 0.098f); // losa base pulida
+    static readonly Color ObsidianDeep = new Color(0.035f, 0.042f, 0.065f); // recovecos / albedo del neón
+    static readonly Color SlotFill     = new Color(0.11f,  0.13f,  0.185f);  // casilla (zócalo)
+    static readonly Color Stone        = new Color(0.10f,  0.11f,  0.15f);   // pedestal (obsidiana mate)
+    static readonly Color StoneDark    = new Color(0.06f,  0.07f,  0.10f);   // bisel del pedestal
+    static readonly Color NeonCyan     = new Color(0.20f,  0.92f,  0.83f);   // turquesa (marco / rims)
+    static readonly Color NeonGold     = new Color(1.00f,  0.80f,  0.42f);   // oro de circuito (acentos)
 
     const string CardPrefabPath = "Assets/Resources/Prefabs/CardMonsterV2.prefab";
 
@@ -109,8 +116,10 @@ public static class DuelSceneBuilder
         var playPoint = MakePoint(boardGO.transform, "CameraPlayPoint",
             new Vector3(-0.2f, 3.2f, -16f), Quaternion.Euler(17.4f, 1f, 0.4f));
 
-        // ── Mesa/altar 3D (pedestal + damero + bordes + adornos) ──────────
-        var tableRoot = BuildTable(boardGO.transform, out var groundRenderer);
+        // ── Mesa/altar 3D (pedestal + zócalos + bordes + neón + obeliscos) ─
+        var tableRoot = BuildTable(boardGO.transform, out var groundRenderer,
+            out var tileRends, out var frameGlowRends, out var accentGlowRends,
+            out var rgbGlowRends, out var rgbLights);
 
         // ── Anclas de slots (sobre las casillas) ──────────────────────────
         var oppSpellAnchors  = MakeSlotRow(boardGO.transform, "OppSpellAnchors", RowZ[0]);
@@ -149,6 +158,12 @@ public static class DuelSceneBuilder
         Set(bso, "discardPoint", discard);
         Set(bso, "cardTemplate", cardTemplate);
         Set(bso, "groundRenderer", groundRenderer);
+        Set(bso, "boardSurface", groundRenderer);
+        SetArrayObj(bso, "boardTiles", tileRends.ToArray());
+        SetArrayObj(bso, "boardFrameGlow", frameGlowRends.ToArray());
+        SetArrayObj(bso, "boardAccentGlow", accentGlowRends.ToArray());
+        SetArrayObj(bso, "boardRgbGlow", rgbGlowRends.ToArray());
+        SetArrayObj(bso, "boardRgbLights", rgbLights.ToArray());
         bso.ApplyModifiedPropertiesWithoutUndo();
 
         // ═════════════════════════════ OVERLAY 2D ════════════════════════════
@@ -595,16 +610,27 @@ public static class DuelSceneBuilder
     // ── Mesa/altar 3D ─────────────────────────────────────────────────────
 
     /// <summary>
-    /// Construye la mesa como el ALTAR de Forbidden Memories: pedestal de piedra,
-    /// tapa dorada en DOS BLOQUES de damero 5×2 (rival / jugador) separados por
-    /// una FRANJA CENTRAL con un HEXAGRAMA (estrella de David), rieles laterales
-    /// de piedra grabada y CUATRO emblemas dorados flanqueando el altar central.
-    /// Devuelve el Transform raíz de la mesa (que la cinemática hace ascender) y,
-    /// por <paramref name="groundRenderer"/>, el Renderer de la BASE de la tapa
-    /// (las juntas del damero), que es lo que se tiñe con el terreno.
+    /// Construye la mesa como un ALTAR "Neo-Kemet" (Egipto futurista + cyberpunk):
+    /// pedestal de OBSIDIANA pulida, una losa base lisa, y las 5×4 casillas como
+    /// ZÓCALOS DEFINIDOS — cada casilla es una placa recesada rodeada de un borde
+    /// de NEÓN turquesa (el "socket" de la carta) —, un marco exterior de neón,
+    /// rieles laterales con vetas luminosas, y una franja central con el HEXAGRAMA
+    /// y emblemas de oro de circuito.
+    ///
+    /// Devuelve por <paramref name="groundRenderer"/> la losa base (fondo teñible) y,
+    /// por las tres listas, los Renderers que DuelBoard3D re-tematiza en juego:
+    /// casillas, piezas emisivas del marco/rejilla y piezas emisivas de acento.
     /// </summary>
-    static Transform BuildTable(Transform parent, out Renderer groundRenderer)
+    static Transform BuildTable(Transform parent, out Renderer groundRenderer,
+        out List<Renderer> tileRends, out List<Renderer> frameGlow, out List<Renderer> accentGlow,
+        out List<Renderer> rgbGlow, out List<Light> rgbLights)
     {
+        tileRends = new List<Renderer>();
+        frameGlow = new List<Renderer>();
+        accentGlow = new List<Renderer>();
+        rgbGlow = new List<Renderer>();
+        rgbLights = new List<Light>();
+
         var table = new GameObject("Table").transform;
         table.SetParent(parent, false);
 
@@ -616,69 +642,158 @@ public static class DuelSceneBuilder
         float topThick = 0.5f;      // grosor de la tapa
         float bodyHeight = 3.2f;    // altura del pedestal
 
-        // Cuerpo del pedestal (piedra) + bisel inferior.
-        MakeBox(table, "Pedestal", Stone,
-            new Vector3(0f, -topThick - bodyHeight * 0.5f, 0f),
-            new Vector3(halfW * 2f, bodyHeight, depth));
-        MakeBox(table, "PedestalBase", StoneDark,
-            new Vector3(0f, -topThick - bodyHeight + 0.15f, 0f),
-            new Vector3(halfW * 2f + 0.8f, 0.5f, depth + 0.8f));
+        // Materiales de obsidiana pulida (mate, sin emisión) para el cuerpo.
+        var obsidianMat = MakePolishedMaterial("ObsidianMat", Obsidian);
+        var pedestalMat = MakePolishedMaterial("PedestalMat", Stone);
 
-        // Tapa: base (juntas, se tiñe con el terreno).
-        var top = MakeBox(table, "TableTop", TableBase,
+        // Pedestal ESCALONADO (mastaba): cornisa ancha bajo la tapa → cuerpo más
+        // estrecho → pie ancho. La silueta en pasos rompe la caja lisa anterior.
+        var bodyMat = MakePolishedMaterial("PedBodyMat", StoneDark);
+        float pedTop = -topThick;
+        MakeBoxMat(table, "PedestalCornice", pedestalMat,
+            new Vector3(0f, pedTop - 0.28f, 0f),
+            new Vector3(halfW * 2f - 0.1f, 0.56f, depth - 0.1f));
+        MakeBoxMat(table, "PedestalBody", bodyMat,
+            new Vector3(0f, pedTop - 0.56f - (bodyHeight - 0.9f) * 0.5f, 0f),
+            new Vector3(halfW * 2f - 1.0f, bodyHeight - 0.9f, depth - 1.0f));
+        MakeBox(table, "PedestalBase", Stone,
+            new Vector3(0f, pedTop - bodyHeight + 0.1f, 0f),
+            new Vector3(halfW * 2f + 0.5f, 0.5f, depth + 0.5f));
+
+        // Losa base lisa (fondo del campo, se re-tiñe con el terreno).
+        var top = MakeBoxMat(table, "TableTop", obsidianMat,
             new Vector3(0f, -topThick * 0.5f, 0f),
             new Vector3(halfW * 2f, topThick, depth));
         groundRenderer = top.GetComponent<Renderer>();
 
-        // Marco dorado alrededor de la tapa (4 barras).
-        var frameMat = MakeLitMaterial("FrameMat", Gold);
-        float fw = halfW * 2f + 0.3f, fd = depth + 0.3f, fy = 0.02f, ft = 0.12f, fb = 0.35f;
-        MakeBoxMat(table, "FrameN", frameMat, new Vector3(0f, fy, fd * 0.5f), new Vector3(fw, ft, fb));
-        MakeBoxMat(table, "FrameS", frameMat, new Vector3(0f, fy, -fd * 0.5f), new Vector3(fw, ft, fb));
-        MakeBoxMat(table, "FrameE", frameMat, new Vector3(halfW + 0.15f, fy, 0f), new Vector3(fb, ft, fd));
-        MakeBoxMat(table, "FrameW", frameMat, new Vector3(-halfW - 0.15f, fy, 0f), new Vector3(fb, ft, fd));
+        // Marco exterior de NEÓN (4 barras finas emisivas).
+        var frameMat = MakeGlowMaterial("FrameGlowMat", NeonCyan, 1.6f);
+        float fw = halfW * 2f + 0.3f, fd = depth + 0.3f, fy = 0.03f, ft = 0.10f, fb = 0.22f;
+        frameGlow.Add(MakeBoxMat(table, "FrameN", frameMat, new Vector3(0f, fy, fd * 0.5f), new Vector3(fw, ft, fb)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "FrameS", frameMat, new Vector3(0f, fy, -fd * 0.5f), new Vector3(fw, ft, fb)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "FrameE", frameMat, new Vector3(halfW + 0.12f, fy, 0f), new Vector3(fb, ft, fd)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "FrameW", frameMat, new Vector3(-halfW - 0.12f, fy, 0f), new Vector3(fb, ft, fd)).GetComponent<Renderer>());
 
-        // Rieles laterales de piedra grabada (izq/der), algo elevados.
-        var railMat = MakeLitMaterial("RailMat", StoneEngraved);
+        // Rieles laterales de obsidiana con una VETA luminosa encima (neón del marco).
+        var railMat = MakePolishedMaterial("RailMat", ObsidianDeep);
         float railW = 0.9f, railX = halfW - railW * 0.5f - 0.12f;
         MakeBoxMat(table, "RailW", railMat, new Vector3(-railX, 0.06f, 0f), new Vector3(railW, 0.24f, depth - 0.3f));
         MakeBoxMat(table, "RailE", railMat, new Vector3(railX, 0.06f, 0f), new Vector3(railW, 0.24f, depth - 0.3f));
+        frameGlow.Add(MakeBoxMat(table, "RailVeinW", frameMat, new Vector3(-railX, 0.19f, 0f), new Vector3(0.10f, 0.03f, depth - 0.8f)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "RailVeinE", frameMat, new Vector3(railX, 0.19f, 0f), new Vector3(0.10f, 0.03f, depth - 0.8f)).GetComponent<Renderer>());
 
-        // Casillas del damero: 2 bloques (RowZ ya trae el hueco central).
-        var lightMat = MakeLitMaterial("TileLightMat", TileLight);
-        var darkMat  = MakeLitMaterial("TileDarkMat", TileDark);
+        // Obeliscos en las 4 esquinas: fuste de obsidiana escalonado con RELIEVES de
+        // glifos egipcios + PIRAMIDIÓN con luz RGB. Enmarcan el altar sin tapar el
+        // campo (bajos y a los lados).
+        var capMat = MakeGlowMaterial("ObeliskCapMat", NeonGold, 1.7f);   // su emisión la cicla el RGB en juego
+        var glyphMat = MakeGlowMaterial("ObeliskGlyphMat", NeonGold, 0.8f);
+        float ox = halfW - 0.02f, oz = depth * 0.5f - 0.6f, oh = 1.75f;
+        foreach (float sx in new[] { -ox, ox })
+            foreach (float sz in new[] { -oz, oz })
+            {
+                MakeBoxMat(table, "ObeliskFoot", pedestalMat, new Vector3(sx, 0.10f, sz), new Vector3(0.62f, 0.2f, 0.62f));
+                MakeBoxMat(table, "ObeliskShaft", bodyMat, new Vector3(sx, oh * 0.5f + 0.14f, sz), new Vector3(0.40f, oh, 0.40f));
+
+                // Piramidión (capstone) — emisión ciclada por el RGB en juego.
+                rgbGlow.Add(MakeBoxMat(table, "ObeliskCap", new Material(capMat) { name = "ObeliskCapMat_i" },
+                    new Vector3(sx, oh + 0.28f, sz), new Vector3(0.30f, 0.30f, 0.30f)).GetComponent<Renderer>());
+
+                // Luz RGB de punto sobre la punta.
+                var lightGo = new GameObject("ObeliskLight");
+                lightGo.transform.SetParent(table, false);
+                lightGo.transform.localPosition = new Vector3(sx, oh + 0.55f, sz);
+                var pl = lightGo.AddComponent<Light>();
+                pl.type = LightType.Point; pl.range = 4.5f; pl.intensity = 0f;
+                pl.shadows = LightShadows.None; pl.renderMode = LightRenderMode.ForcePixel;
+                rgbLights.Add(pl);
+
+                // Relieves de glifos egipcios en la cara del obelisco que mira a la cámara (-Z).
+                BuildObeliskGlyphs(table, new Vector3(sx, 0.6f, sz - 0.205f), glyphMat, accentGlow);
+            }
+
+        // Casillas como ZÓCALOS: placa de neón (rim) bajo una casilla recesada.
+        // El neón asoma como un borde fino alrededor de la casilla → "socket" definido.
+        var rimMat  = MakeGlowMaterial("SlotRimMat", NeonCyan, 1.3f);
+        var tileMat = MakePolishedMaterial("TileMat", SlotFill);
+        float tX = TileSize, tZ = TileSize * ZScale;
+        float inset = 0.16f;   // grosor del borde de neón visible
         for (int r = 0; r < RowZ.Length; r++)
         {
             for (int c = 0; c < 5; c++)
             {
                 float x = (c - 2) * SlotSpacingX;
-                bool light = (r + c) % 2 == 0;
-                MakeBoxMat(table, $"Tile_{r}_{c}", light ? lightMat : darkMat,
-                    new Vector3(x, 0.015f, RowZ[r]),
-                    new Vector3(TileSize, 0.05f, TileSize * ZScale));  // casilla alargada en Z
+                // Rim emisivo (un pelín mayor, más bajo).
+                frameGlow.Add(MakeBoxMat(table, $"SlotRim_{r}_{c}", rimMat,
+                    new Vector3(x, 0.012f, RowZ[r]),
+                    new Vector3(tX, 0.04f, tZ)).GetComponent<Renderer>());
+                // Casilla recesada (encima, más chica) — material PROPIO por casilla
+                // (así el damero y el teñido por terreno la afectan de forma individual).
+                var tileGo = MakeBoxMat(table, $"Tile_{r}_{c}",
+                    new Material(tileMat) { name = $"TileMat_{r}_{c}" },
+                    new Vector3(x, 0.028f, RowZ[r]),
+                    new Vector3(tX - inset, 0.05f, tZ - inset));
+                tileRends.Add(tileGo.GetComponent<Renderer>());
             }
         }
 
-        // ── Franja central (altar) con el HEXAGRAMA ──────────────────────
-        var centerMat = MakeLitMaterial("CenterMat", CenterGold);
-        MakeBoxMat(table, "CenterStrip", centerMat,
-            new Vector3(0f, 0.016f, 0f), new Vector3(fieldHalf * 2f, 0.05f, 2.0f * ZScale));
+        // ── Altar central: franja de obsidiana + MEDALLÓN CIRCULAR de oro ──
+        // Franja base oscura (estructura) que cruza el campo.
+        var stripMat = MakePolishedMaterial("CenterStripMat", ObsidianDeep);
+        MakeBoxMat(table, "CenterStrip", stripMat,
+            new Vector3(0f, 0.014f, 0f), new Vector3(fieldHalf * 2f, 0.04f, 1.5f * ZScale));
+        // Medallón elíptico (foco): anillo con luz RGB bajo un disco de obsidiana.
+        var ringMat = MakeGlowMaterial("MedallionRingMat", NeonGold, 1.4f);
+        var discMat = MakePolishedMaterial("MedallionMat", ObsidianDeep);
+        rgbGlow.Add(MakeCyl(table, "MedallionRing", ringMat,
+            new Vector3(0f, 0.02f, 0f), new Vector3(6.2f, 0.03f, 2.75f)).GetComponent<Renderer>());
+        MakeCyl(table, "Medallion", discMat, new Vector3(0f, 0.03f, 0f), new Vector3(5.7f, 0.035f, 2.3f));
         BuildHexagram(table, new Vector3(0f, 0.08f, 0f), 2.6f, 0.9f * ZScale);
 
-        // ── Cuatro emblemas dorados flanqueando el altar central ─────────
-        var emblemMat = MakeLitMaterial("EmblemMat", GoldBright);
+        // Luz RGB del medallón (sobre el altar central).
+        var medLightGo = new GameObject("MedallionLight");
+        medLightGo.transform.SetParent(table, false);
+        medLightGo.transform.localPosition = new Vector3(0f, 0.7f, 0f);
+        var ml = medLightGo.AddComponent<Light>();
+        ml.type = LightType.Point; ml.range = 5.5f; ml.intensity = 0f;
+        ml.shadows = LightShadows.None; ml.renderMode = LightRenderMode.ForcePixel;
+        rgbLights.Add(ml);
+
+        // ── Studs redondos de oro flanqueando el altar (sobre los rieles) ──
+        var studMat = MakeGlowMaterial("StudGlowMat", NeonGold, 1.5f);
         foreach (float sx in new[] { -railX, railX })
-            foreach (float sz in new[] { 2.0f, -2.0f })
-                MakeFlatEmblem(table, emblemMat, new Vector3(sx, 0.16f, sz), 0.8f);
+            foreach (float sz in new[] { 2.6f, -2.6f })
+                accentGlow.Add(MakeCyl(table, "EmblemStud", studMat,
+                    new Vector3(sx, 0.20f, sz), new Vector3(0.5f, 0.05f, 0.5f)).GetComponent<Renderer>());
 
         return table;
     }
 
-    /// <summary>Emblema dorado (rombo) tumbado sobre la superficie, visto desde arriba.</summary>
-    static void MakeFlatEmblem(Transform parent, Material mat, Vector3 pos, float size)
+    /// <summary>
+    /// Estampa RELIEVES de glifos egipcios (ankh + registros + ojo de Horus simplificado)
+    /// en la cara de un obelisco: barras finas en el plano XY a la z de <paramref name="anchor"/>,
+    /// protruyendo hacia la cámara. Se añaden a <paramref name="accentGlow"/> (se tiñen con el
+    /// terreno y se atenúan con la intro como el resto del neón de acento).
+    /// </summary>
+    static void BuildObeliskGlyphs(Transform parent, Vector3 anchor, Material mat, List<Renderer> accentGlow)
     {
-        var go = MakeBoxMat(parent, "Emblem", mat, pos, new Vector3(size, 0.08f, size));
-        go.transform.localRotation = Quaternion.Euler(0f, 45f, 0f);
+        const float d = 0.03f;   // grosor/protrusión del relieve
+        void Bar(float lx, float ly, float w, float h) =>
+            accentGlow.Add(MakeBoxMat(parent, "Glyph", mat,
+                new Vector3(anchor.x + lx, anchor.y + ly, anchor.z),
+                new Vector3(w, h, d)).GetComponent<Renderer>());
+
+        // ── Ankh (parte alta) ──
+        Bar(0f,      0.62f, 0.035f, 0.30f);   // asta vertical
+        Bar(0f,      0.70f, 0.22f,  0.035f);  // brazos
+        Bar(-0.075f, 0.85f, 0.035f, 0.16f);   // lazo: lado izquierdo
+        Bar( 0.075f, 0.85f, 0.035f, 0.16f);   // lazo: lado derecho
+        Bar(0f,      0.93f, 0.19f,  0.035f);  // lazo: techo
+        // ── Registros (barras horizontales, "texto") ──
+        Bar(0f,      0.34f, 0.24f,  0.035f);
+        Bar(0f,      0.22f, 0.24f,  0.035f);
+        // ── Ojo de Horus simplificado ──
+        Bar(0f,      0.08f, 0.20f,  0.035f);  // línea del ojo
+        Bar(0.11f,  -0.01f, 0.10f,  0.035f);  // rabillo
     }
 
     /// <summary>Hexagrama (estrella de David) de dos triángulos, tumbado en la franja central.</summary>
@@ -746,6 +861,20 @@ public static class DuelSceneBuilder
     static GameObject MakeBox(Transform parent, string name, Color color, Vector3 pos, Vector3 size)
         => MakeBoxMat(parent, name, MakeLitMaterial(name + "Mat", color), pos, size);
 
+    /// <summary>Cilindro (20 lados) para piezas REDONDAS: discos, medallones, studs.
+    /// Escala X/Z = diámetro; escala Y = mitad del grosor (el cilindro mide 2 de alto).</summary>
+    static GameObject MakeCyl(Transform parent, string name, Material mat, Vector3 pos, Vector3 size)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        go.name = name;
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = pos;
+        go.transform.localScale = size;
+        go.GetComponent<Renderer>().sharedMaterial = mat;
+        Object.DestroyImmediate(go.GetComponent<Collider>());
+        return go;
+    }
+
     static GameObject MakeBoxMat(Transform parent, string name, Material mat, Vector3 pos, Vector3 size)
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -800,6 +929,29 @@ public static class DuelSceneBuilder
         Shader shader = Shader.Find("Universal Render Pipeline/Lit");
         if (shader == null) shader = Shader.Find("Standard");
         return new Material(shader) { name = name, color = color };
+    }
+
+    /// <summary>Material de OBSIDIANA pulida: liso, algo metálico, sin emisión.</summary>
+    static Material MakePolishedMaterial(string name, Color color)
+    {
+        var m = MakeLitMaterial(name, color);
+        if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", 0.72f);
+        if (m.HasProperty("_Glossiness")) m.SetFloat("_Glossiness", 0.72f); // Standard
+        if (m.HasProperty("_Metallic")) m.SetFloat("_Metallic", 0.35f);
+        return m;
+    }
+
+    /// <summary>Material EMISIVO de neón: albedo casi negro y emisión de <paramref name="emission"/>.
+    /// En juego DuelBoard3D reescribe su _EmissionColor con el color/intensidad del terreno.</summary>
+    static Material MakeGlowMaterial(string name, Color emission, float intensity = 1.5f)
+    {
+        var m = MakeLitMaterial(name, ObsidianDeep);
+        m.EnableKeyword("_EMISSION");
+        m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        m.SetColor("_EmissionColor", emission * intensity);
+        if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", 0.8f);
+        if (m.HasProperty("_Metallic")) m.SetFloat("_Metallic", 0.1f);
+        return m;
     }
 
     // ── Piezas UI (mismo estilo que el resto de builders) ────────────────
@@ -890,6 +1042,15 @@ public static class DuelSceneBuilder
     }
 
     static void SetArray(SerializedObject so, string prop, Transform[] values)
+    {
+        var p = so.FindProperty(prop);
+        if (p == null) { Debug.LogError($"DuelSceneBuilder: no existe el array '{prop}'."); return; }
+        p.arraySize = values.Length;
+        for (int i = 0; i < values.Length; i++)
+            p.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+    }
+
+    static void SetArrayObj(SerializedObject so, string prop, Object[] values)
     {
         var p = so.FindProperty(prop);
         if (p == null) { Debug.LogError($"DuelSceneBuilder: no existe el array '{prop}'."); return; }

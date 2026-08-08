@@ -163,7 +163,7 @@ public class DuelController : MonoBehaviour
 
         screen.SetOpponentName(Opponent.Name);
         screen.SetTerrain(_terrain);
-        board.SetTerrain(_terrain);
+        board.SetTerrain(_terrain, animated: false);   // estado inicial sin transición
         screen.ShowTurn("");
         screen.ShowPhase("Preparación");
 
@@ -1546,6 +1546,7 @@ public class DuelController : MonoBehaviour
                 int fslot = Opponent.PlaceMonster(chain.FinalResult, CardPosition.FaceUpAttack, fatk, fdef, fstar);
 
                 yield return board.AnimateFusionSummon(playerSide: false, fslot, Opponent);
+                board.SyncField(Player, Opponent);   // normaliza igual que su invocación normal (misma posición)
                 screen.Log($"¡{Opponent.Name} fusiona! → {chain.FinalResult.cardName} (ATK {fatk}/DEF {fdef})");
 
                 // TUS trampas pueden responder a la invocación por fusión del rival.
@@ -1601,11 +1602,38 @@ public class DuelController : MonoBehaviour
         yield return StartCoroutine(RunAIBattlePhase());
     }
 
+    /// <summary>El rival ajusta la posición (Ataque/Defensa) de sus monstruos antes de
+    /// atacar, resaltando cada cambio. Igual que tú cambias con W.</summary>
+    private IEnumerator AIApplyPositions()
+    {
+        var changes = _ai.DecidePositions(Opponent, Player, _terrain);
+        if (changes.Count == 0) yield break;
+
+        yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentMonsterZone, 0.5f);
+        foreach (var (slot, pos) in changes)
+        {
+            if (Opponent.MonsterZone[slot] == null) continue;
+            Opponent.SetMonsterPosition(slot, pos);
+            board.SyncField(Player, Opponent);
+            board.SetOpponentMonsterHighlight(slot, true);
+
+            bool def = pos == CardPosition.FaceUpDefense;
+            screen.Log($"{Opponent.Name} pone {Opponent.MonsterZone[slot].cardName} en {(def ? "Defensa" : "Ataque")}.");
+            DuelAudio.Play(DuelAudio.Sfx.Flip);
+            yield return new WaitForSeconds(0.55f);
+            board.SetOpponentMonsterHighlight(slot, false);
+        }
+    }
+
     private IEnumerator RunAIBattlePhase()
     {
         Phase = DuelPhase.BattlePhase;
         screen.ShowPhase("Fase de Batalla");
         DuelAudio.Play(DuelAudio.Sfx.Phase);
+
+        // Antes de atacar, el rival coloca cada monstruo en la mejor posición
+        // (Ataque si le conviene atacar; Defensa si no) — como tú con W.
+        yield return AIApplyPositions();
 
         var attacks = _ai.DecideAttacks(Opponent, Player, _terrain);
         foreach (var (atkSlot, defSlot) in attacks)

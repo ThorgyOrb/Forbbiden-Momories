@@ -53,6 +53,31 @@ public class DuelBoard3D : MonoBehaviour
              "ven más chicas que la carta 2D alzada en una invocación normal.")]
     [SerializeField] private float fusionCardScale = 1.15f;
 
+    [Header("Estilo de campo (terreno / carta de campo)")]
+    [Tooltip("Losa de obsidiana (base de la mesa): recibe el color/textura de fondo del estilo.")]
+    [SerializeField] private Renderer boardSurface;
+    [Tooltip("Las 20 casillas (5×4): reciben el color/textura de casilla del estilo (con un leve damero).")]
+    [SerializeField] private Renderer[] boardTiles;
+    [Tooltip("Piezas emisivas del MARCO/rejilla (borde exterior, rieles, rims de casilla): neón principal.")]
+    [SerializeField] private Renderer[] boardFrameGlow;
+    [Tooltip("Piezas emisivas de ACENTO (franja central, emblemas): neón secundario.")]
+    [SerializeField] private Renderer[] boardAccentGlow;
+
+    [Header("Neón RGB (puntas de obeliscos + medallón)")]
+    [Tooltip("Piezas cuya EMISIÓN cicla el arcoíris (piramidiones + anillo del medallón).")]
+    [SerializeField] private Renderer[] boardRgbGlow;
+    [Tooltip("Luces de punto que acompañan al neón RGB (una por punta de obelisco + medallón).")]
+    [SerializeField] private Light[] boardRgbLights;
+    [Tooltip("Velocidad del ciclo de color (vueltas de tono por segundo).")]
+    [SerializeField] private float rgbCycleSpeed = 0.13f;
+    [Tooltip("Desfase de tono entre piezas (0 = TODAS del mismo color; >0 = arcoíris repartido).")]
+    [SerializeField] private float rgbHueSpread = 0f;
+    [SerializeField] private float rgbEmission = 2.0f;
+    [SerializeField] private float rgbLightIntensity = 2.4f;
+    [Tooltip("Desfase de tono de los diamantes/hexagrama respecto al RGB de obeliscos/medallón " +
+             "(0.5 = color complementario, siempre distinto).")]
+    [SerializeField] private float markerHueOffset = 0.5f;
+
     // ── Registro de vistas por slot ──────────────────────────────────────
     private readonly Duel3DCardView[] _playerMonsters = new Duel3DCardView[5];
     private readonly Duel3DCardView[] _opponentMonsters = new Duel3DCardView[5];
@@ -69,10 +94,214 @@ public class DuelBoard3D : MonoBehaviour
     private LineRenderer[] _markers;      // rombos indicadores (material sin luz)
     private Color[] _markerColors;        // su color pleno, para desvanecerlos con la luz
 
+    // ── Estilo de campo (re-tematizable) ─────────────────────────────────
+    // Un mismo tablero de obsidiana cambia de "piel" según el terreno o la carta
+    // de campo activa: colores base + intensidad de neón + texturas opcionales.
+    public struct FieldStyle
+    {
+        public Color surface;     // losa de obsidiana (fondo)
+        public Color tile;        // casillas
+        public Color frameGlow;   // emisión del marco/rejilla (neón principal)
+        public Color accentGlow;  // emisión de acentos (franja central, emblemas)
+        public float glow;        // multiplicador de emisión
+        public Texture surfaceTex;// textura opcional del fondo (null = liso)
+        public Texture tileTex;   // textura opcional de las casillas
+
+        public static FieldStyle Lerp(FieldStyle a, FieldStyle b, float t) => new FieldStyle
+        {
+            surface    = Color.Lerp(a.surface, b.surface, t),
+            tile       = Color.Lerp(a.tile, b.tile, t),
+            frameGlow  = Color.Lerp(a.frameGlow, b.frameGlow, t),
+            accentGlow = Color.Lerp(a.accentGlow, b.accentGlow, t),
+            glow       = Mathf.Lerp(a.glow, b.glow, t),
+            surfaceTex = b.surfaceTex,   // las texturas no interpolan: se fijan al destino
+            tileTex    = b.tileTex,
+        };
+    }
+
+    // Paleta base "Neo-Kemet" (obsidiana + neón turquesa + oro de circuito).
+    private static readonly FieldStyle NeoKemetDefault = new FieldStyle
+    {
+        surface    = new Color(0.055f, 0.065f, 0.098f),
+        tile       = new Color(0.11f, 0.13f, 0.185f),
+        frameGlow  = new Color(0.20f, 0.92f, 0.83f),   // turquesa
+        accentGlow = new Color(1.00f, 0.80f, 0.42f),   // oro de circuito
+        glow       = 1.5f,
+    };
+
+    // Repaletiza TODO el tablero según el terreno / carta de campo activa.
+    private static readonly Dictionary<TerrainType, FieldStyle> TerrainStyles = new()
+    {
+        { TerrainType.Neutral,   NeoKemetDefault },
+        { TerrainType.Forest,    new FieldStyle { surface = new Color(0.05f,0.09f,0.06f), tile = new Color(0.09f,0.16f,0.10f), frameGlow = new Color(0.35f,0.95f,0.48f), accentGlow = new Color(0.80f,0.96f,0.42f), glow = 1.4f } },
+        { TerrainType.Mountain,  new FieldStyle { surface = new Color(0.09f,0.07f,0.05f), tile = new Color(0.17f,0.13f,0.09f), frameGlow = new Color(1.00f,0.62f,0.28f), accentGlow = new Color(1.00f,0.82f,0.40f), glow = 1.4f } },
+        { TerrainType.Sea,       new FieldStyle { surface = new Color(0.04f,0.07f,0.12f), tile = new Color(0.08f,0.13f,0.21f), frameGlow = new Color(0.26f,0.72f,1.00f), accentGlow = new Color(0.35f,0.95f,0.95f), glow = 1.5f } },
+        { TerrainType.Dark,      new FieldStyle { surface = new Color(0.06f,0.05f,0.10f), tile = new Color(0.12f,0.09f,0.17f), frameGlow = new Color(0.56f,0.36f,0.96f), accentGlow = new Color(0.76f,0.46f,1.00f), glow = 1.6f } },
+        { TerrainType.Wasteland, new FieldStyle { surface = new Color(0.09f,0.08f,0.06f), tile = new Color(0.17f,0.15f,0.10f), frameGlow = new Color(0.86f,0.72f,0.36f), accentGlow = new Color(1.00f,0.85f,0.45f), glow = 1.3f } },
+        { TerrainType.Meadow,    new FieldStyle { surface = new Color(0.06f,0.09f,0.05f), tile = new Color(0.11f,0.17f,0.09f), frameGlow = new Color(0.55f,0.95f,0.36f), accentGlow = new Color(0.86f,0.98f,0.46f), glow = 1.4f } },
+        { TerrainType.Yami,      new FieldStyle { surface = new Color(0.07f,0.04f,0.11f), tile = new Color(0.13f,0.07f,0.18f), frameGlow = new Color(0.96f,0.26f,0.70f), accentGlow = new Color(0.70f,0.36f,1.00f), glow = 1.7f } },
+    };
+
+    private FieldStyle _style = NeoKemetDefault;   // estilo actualmente aplicado
+    private float _glowK = 0f;                      // compuerta de emisión (la intro la sube de 0→1)
+    private float _pulse = 1f;                      // latido sutil del neón (tras la intro)
+    private bool _introDone;                        // el latido solo corre con el duelo ya iluminado
+    private Coroutine _styleAnim;
+
+    // Materiales instanciados cacheados (para no re-instanciar cada frame en el latido).
+    private Material _surfaceMat;
+    private Material[] _tileMats;
+    private Material[] _frameMats;
+    private Material[] _accentMats;
+    private Material[] _rgbMats;
+
     void Awake()
     {
         if (cardTemplate != null) cardTemplate.gameObject.SetActive(false);
         PrepareIntro();
+        InitFieldStyle();
+    }
+
+    void Update()
+    {
+        // Latido tenue del neón una vez que el duelo está iluminado (la intro maneja
+        // la emisión con _glowK; aquí solo la modulamos suavemente para que "respire").
+        if (_introDone)
+        {
+            _pulse = 0.92f + 0.08f * Mathf.Sin(Time.time * 2.2f);
+            PushGlow();
+        }
+        // El neón RGB de obeliscos/medallón cicla siempre (atenuado por _glowK en la intro).
+        PushRgb();
+    }
+
+    /// <summary>Cicla el arcoíris en las puntas de obelisco y el medallón (emisión + luces),
+    /// atenuado por la compuerta de intro <c>_glowK</c> y el latido <c>_pulse</c>.</summary>
+    private void PushRgb()
+    {
+        float baseHue = Time.time * rgbCycleSpeed;
+        float k = _glowK * _pulse;
+
+        if (_rgbMats != null)
+            for (int i = 0; i < _rgbMats.Length; i++)
+            {
+                if (_rgbMats[i] == null) continue;
+                Color c = Color.HSVToRGB(Mathf.Repeat(baseHue + i * rgbHueSpread, 1f), 1f, 1f);
+                _rgbMats[i].SetColor("_EmissionColor", c * (rgbEmission * k));
+            }
+
+        if (boardRgbLights != null)
+            for (int i = 0; i < boardRgbLights.Length; i++)
+            {
+                if (boardRgbLights[i] == null) continue;
+                boardRgbLights[i].color = Color.HSVToRGB(Mathf.Repeat(baseHue + i * rgbHueSpread, 1f), 1f, 1f);
+                boardRgbLights[i].intensity = rgbLightIntensity * k;
+            }
+
+        // Diamantes + hexagrama (LineRenderers de _markers): ciclan en un tono DISTINTO
+        // (baseHue + markerHueOffset) al de obeliscos/medallón, atenuados con la intro.
+        if (_markers != null)
+        {
+            Color mc = Color.HSVToRGB(Mathf.Repeat(baseHue + markerHueOffset, 1f), 1f, 1f);
+            for (int i = 0; i < _markers.Length; i++)
+            {
+                if (_markers[i] == null) continue;
+                float a = (_markerColors != null && i < _markerColors.Length) ? _markerColors[i].a : 0.9f;
+                Color c = mc; c.a = a * k;
+                _markers[i].startColor = _markers[i].endColor = c;
+            }
+        }
+    }
+
+    // ── Estilo de campo: inicialización y aplicación ─────────────────────
+
+    /// <summary>Cachea los materiales teñibles y aplica el estilo por defecto (apagado hasta la intro).</summary>
+    private void InitFieldStyle()
+    {
+        if (boardSurface != null) _surfaceMat = boardSurface.material;
+        _tileMats   = MatsOf(boardTiles);
+        _frameMats  = MatsOf(boardFrameGlow);
+        _accentMats = MatsOf(boardAccentGlow);
+        _rgbMats    = MatsOf(boardRgbGlow);
+        // Las luces RGB arrancan apagadas (la intro las sube vía _glowK).
+        if (boardRgbLights != null)
+            foreach (var l in boardRgbLights) if (l != null) l.intensity = 0f;
+        ApplyStyleInstant(_style);   // _glowK ya es 0 (PrepareIntro dejó todo oscuro)
+        PushRgb();                   // deja marcadores/RGB apagados hasta que la intro suba _glowK
+    }
+
+    private static Material[] MatsOf(Renderer[] rends)
+    {
+        if (rends == null) return System.Array.Empty<Material>();
+        var mats = new Material[rends.Length];
+        for (int i = 0; i < rends.Length; i++)
+            mats[i] = rends[i] != null ? rends[i].material : null;
+        return mats;
+    }
+
+    /// <summary>Aplica un estilo AL INSTANTE (colores base + texturas + emisión actual).</summary>
+    private void ApplyStyleInstant(FieldStyle s)
+    {
+        _style = s;
+
+        if (_surfaceMat != null)
+        {
+            _surfaceMat.color = s.surface;
+            if (_surfaceMat.HasProperty("_BaseMap")) _surfaceMat.SetTexture("_BaseMap", s.surfaceTex);
+            else _surfaceMat.mainTexture = s.surfaceTex;
+        }
+
+        if (_tileMats != null)
+            for (int i = 0; i < _tileMats.Length; i++)
+            {
+                if (_tileMats[i] == null) continue;
+                // Damero sutil: casillas pares un pelín más claras (menos plano, más "definido").
+                bool lightSq = ((i / 5) + (i % 5)) % 2 == 0;
+                Color tc = s.tile * (lightSq ? 1f : 0.82f); tc.a = 1f;
+                _tileMats[i].color = tc;
+                if (_tileMats[i].HasProperty("_BaseMap")) _tileMats[i].SetTexture("_BaseMap", s.tileTex);
+                else _tileMats[i].mainTexture = s.tileTex;
+            }
+
+        PushGlow();
+    }
+
+    /// <summary>Empuja la emisión de marco/acento con la compuerta de intro y el latido.</summary>
+    private void PushGlow()
+    {
+        float kFrame = _style.glow * _glowK * _pulse;
+        Color fg = _style.frameGlow  * kFrame;
+        Color ag = _style.accentGlow * kFrame;
+        SetEmission(_frameMats, fg);
+        SetEmission(_accentMats, ag);
+    }
+
+    private static void SetEmission(Material[] mats, Color c)
+    {
+        if (mats == null) return;
+        foreach (var m in mats)
+            if (m != null) m.SetColor("_EmissionColor", c);
+    }
+
+    /// <summary>Cambia el estilo del campo (por terreno o carta de campo), con transición animada.</summary>
+    public void ApplyFieldStyle(FieldStyle target, bool animated = true)
+    {
+        if (_styleAnim != null) { StopCoroutine(_styleAnim); _styleAnim = null; }
+        if (!animated || !Application.isPlaying) { ApplyStyleInstant(target); return; }
+        _styleAnim = StartCoroutine(StyleTransition(_style, target, 0.7f));
+    }
+
+    private IEnumerator StyleTransition(FieldStyle from, FieldStyle to, float dur)
+    {
+        // Fija ya las texturas del destino (no interpolan) reaplicando 'to' al final.
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = Mathf.SmoothStep(0f, 1f, e / dur);
+            ApplyStyleInstant(FieldStyle.Lerp(from, to, k));
+            yield return null;
+        }
+        ApplyStyleInstant(to);
+        _styleAnim = null;
     }
 
     /// <summary>
@@ -172,6 +401,7 @@ public class DuelBoard3D : MonoBehaviour
         cam.SetPositionAndRotation(cameraPlayPoint.position, cameraPlayPoint.rotation);
         ApplyLighting(1f);
         SetTableY(_tableTargetY);
+        _introDone = true;   // a partir de aquí el neón "respira" (latido en Update)
     }
 
     /// <summary>
@@ -213,13 +443,10 @@ public class DuelBoard3D : MonoBehaviour
         RenderSettings.ambientIntensity = Mathf.Lerp(_ambientIntensityDark, _ambientIntensityTarget, k);
         RenderSettings.ambientLight = Color.Lerp(_ambientColorDark, _ambientColorTarget, k);
 
-        if (_markers != null)
-            for (int i = 0; i < _markers.Length; i++)
-            {
-                if (_markers[i] == null) continue;
-                Color c = _markerColors[i]; c.a = _markerColors[i].a * k;
-                _markers[i].startColor = _markers[i].endColor = c;
-            }
+        // La emisión del neón del tablero sube a la par que la iluminación. Los
+        // diamantes/hexagrama (LineRenderers) los cicla PushRgb (gated por _glowK).
+        _glowK = k;
+        PushGlow();
     }
 
     private void SetTableY(float y)
@@ -322,24 +549,15 @@ public class DuelBoard3D : MonoBehaviour
         }
     }
 
-    private static readonly Dictionary<TerrainType, Color> TerrainColors = new()
+    /// <summary>
+    /// Re-tematiza TODO el tablero según el terreno / carta de campo activa: color de
+    /// la losa, casillas, y color+intensidad del neón (marco y acentos). Con transición
+    /// animada durante el duelo; instantánea en el montaje inicial.
+    /// </summary>
+    public void SetTerrain(TerrainType terrain, bool animated = true)
     {
-        { TerrainType.Neutral,   new Color(0.16f, 0.17f, 0.22f) },
-        { TerrainType.Forest,    new Color(0.10f, 0.22f, 0.10f) },
-        { TerrainType.Mountain,  new Color(0.24f, 0.20f, 0.16f) },
-        { TerrainType.Sea,       new Color(0.08f, 0.16f, 0.28f) },
-        { TerrainType.Dark,      new Color(0.10f, 0.08f, 0.16f) },
-        { TerrainType.Wasteland, new Color(0.26f, 0.22f, 0.12f) },
-        { TerrainType.Meadow,    new Color(0.14f, 0.24f, 0.08f) },
-        { TerrainType.Yami,      new Color(0.14f, 0.06f, 0.18f) },
-    };
-
-    /// <summary>Tiñe la mesa según el terreno activo.</summary>
-    public void SetTerrain(TerrainType terrain)
-    {
-        if (groundRenderer == null) return;
-        if (TerrainColors.TryGetValue(terrain, out var c))
-            groundRenderer.material.color = c;
+        FieldStyle style = TerrainStyles.TryGetValue(terrain, out var s) ? s : NeoKemetDefault;
+        ApplyFieldStyle(style, animated);
     }
 
     // ── Sincronización sin animación ─────────────────────────────────────
@@ -349,9 +567,10 @@ public class DuelBoard3D : MonoBehaviour
     /// vistas sin animar). Se usa tras efectos instantáneos (magias, revelar,
     /// cambio de posición) y como red de seguridad tras cada animación.
     /// </summary>
-    // Las cartas se posan a una ALTURA FIJA sobre la mesa (Y = 0.5): con el ancla
-    // (Y ≈ 0.06) quedaban hundidas dentro del tablero.
-    private const float CardY = 0.5f;
+    // Las cartas se posan a una ALTURA FIJA sobre la mesa, CASI tocando el campo: la
+    // cara de la carta (que va +0.03 sobre este valor) queda ~0.11, justo por encima
+    // de la superficie del zócalo (~0.05) sin hundirse ni parpadear (z-fighting).
+    private const float CardY = 0.08f;
     private Vector3 SlotPos(Transform anchor) => new Vector3(anchor.position.x, CardY, anchor.position.z);
 
     // Orientación de TODAS las cartas del tablero según qué lado mira la cámara:
@@ -1065,10 +1284,13 @@ public class DuelBoard3D : MonoBehaviour
         view.SetTableYaw(_boardYaw);
         view.SetStats("");
 
+        // Aterriza en la MISMA posición canónica de reposo que la invocación simple
+        // (SlotPos, Y fija) para que fusión e invocación queden idénticas en el campo.
+        Vector3 rest = SlotPos(anchors[slot]);
         yield return DuelTween.Parallel(this,
-            DuelTween.Arc(view.transform, view.transform.position, anchors[slot].position, 1.2f, 0.5f),
+            DuelTween.Arc(view.transform, view.transform.position, rest, 1.2f, 0.5f),
             DuelTween.ScaleTo(view.transform, Vector3.one, 0.5f));
-        yield return LandOnSlot(view, anchors[slot].position);
+        yield return LandOnSlot(view, rest);
 
         view.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
     }
@@ -1154,10 +1376,12 @@ public class DuelBoard3D : MonoBehaviour
         v.Show(owner.MonsterZone[slot], owner.MonsterPositions[slot]);
         v.SetTableYaw(_boardYaw);
         v.SetStats("");
+        // Misma posición canónica de reposo (SlotPos) que la fusión → idénticas.
+        Vector3 rest = SlotPos(anchors[slot]);
         yield return DuelTween.Parallel(this,
-            DuelTween.Arc(v.transform, v.transform.position, anchors[slot].position, 1.0f, 0.5f),
+            DuelTween.Arc(v.transform, v.transform.position, rest, 1.0f, 0.5f),
             DuelTween.ScaleTo(v.transform, Vector3.one, 0.5f));
-        yield return LandOnSlot(v, anchors[slot].position);
+        yield return LandOnSlot(v, rest);
         v.SetCurrentStats(owner.MonsterCurrentAtk[slot], owner.MonsterCurrentDef[slot]);
     }
 
