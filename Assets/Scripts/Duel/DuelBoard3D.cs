@@ -724,7 +724,9 @@ public class DuelBoard3D : MonoBehaviour
 
     private IEnumerator SelectPulse(Duel3DCardView v, Vector3 basePos)
     {
-        Vector3 lifted = basePos + Vector3.up * 0.4f;
+        // Elevación al seleccionar: baja (0.18) para que quede cerca del campo,
+        // acorde a la nueva altura de reposo de las cartas (antes 0.4, flotaba mucho).
+        Vector3 lifted = basePos + Vector3.up * 0.18f;
 
         // Subida rápida y suave, con un leve pop de escala.
         const float up = 0.16f;
