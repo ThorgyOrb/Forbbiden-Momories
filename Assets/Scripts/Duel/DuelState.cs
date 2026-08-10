@@ -31,7 +31,9 @@ public enum DuelResult
 public enum DuelRank
 {
     BPow, APow, SPow,
-    BTec, ATec, STec
+    BTec, ATec, STec,
+    // Añadidos (APPEND-ONLY): escala completa estilo Forbidden Memories.
+    CPow, DPow, CTec, DTec
 }
 
 /// <summary>

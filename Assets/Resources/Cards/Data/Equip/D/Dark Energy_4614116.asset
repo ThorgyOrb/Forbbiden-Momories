@@ -37,6 +37,7 @@ MonoBehaviour:
   spellDescription: 
   equipAtkBonus: 500
   equipDefBonus: 500
+  equipTargets: {fileID: 0}
   equipRestrictToType: 1
   equipMonsterType: 0
   ritualMaterials: []

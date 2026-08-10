@@ -47,12 +47,20 @@ public class Duelist
     // entre estrellas se evalúa POR BATALLA (atacante vs defensor), no al invocar.
     public GuardianStar[] MonsterStars { get; } = new GuardianStar[5];
 
-    // Estadísticas para rango
+    // Estadísticas para rango / resumen del duelo
     public int DamageTaken { get; private set; }
-    public int MonstersDestroyed { get; private set; }
+    public int MonstersDestroyed { get; private set; }   // monstruos PROPIOS destruidos
     public int SpellsUsed { get; private set; }
     public int FusionsPerformed { get; private set; }
     public int TurnsPlayed { get; private set; }
+    public int MonstersPlayed { get; private set; }       // monstruos colocados en el campo
+    public int AttacksMade { get; private set; }          // ataques declarados (incluye directos)
+    public int DirectAttacks { get; private set; }        // ataques directos
+    public int TrapsSet { get; private set; }             // trampas colocadas
+    public int TrapsActivated { get; private set; }       // trampas que se activaron
+    public int EquipsApplied { get; private set; }        // equipos aplicados a monstruos
+    public int EffectiveAttacks { get; private set; }     // destruiste un monstruo rival en ATAQUE
+    public int EffectiveDefenses { get; private set; }    // tu monstruo en DEFENSA sobrevivió un ataque
     public bool DeckOut { get; private set; }
 
     public Duelist(string name, bool isHuman)
@@ -127,6 +135,7 @@ public class Duelist
                 MonsterCurrentAtk[i] = atk;
                 MonsterCurrentDef[i] = def;
                 MonsterStars[i] = star;
+                MonstersPlayed++;
                 return i;
             }
         }
@@ -143,6 +152,7 @@ public class Duelist
         MonsterCurrentAtk[slot] = atk;
         MonsterCurrentDef[slot] = def;
         MonsterStars[slot] = star;
+        MonstersPlayed++;
         return true;
     }
 
@@ -270,4 +280,14 @@ public class Duelist
     // ── Turno ──────────────────────────────────────────────────
 
     public void EndTurn() => TurnsPlayed++;
+
+    // ── Otras estadísticas del duelo ───────────────────────────
+
+    public void RegisterAttack() => AttacksMade++;
+    public void RegisterDirectAttack() { AttacksMade++; DirectAttacks++; }
+    public void RegisterTrapSet() => TrapsSet++;
+    public void RegisterTrapActivated() => TrapsActivated++;
+    public void RegisterEquip() => EquipsApplied++;
+    public void RegisterEffectiveAttack() => EffectiveAttacks++;
+    public void RegisterEffectiveDefense() => EffectiveDefenses++;
 }

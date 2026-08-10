@@ -67,35 +67,63 @@ public class DuelHandCardView : MonoBehaviour, IPointerEnterHandler
             _display.SetPosition(faceDown ? CardPosition.FaceDownAttack : CardPosition.FaceUpAttack);
     }
 
-    // ── Número de orden en la lista de fusión (↑ en la mano) ─────────────
+    // ── Marca de la lista de fusión (↑ en la mano) ───────────────────────
+    // Un CUADRADO NEGRO (con borde dorado) en la esquina superior derecha de la
+    // carta, con el NÚMERO de orden en la pila de fusión.
 
-    private TextMeshProUGUI _fusionBadge;
+    private GameObject _fusionBadge;
+    private TextMeshProUGUI _fusionBadgeNum;
 
     public void ShowFusionBadge(int order)
     {
         if (_fusionBadge == null)
         {
-            var go = new GameObject("FusionBadge", typeof(RectTransform));
+            // Cuadrado exterior = borde dorado (para que resalte sobre la carta).
+            var go = new GameObject("FusionBadge", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(transform, false);
-            _fusionBadge = go.AddComponent<TextMeshProUGUI>();
-            if (TMP_Settings.defaultFontAsset != null) _fusionBadge.font = TMP_Settings.defaultFontAsset;
-            _fusionBadge.fontSize = 88;
-            _fusionBadge.fontStyle = FontStyles.Bold;
-            _fusionBadge.color = new Color(1f, 0.32f, 0.25f);
-            _fusionBadge.alignment = TextAlignmentOptions.Center;
-            _fusionBadge.raycastTarget = false;
-            var rt = _fusionBadge.rectTransform;
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.72f);
-            rt.sizeDelta = new Vector2(110, 110);
+            var border = go.GetComponent<Image>();
+            border.color = new Color(1f, 0.85f, 0.42f);   // oro
+            border.raycastTarget = false;
+            var rt = border.rectTransform;
+            rt.anchorMin = rt.anchorMax = new Vector2(1f, 1f);   // esquina superior derecha
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(56f, 56f);
+            rt.anchoredPosition = new Vector2(-6f, -6f);          // pisando un poco la esquina
+
+            // Cuadrado interior = relleno NEGRO.
+            var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fillGo.transform.SetParent(go.transform, false);
+            var fill = fillGo.GetComponent<Image>();
+            fill.color = new Color(0.05f, 0.05f, 0.06f);         // negro
+            fill.raycastTarget = false;
+            var frt = fill.rectTransform;
+            frt.anchorMin = Vector2.zero; frt.anchorMax = Vector2.one;
+            frt.offsetMin = new Vector2(4f, 4f); frt.offsetMax = new Vector2(-4f, -4f);
+
+            // NÚMERO de orden en la pila de fusión.
+            var numGo = new GameObject("Num", typeof(RectTransform));
+            numGo.transform.SetParent(go.transform, false);
+            _fusionBadgeNum = numGo.AddComponent<TextMeshProUGUI>();
+            if (TMP_Settings.defaultFontAsset != null) _fusionBadgeNum.font = TMP_Settings.defaultFontAsset;
+            _fusionBadgeNum.fontSize = 36;
+            _fusionBadgeNum.fontStyle = FontStyles.Bold;
+            _fusionBadgeNum.color = Color.white;
+            _fusionBadgeNum.alignment = TextAlignmentOptions.Center;
+            _fusionBadgeNum.raycastTarget = false;
+            var nrt = _fusionBadgeNum.rectTransform;
+            nrt.anchorMin = Vector2.zero; nrt.anchorMax = Vector2.one;
+            nrt.offsetMin = Vector2.zero; nrt.offsetMax = Vector2.zero;
+
+            _fusionBadge = go;
         }
         _fusionBadge.transform.SetAsLastSibling();
-        _fusionBadge.gameObject.SetActive(true);
-        _fusionBadge.text = order.ToString();
+        _fusionBadge.SetActive(true);
+        _fusionBadgeNum.text = order.ToString();
     }
 
     public void HideFusionBadge()
     {
-        if (_fusionBadge != null) _fusionBadge.gameObject.SetActive(false);
+        if (_fusionBadge != null) _fusionBadge.SetActive(false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

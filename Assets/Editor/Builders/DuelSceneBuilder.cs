@@ -38,14 +38,14 @@ public static class DuelSceneBuilder
 
     // Geometría del tablero: 5 columnas × 4 filas repartidas en DOS BLOQUES
     // (rival arriba / jugador abajo) separados por una franja central (altar).
-    const float SlotSpacingX = 2.0f;                 // separación entre columnas
-    const float TileSize     = 1.95f;                // lado X de la casilla (junta fina)
+    const float SlotSpacingX = 2.2f;                 // separación entre columnas (X) — campo ensanchado
+    const float TileSize     = 1.95f;                // LARGO (Z) de la casilla: TileSize×ZScale (no crece: chocaría con la fila vecina)
+    const float TileX        = 2.12f;                // ANCHO (X) de la casilla — desacoplado del largo para poder ensanchar el campo
     const float ZScale       = 1.5f;                 // campo ALARGADO en Z (tablero 1.5× más largo)
-    // Ancho físico de una carta en el tablero. Se eligió para que la carta QUEPA en su
-    // zócalo en CUALQUIER orientación: en Defensa gira 90° y su lado largo (ancho×1.4)
-    // pasa a lo ancho, así que ese lado largo (1.35×1.4≈1.89) debe caber en la casilla
-    // (TileSize 1.95) y NO invadir la vecina (SlotSpacingX 2.0).
-    const float CardWidth    = 1.35f;
+    // Ancho físico de una carta en el tablero. En Defensa gira 90° y su lado largo (ancho×1.4)
+    // pasa a lo ancho, así que ese lado largo (1.5×1.4=2.1) debe caber en la casilla
+    // (TileX 2.12) y NO invadir la vecina (SlotSpacingX 2.2).
+    const float CardWidth    = 1.5f;
     // Filas: oppSpell, oppMon | (franja central) | playMon, playSpell.
     // Base {4,2,-2,-4} × ZScale → hueco central para la franja del hexagrama.
     static readonly float[] RowZ = { 4.0f * ZScale, 2.0f * ZScale, -2.0f * ZScale, -4.0f * ZScale };
@@ -114,7 +114,7 @@ public static class DuelSceneBuilder
         var introPoint = MakePoint(boardGO.transform, "CameraIntroPoint",
             new Vector3(0f, 16f, 0.4f), Quaternion.Euler(90f, 0f, 0f));
         var playPoint = MakePoint(boardGO.transform, "CameraPlayPoint",
-            new Vector3(-0.2f, 3.2f, -16f), Quaternion.Euler(17.4f, 1f, 0.4f));
+            new Vector3(-0.22f, 3.51f, -17f), Quaternion.Euler(17.4f, 1f, 0.4f));
 
         // ── Mesa/altar 3D (pedestal + zócalos + bordes + neón + obeliscos) ─
         var tableRoot = BuildTable(boardGO.transform, out var groundRenderer,
@@ -635,7 +635,7 @@ public static class DuelSceneBuilder
         table.SetParent(parent, false);
 
         // Dimensiones. La media anchura deja sitio a los rieles laterales.
-        float fieldHalf = 2 * SlotSpacingX + TileSize * 0.5f;      // borde exterior de las casillas
+        float fieldHalf = 2 * SlotSpacingX + TileX * 0.5f;         // borde exterior de las casillas (X)
         float halfW = fieldHalf + 1.1f;                            // media anchura de la tapa (con rieles)
         float zBack = RowZ[0], zFront = RowZ[3];
         float depth = (zBack - zFront) + TileSize * ZScale + 1.2f;  // margen tras las casillas alargadas
@@ -682,40 +682,30 @@ public static class DuelSceneBuilder
         frameGlow.Add(MakeBoxMat(table, "RailVeinW", frameMat, new Vector3(-railX, 0.19f, 0f), new Vector3(0.10f, 0.03f, depth - 0.8f)).GetComponent<Renderer>());
         frameGlow.Add(MakeBoxMat(table, "RailVeinE", frameMat, new Vector3(railX, 0.19f, 0f), new Vector3(0.10f, 0.03f, depth - 0.8f)).GetComponent<Renderer>());
 
-        // Obeliscos en las 4 esquinas: fuste de obsidiana escalonado con RELIEVES de
-        // glifos egipcios + PIRAMIDIÓN con luz RGB. Enmarcan el altar sin tapar el
-        // campo (bajos y a los lados).
-        var capMat = MakeGlowMaterial("ObeliskCapMat", NeonGold, 1.7f);   // su emisión la cicla el RGB en juego
+        // Detalle arquitectónico del canto/marco (chaflán + moldura + oro + dentículos + jeroglíficos).
+        BuildBoardTrim(table, halfW, depth, frameMat, frameGlow, accentGlow);
+
+        // Bandas de jeroglíficos grabadas en los RIELES laterales (a lo largo de Z).
+        var railGlyphGold = MakeGlowMaterial("RailGlyphMat", NeonGold, 1.1f);
+        BuildGlyphBand(table, new Vector3(-railX, 0.22f, 0f), true, (depth - 1.2f) * 0.5f, 20, railGlyphGold, accentGlow);
+        BuildGlyphBand(table, new Vector3( railX, 0.22f, 0f), true, (depth - 1.2f) * 0.5f, 20, railGlyphGold, accentGlow);
+
+        // Obeliscos monumentales en las 4 esquinas (base escalonada + fuste ahusado +
+        // collar de oro + piramidión escalonado con luz RGB + relieves de glifos).
+        var capMat = MakeGlowMaterial("ObeliskCapMat", NeonGold, 1.7f);      // su emisión la cicla el RGB
         var glyphMat = MakeGlowMaterial("ObeliskGlyphMat", NeonGold, 0.8f);
-        float ox = halfW - 0.02f, oz = depth * 0.5f - 0.6f, oh = 1.75f;
+        var collarMat = MakeGlowMaterial("ObeliskCollarMat", NeonGold, 1.4f);
+        float ox = halfW - 0.02f, oz = depth * 0.5f - 0.6f;
         foreach (float sx in new[] { -ox, ox })
             foreach (float sz in new[] { -oz, oz })
-            {
-                MakeBoxMat(table, "ObeliskFoot", pedestalMat, new Vector3(sx, 0.10f, sz), new Vector3(0.62f, 0.2f, 0.62f));
-                MakeBoxMat(table, "ObeliskShaft", bodyMat, new Vector3(sx, oh * 0.5f + 0.14f, sz), new Vector3(0.40f, oh, 0.40f));
-
-                // Piramidión (capstone) — emisión ciclada por el RGB en juego.
-                rgbGlow.Add(MakeBoxMat(table, "ObeliskCap", new Material(capMat) { name = "ObeliskCapMat_i" },
-                    new Vector3(sx, oh + 0.28f, sz), new Vector3(0.30f, 0.30f, 0.30f)).GetComponent<Renderer>());
-
-                // Luz RGB de punto sobre la punta.
-                var lightGo = new GameObject("ObeliskLight");
-                lightGo.transform.SetParent(table, false);
-                lightGo.transform.localPosition = new Vector3(sx, oh + 0.55f, sz);
-                var pl = lightGo.AddComponent<Light>();
-                pl.type = LightType.Point; pl.range = 4.5f; pl.intensity = 0f;
-                pl.shadows = LightShadows.None; pl.renderMode = LightRenderMode.ForcePixel;
-                rgbLights.Add(pl);
-
-                // Relieves de glifos egipcios en la cara del obelisco que mira a la cámara (-Z).
-                BuildObeliskGlyphs(table, new Vector3(sx, 0.6f, sz - 0.205f), glyphMat, accentGlow);
-            }
+                BuildObelisk(table, sx, sz, pedestalMat, bodyMat, capMat, glyphMat, collarMat, rgbGlow, rgbLights, accentGlow);
 
         // Casillas como ZÓCALOS: placa de neón (rim) bajo una casilla recesada.
         // El neón asoma como un borde fino alrededor de la casilla → "socket" definido.
         var rimMat  = MakeGlowMaterial("SlotRimMat", NeonCyan, 1.3f);
         var tileMat = MakePolishedMaterial("TileMat", SlotFill);
-        float tX = TileSize, tZ = TileSize * ZScale;
+        var bevelMat = MakePolishedMaterial("SocketBevelMat", new Color(0.17f, 0.19f, 0.25f)); // metal maquinado
+        float tX = TileX, tZ = TileSize * ZScale;
         float inset = 0.16f;   // grosor del borde de neón visible
         for (int r = 0; r < RowZ.Length; r++)
         {
@@ -733,6 +723,8 @@ public static class DuelSceneBuilder
                     new Vector3(x, 0.028f, RowZ[r]),
                     new Vector3(tX - inset, 0.05f, tZ - inset));
                 tileRends.Add(tileGo.GetComponent<Renderer>());
+                // Bisel interior a 45° → cada casilla parece un hueco maquinado.
+                MakeSocketBevel(table, x, RowZ[r], tX - inset, tZ - inset, bevelMat);
             }
         }
 
@@ -766,6 +758,152 @@ public static class DuelSceneBuilder
                     new Vector3(sx, 0.20f, sz), new Vector3(0.5f, 0.05f, 0.5f)).GetComponent<Renderer>());
 
         return table;
+    }
+
+    /// <summary>
+    /// Detalle arquitectónico del canto y el marco para que la mesa NO parezca "hecha de
+    /// cubos": un CHAFLÁN a 45° que rompe la arista viva del canto superior, una COSTURA de
+    /// neón inset, una MOLDURA del marco en capas (falda de obsidiana + filete de oro) y una
+    /// hilera de DENTÍCULOS (friso). Las piezas de neón/oro entran en frameGlow/accentGlow
+    /// para teñirse/atenuarse con el terreno y la intro.
+    /// </summary>
+    static void BuildBoardTrim(Transform table, float halfW, float depth, Material neonMat,
+        List<Renderer> frameGlow, List<Renderer> accentGlow)
+    {
+        float sx = halfW, sz = depth * 0.5f;   // media anchura/largo de la losa
+        var chamferMat = MakePolishedMaterial("ChamferMat", new Color(0.085f, 0.095f, 0.135f)); // obsidiana algo más clara
+        var moldMat    = MakePolishedMaterial("MoldMat", Stone);
+        var goldTrim   = MakeGlowMaterial("GoldTrimMat", NeonGold, 1.2f);
+
+        // (a) CHAFLÁN del canto superior (4 barras a 45°) + tapas de esquina.
+        MakeAngledBar(table, "ChamferN", chamferMat, new Vector3(0f, 0f,  sz), new Vector3(sx * 2f - 0.3f, 0.16f, 0.16f), new Vector3( 45f, 0f, 0f));
+        MakeAngledBar(table, "ChamferS", chamferMat, new Vector3(0f, 0f, -sz), new Vector3(sx * 2f - 0.3f, 0.16f, 0.16f), new Vector3(-45f, 0f, 0f));
+        MakeAngledBar(table, "ChamferE", chamferMat, new Vector3( sx, 0f, 0f), new Vector3(0.16f, 0.16f, sz * 2f - 0.3f), new Vector3(0f, 0f, -45f));
+        MakeAngledBar(table, "ChamferW", chamferMat, new Vector3(-sx, 0f, 0f), new Vector3(0.16f, 0.16f, sz * 2f - 0.3f), new Vector3(0f, 0f,  45f));
+        foreach (float cx in new[] { -sx, sx })
+            foreach (float cz in new[] { -sz, sz })
+                MakeAngledBar(table, "ChamferCorner", chamferMat, new Vector3(cx, 0f, cz), new Vector3(0.24f, 0.16f, 0.24f), new Vector3(0f, 45f, 0f));
+
+        // (b) COSTURA de neón inset (una veta luminosa recorriendo el borde interior).
+        float seamIn = 0.34f, seamY = 0.055f;
+        frameGlow.Add(MakeBoxMat(table, "SeamN", neonMat, new Vector3(0f, seamY,  sz - seamIn), new Vector3(sx * 2f - 1.0f, 0.02f, 0.05f)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "SeamS", neonMat, new Vector3(0f, seamY, -sz + seamIn), new Vector3(sx * 2f - 1.0f, 0.02f, 0.05f)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "SeamE", neonMat, new Vector3( sx - seamIn, seamY, 0f), new Vector3(0.05f, 0.02f, sz * 2f - 1.0f)).GetComponent<Renderer>());
+        frameGlow.Add(MakeBoxMat(table, "SeamW", neonMat, new Vector3(-sx + seamIn, seamY, 0f), new Vector3(0.05f, 0.02f, sz * 2f - 1.0f)).GetComponent<Renderer>());
+
+        // (c) MOLDURA del marco: falda de obsidiana (escalón bajo) + filete de oro emisivo.
+        float mw = sx * 2f + 0.5f, md = sz * 2f + 0.5f, mb = 0.42f;
+        MakeBoxMat(table, "MoldN", moldMat, new Vector3(0f, -0.1f,  md * 0.5f), new Vector3(mw, 0.2f, mb));
+        MakeBoxMat(table, "MoldS", moldMat, new Vector3(0f, -0.1f, -md * 0.5f), new Vector3(mw, 0.2f, mb));
+        MakeBoxMat(table, "MoldE", moldMat, new Vector3( mw * 0.5f, -0.1f, 0f), new Vector3(mb, 0.2f, md));
+        MakeBoxMat(table, "MoldW", moldMat, new Vector3(-mw * 0.5f, -0.1f, 0f), new Vector3(mb, 0.2f, md));
+        float gw = sx * 2f + 0.34f, gd = sz * 2f + 0.34f;
+        accentGlow.Add(MakeBoxMat(table, "GoldN", goldTrim, new Vector3(0f, 0.10f,  gd * 0.5f), new Vector3(gw, 0.03f, 0.09f)).GetComponent<Renderer>());
+        accentGlow.Add(MakeBoxMat(table, "GoldS", goldTrim, new Vector3(0f, 0.10f, -gd * 0.5f), new Vector3(gw, 0.03f, 0.09f)).GetComponent<Renderer>());
+        accentGlow.Add(MakeBoxMat(table, "GoldE", goldTrim, new Vector3( gw * 0.5f, 0.10f, 0f), new Vector3(0.09f, 0.03f, gd)).GetComponent<Renderer>());
+        accentGlow.Add(MakeBoxMat(table, "GoldW", goldTrim, new Vector3(-gw * 0.5f, 0.10f, 0f), new Vector3(0.09f, 0.03f, gd)).GetComponent<Renderer>());
+
+        // (d) DENTÍCULOS: friso de bloques bajo el canto (a lo largo de N y S).
+        int nd = 17; float dW = (sx * 2f - 0.6f) / nd;
+        for (int i = 0; i < nd; i++)
+        {
+            float x = -sx + 0.3f + dW * (i + 0.5f);
+            MakeBoxMat(table, "DentN", moldMat, new Vector3(x, -0.24f,  sz + 0.13f), new Vector3(dW * 0.55f, 0.14f, 0.12f));
+            MakeBoxMat(table, "DentS", moldMat, new Vector3(x, -0.24f, -sz - 0.13f), new Vector3(dW * 0.55f, 0.14f, 0.12f));
+        }
+
+        // (e) BANDAS DE JEROGLÍFICOS grabadas en el borde (frente y fondo), en el margen
+        // libre entre la última fila y la costura de neón.
+        BuildGlyphBand(table, new Vector3(0f, 0.055f,  sz - 0.47f), false, sx - 1.2f, 16, goldTrim, accentGlow);
+        BuildGlyphBand(table, new Vector3(0f, 0.055f, -(sz - 0.47f)), false, sx - 1.2f, 16, goldTrim, accentGlow);
+    }
+
+    /// <summary>
+    /// Obelisco monumental de esquina: BASE escalonada (2 gradas) + FUSTE AHUSADO (3 tramos
+    /// que se estrechan) con relieves de glifos en la cara a cámara + COLLAR de oro + un
+    /// PIRAMIDIÓN escalonado cuya emisión cicla el RGB, coronado por una luz de punto RGB.
+    /// </summary>
+    static void BuildObelisk(Transform parent, float x, float z, Material stoneMat, Material shaftMat,
+        Material capMat, Material glyphMat, Material goldMat,
+        List<Renderer> rgbGlow, List<Light> rgbLights, List<Renderer> accentGlow)
+    {
+        // Base escalonada.
+        MakeBoxMat(parent, "ObBase1", stoneMat, new Vector3(x, 0.09f, z), new Vector3(0.74f, 0.18f, 0.74f));
+        MakeBoxMat(parent, "ObBase2", stoneMat, new Vector3(x, 0.25f, z), new Vector3(0.58f, 0.16f, 0.58f));
+
+        // Fuste ahusado (3 tramos que se estrechan hacia arriba).
+        MakeBoxMat(parent, "ObShaft1", shaftMat, new Vector3(x, 0.68f, z), new Vector3(0.44f, 0.72f, 0.44f));
+        MakeBoxMat(parent, "ObShaft2", shaftMat, new Vector3(x, 1.40f, z), new Vector3(0.39f, 0.72f, 0.39f));
+        MakeBoxMat(parent, "ObShaft3", shaftMat, new Vector3(x, 2.05f, z), new Vector3(0.34f, 0.58f, 0.34f));
+        const float shaftTop = 2.34f;
+
+        // Collar de oro bajo el piramidión.
+        accentGlow.Add(MakeBoxMat(parent, "ObCollar", goldMat, new Vector3(x, shaftTop, z), new Vector3(0.40f, 0.05f, 0.40f)).GetComponent<Renderer>());
+
+        // Piramidión escalonado (emisión ciclada por el RGB en juego) — instancia por grada.
+        rgbGlow.Add(MakeBoxMat(parent, "ObCap1", new Material(capMat) { name = "ObCapMat_i" }, new Vector3(x, shaftTop + 0.11f, z), new Vector3(0.34f, 0.13f, 0.34f)).GetComponent<Renderer>());
+        rgbGlow.Add(MakeBoxMat(parent, "ObCap2", new Material(capMat) { name = "ObCapMat_i" }, new Vector3(x, shaftTop + 0.24f, z), new Vector3(0.23f, 0.12f, 0.23f)).GetComponent<Renderer>());
+        rgbGlow.Add(MakeBoxMat(parent, "ObCap3", new Material(capMat) { name = "ObCapMat_i" }, new Vector3(x, shaftTop + 0.35f, z), new Vector3(0.12f, 0.12f, 0.12f)).GetComponent<Renderer>());
+
+        // Luz RGB de punto sobre la punta.
+        var lightGo = new GameObject("ObeliskLight");
+        lightGo.transform.SetParent(parent, false);
+        lightGo.transform.localPosition = new Vector3(x, shaftTop + 0.6f, z);
+        var pl = lightGo.AddComponent<Light>();
+        pl.type = LightType.Point; pl.range = 4.8f; pl.intensity = 0f;
+        pl.shadows = LightShadows.None; pl.renderMode = LightRenderMode.ForcePixel;
+        rgbLights.Add(pl);
+
+        // Relieves de glifos egipcios en la cara -Z (hacia la cámara).
+        BuildObeliskGlyphs(parent, new Vector3(x, 0.78f, z - 0.235f), glyphMat, accentGlow);
+    }
+
+    /// <summary>
+    /// Banda de JEROGLÍFICOS grabada (relieves emisivos planos) recorriendo una línea a partir
+    /// de <paramref name="center"/>: a lo largo de Z si <paramref name="alongZ"/>, o de X si no,
+    /// abarcando ±<paramref name="half"/>. Cada celda alterna una figura simple (T, ||, =, ▪, +)
+    /// para leerse como inscripción; las marcas son COMPACTAS en el eje transversal (≤0.13).
+    /// </summary>
+    static void BuildGlyphBand(Transform parent, Vector3 center, bool alongZ, float half, int count, Material mat, List<Renderer> accentGlow)
+    {
+        const float d = 0.02f;
+        float step = (half * 2f) / count;
+        for (int i = 0; i < count; i++)
+        {
+            float a = -half + step * (i + 0.5f);   // posición a lo largo de la banda
+            // Mark(along, cross, alongSize, crossSize): 'along' = dirección de lectura.
+            void Mark(float ao, float co, float aw, float cw)
+            {
+                Vector3 pos = center;
+                if (alongZ) { pos.z += a + ao; pos.x += co; }
+                else        { pos.x += a + ao; pos.z += co; }
+                Vector3 size = alongZ ? new Vector3(cw, d, aw) : new Vector3(aw, d, cw);
+                accentGlow.Add(MakeBoxMat(parent, "GlyphB", mat, pos, size).GetComponent<Renderer>());
+            }
+            switch (i % 5)
+            {
+                case 0: Mark(0f, -0.02f, 0.05f, 0.13f); Mark(0f, 0.05f, 0.18f, 0.04f); break;   // ┳
+                case 1: Mark(-0.06f, 0f, 0.05f, 0.13f); Mark(0.06f, 0f, 0.05f, 0.13f); break;   // ||
+                case 2: Mark(0f, 0.04f, 0.18f, 0.04f); Mark(0f, -0.04f, 0.18f, 0.04f); break;   // =
+                case 3: Mark(0f, 0f, 0.13f, 0.13f); break;                                      // ▪
+                default: Mark(0f, 0f, 0.05f, 0.13f); Mark(0f, 0f, 0.18f, 0.04f); break;         // +
+            }
+        }
+    }
+
+    /// <summary>
+    /// Bisel interior a 45° de una casilla: 4 barras chaflanadas en el borde superior de la
+    /// casilla recesada → el zócalo parece un HUECO MAQUINADO (paredes inclinadas) en vez de
+    /// una caja. <paramref name="innerX"/>/<paramref name="innerZ"/> = tamaño de la casilla recesada.
+    /// </summary>
+    static void MakeSocketBevel(Transform parent, float x, float z, float innerX, float innerZ, Material mat)
+    {
+        const float y = 0.04f, t = 0.09f;
+        float hx = innerX * 0.5f, hz = innerZ * 0.5f;
+        MakeAngledBar(parent, "SockBevN", mat, new Vector3(x, y, z + hz), new Vector3(innerX, t, t), new Vector3(-45f, 0f, 0f));
+        MakeAngledBar(parent, "SockBevS", mat, new Vector3(x, y, z - hz), new Vector3(innerX, t, t), new Vector3( 45f, 0f, 0f));
+        MakeAngledBar(parent, "SockBevE", mat, new Vector3(x + hx, y, z), new Vector3(t, t, innerZ), new Vector3(0f, 0f,  45f));
+        MakeAngledBar(parent, "SockBevW", mat, new Vector3(x - hx, y, z), new Vector3(t, t, innerZ), new Vector3(0f, 0f, -45f));
     }
 
     /// <summary>
@@ -844,7 +982,7 @@ public static class DuelSceneBuilder
             lr.useWorldSpace = false;
             lr.loop = true;
             lr.positionCount = 4;
-            float h = TileSize * 0.34f;
+            float h = TileX * 0.34f;
             float hz = TileSize * ZScale * 0.34f;   // rombo alargado como la casilla
             lr.SetPositions(new[]
             {
@@ -872,6 +1010,14 @@ public static class DuelSceneBuilder
         go.transform.localScale = size;
         go.GetComponent<Renderer>().sharedMaterial = mat;
         Object.DestroyImmediate(go.GetComponent<Collider>());
+        return go;
+    }
+
+    /// <summary>Caja ROTADA (para chaflanes/biseles): igual que MakeBoxMat pero con rotación.</summary>
+    static GameObject MakeAngledBar(Transform parent, string name, Material mat, Vector3 pos, Vector3 size, Vector3 euler)
+    {
+        var go = MakeBoxMat(parent, name, mat, pos, size);
+        go.transform.localRotation = Quaternion.Euler(euler);
         return go;
     }
 

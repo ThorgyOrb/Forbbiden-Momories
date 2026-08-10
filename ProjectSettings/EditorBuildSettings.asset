@@ -33,9 +33,9 @@ EditorBuildSettings:
     path: Assets/Scenes/StoryScene.unity
     guid: 7ed74da4a54b064459352e0c4478fa0e
   - enabled: 1
-    path: Assets/Scenes/WireframeStage.unity
-    guid: 23b6878e318f80f4aaf107493a0b47a6
-  - enabled: 1
     path: Assets/Scenes/TestGrantCardsScene.unity
     guid: 26965dbc23336364a9c92035664573ea
+  - enabled: 1
+    path: Assets/Scenes/WireframeStage.unity
+    guid: 23b6878e318f80f4aaf107493a0b47a6
   m_configObjects: {}

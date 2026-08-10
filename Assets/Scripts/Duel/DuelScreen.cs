@@ -463,9 +463,8 @@ public class DuelScreen : MonoBehaviour
 
         _handCursorRT.SetAsLastSibling();
         _handCursorRT.gameObject.SetActive(true);
-        // Esquina inferior-izquierda de la carta (ancho 210, pivote 0.5/0),
-        // con la punta un poco encima de la carta.
-        _handCursorRT.anchoredPosition = new Vector2(HandSlotX(index, n) - 86f, 34f);
+        // Al COSTADO izquierdo de la carta; el vértice (pivote) apunta → hacia la carta.
+        _handCursorRT.anchoredPosition = new Vector2(HandSlotX(index, n) - 100f, 80f);
         if (_handCursorPulse == null) _handCursorPulse = StartCoroutine(PulseCursor(_handCursorRT));
     }
 
@@ -481,39 +480,58 @@ public class DuelScreen : MonoBehaviour
         _handCursorRT = BuildHandCursor(handContainer);
     }
 
-    /// <summary>Construye una flecha-cursor (dos barras doradas en "∧") bajo un contenedor.</summary>
+    /// <summary>Construye el cursor de mano: un TRIÁNGULO rojo ("cono aplastado") que gira.</summary>
     private RectTransform BuildHandCursor(Transform parent)
     {
-        var go = new GameObject("HandCursor", typeof(RectTransform));
+        var go = new GameObject("HandCursor", typeof(RectTransform), typeof(Image));
         go.transform.SetParent(parent, false);
         var rt = (RectTransform)go.transform;
-        rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0f);
-        rt.sizeDelta = new Vector2(64, 64);
-        rt.localRotation = Quaternion.Euler(0f, 0f, -45f); // apunta ↗ a la carta
-        MakeCursorBar(rt, -13f, 45f);
-        MakeCursorBar(rt, 13f, -45f);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f);
+        rt.pivot = new Vector2(0.5f, 1f);             // pivote en el VÉRTICE (arriba-centro)
+        rt.sizeDelta = new Vector2(64f, 84f);
+        var img = go.GetComponent<Image>();
+        img.sprite = TriangleSprite();
+        img.color = new Color(0.92f, 0.16f, 0.14f);   // rojo
+        img.raycastTarget = false;
         return rt;
     }
 
-    private void MakeCursorBar(RectTransform parent, float x, float angle)
+    // Sprite de triángulo (vértice arriba) generado por código: máscara alfa sobre blanco,
+    // así el color de la Image lo tiñe. Se cachea (una sola textura para todos los cursores).
+    private static Sprite _triangleSprite;
+    private static Sprite TriangleSprite()
     {
-        var bar = new GameObject("Bar", typeof(RectTransform), typeof(Image));
-        bar.transform.SetParent(parent, false);
-        var rt = (RectTransform)bar.transform;
-        rt.sizeDelta = new Vector2(13f, 46f);
-        rt.anchoredPosition = new Vector2(x, 0f);
-        rt.localRotation = Quaternion.Euler(0f, 0f, angle);
-        var img = bar.GetComponent<Image>();
-        img.color = new Color(0.98f, 0.85f, 0.45f);
-        img.raycastTarget = false;
+        if (_triangleSprite != null) return _triangleSprite;
+        const int s = 64;
+        var tex = new Texture2D(s, s, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+        var px = new Color32[s * s];
+        for (int y = 0; y < s; y++)
+        {
+            float t = (float)y / (s - 1);              // 0 abajo, 1 arriba (vértice)
+            float halfW = (1f - t) * (s * 0.5f);       // ancho medio: máximo abajo, 0 en el vértice
+            for (int x = 0; x < s; x++)
+            {
+                bool inside = Mathf.Abs(x + 0.5f - s * 0.5f) <= halfW;
+                px[y * s + x] = new Color32(255, 255, 255, (byte)(inside ? 255 : 0));
+            }
+        }
+        tex.SetPixels32(px);
+        tex.Apply();
+        _triangleSprite = Sprite.Create(tex, new Rect(0, 0, s, s), new Vector2(0.5f, 0.5f));
+        return _triangleSprite;
     }
+
+    // Orientación del cursor: el vértice apunta → (a la derecha, hacia la carta que está al lado).
+    private static readonly Quaternion CursorOrient = Quaternion.Euler(0f, 0f, -90f);
+    private static readonly Vector3 CursorSpinAxis = CursorOrient * Vector3.up;   // eje = dirección del vértice
 
     private IEnumerator PulseCursor(RectTransform rt)
     {
+        // El vértice queda fijo apuntando a la carta; la base GIRA alrededor de ese eje
+        // (cono girando en su propio eje, aplastándose en overlay).
         while (rt != null && rt.gameObject.activeSelf)
         {
-            float k = (Mathf.Sin(Time.time * 6f) + 1f) * 0.5f;
-            rt.localScale = Vector3.one * (1f + 0.14f * k);
+            rt.localRotation = Quaternion.AngleAxis((Time.time * 200f) % 360f, CursorSpinAxis) * CursorOrient;
             yield return null;
         }
     }
@@ -534,7 +552,7 @@ public class DuelScreen : MonoBehaviour
 
         _oppHandCursorRT.SetAsLastSibling();
         _oppHandCursorRT.gameObject.SetActive(true);
-        _oppHandCursorRT.anchoredPosition = new Vector2(HandSlotX(index, n) - 86f, 34f);
+        _oppHandCursorRT.anchoredPosition = new Vector2(HandSlotX(index, n) - 100f, 80f);
         if (_oppHandCursorPulse == null) _oppHandCursorPulse = StartCoroutine(PulseCursor(_oppHandCursorRT));
     }
 
@@ -917,7 +935,7 @@ public class DuelScreen : MonoBehaviour
     /// Barra de info del CAMPO propio. bottom=false → sobre la mano (elección de
     /// casilla); bottom=true → al fondo (batalla, con la mano oculta).
     /// </summary>
-    public void ShowFieldBar(CardData card, bool bottom)
+    public void ShowFieldBar(CardData card, bool bottom, int curAtk = -1, int curDef = -1)
     {
         _fieldBar ??= BuildInfoBar("FieldInfoBar");
         SetBarRect(_fieldBar.root, bottom ? 0.0f : 0.335f, bottom ? 0.10f : 0.435f);
@@ -928,7 +946,7 @@ public class DuelScreen : MonoBehaviour
             _fieldBar.root.offsetMin = new Vector2(0f, 35f);
         }
         _fieldBar.root.gameObject.SetActive(true);
-        FillInfoBar(_fieldBar, card, hidden: false);
+        FillInfoBar(_fieldBar, card, hidden: false, curAtk, curDef);
     }
 
     public void HideFieldBar()
@@ -974,8 +992,10 @@ public class DuelScreen : MonoBehaviour
         _targetBarSlide = null;
     }
 
-    /// <summary>Rellena la barra con los mismos datos que <see cref="ShowCardInfo"/>.</summary>
-    private void FillInfoBar(InfoBar bar, CardData card, bool hidden)
+    /// <summary>Rellena la barra con los mismos datos que <see cref="ShowCardInfo"/>.
+    /// Si <paramref name="curAtk"/>/<paramref name="curDef"/> son ≥0 se muestran ESOS
+    /// (ATK/DEF actuales con equipos/terreno) en vez de los base.</summary>
+    private void FillInfoBar(InfoBar bar, CardData card, bool hidden, int curAtk = -1, int curDef = -1)
     {
         if (card == null)
         {
@@ -993,8 +1013,10 @@ public class DuelScreen : MonoBehaviour
         }
 
         bool monster = card.IsMonster;
+        int atk = curAtk >= 0 ? curAtk : card.baseAtk;
+        int def = curDef >= 0 ? curDef : card.baseDef;
         bar.name.text = card.cardName;
-        bar.stats.text = monster ? $"ATK {card.baseAtk}    DEF {card.baseDef}" : card.CategoryLabel;
+        bar.stats.text = monster ? $"ATK {atk}    DEF {def}" : card.CategoryLabel;
         bar.star.text = monster ? $"★ {card.starA} / {card.starB}" : "";
         bar.level.text = (monster && card.stars > 0) ? $"Niv {card.stars}" : "";
 
@@ -1134,6 +1156,156 @@ public class DuelScreen : MonoBehaviour
     // la destruida; la(s) superviviente(s) vuelven a su sitio. Todo en el canvas 2D.
 
     /// <summary>Resultado del combate para escenificarlo.</summary>
+    // ── Modal de información de carta (tecla F) ──────────────────────────
+    // Fondo oscuro + panel central: IZQUIERDA la imagen (carta completa) y
+    // DERECHA la información (nombre, categoría/tipo, nivel/estrellas, ATK/DEF,
+    // descripción). Se construye una sola vez y se reutiliza.
+
+    private static readonly Color CmGold       = new Color(0.86f, 0.72f, 0.35f);
+    private static readonly Color CmGoldBright = new Color(0.98f, 0.85f, 0.45f);
+    private static readonly Color CmTextLight  = new Color(0.93f, 0.94f, 0.98f);
+
+    private GameObject _cardModal;
+    private RectTransform _cardModalImageHolder;
+    private DuelHandCardView _cardModalCard;
+    private TextMeshProUGUI _cmName, _cmCategory, _cmStars, _cmStats, _cmDesc;
+
+    /// <summary>Muestra el modal con la carta <paramref name="card"/>. Si <paramref name="curAtk"/>
+    /// ≥ 0, muestra ese ATK/DEF actual (con equipos/terreno) en vez del base.</summary>
+    public void ShowCardModal(CardData card, int curAtk = -1, int curDef = -1)
+    {
+        if (card == null || handTemplate == null) return;
+        EnsureCardModal();
+        if (_cardModal == null) return;
+
+        _cardModal.SetActive(true);
+        _cardModal.transform.SetAsLastSibling();
+
+        // Imagen: (re)clona la carta completa dentro del contenedor izquierdo.
+        if (_cardModalCard != null) Destroy(_cardModalCard.gameObject);
+        var go = Instantiate(handTemplate.gameObject, _cardModalImageHolder);
+        go.SetActive(true);
+        _cardModalCard = go.GetComponent<DuelHandCardView>();
+        _cardModalCard.Setup(card);
+        _cardModalCard.SetFace(false);   // boca arriba (ya es visible)
+        if (_cardModalCard.Button != null) _cardModalCard.Button.interactable = false;
+        var crt = (RectTransform)go.transform;
+        crt.anchorMin = crt.anchorMax = crt.pivot = new Vector2(0.5f, 0.5f);
+        crt.anchoredPosition = Vector2.zero;
+
+        Canvas.ForceUpdateCanvases();   // resuelve tamaños antes de escalar
+        float hw = _cardModalImageHolder.rect.width, hh = _cardModalImageHolder.rect.height;
+        float nw = crt.rect.width, nh = crt.rect.height;
+        if (nw < 1f) { nw = crt.sizeDelta.x; nh = crt.sizeDelta.y; }
+        float fit = (nw > 1f && nh > 1f) ? Mathf.Min(hw / nw, hh / nh) * 0.95f : 1f;
+        crt.localScale = Vector3.one * fit;
+        if (curAtk >= 0) _cardModalCard.SetCurrentStats(curAtk, curDef);
+
+        // Info a la derecha.
+        _cmName.text = card.cardName;
+        _cmCategory.text = card.IsMonster ? $"{card.CategoryLabel} · {card.monsterType}" : card.CategoryLabel;
+        if (card.IsMonster)
+        {
+            _cmStars.gameObject.SetActive(true);
+            _cmStats.gameObject.SetActive(true);
+            _cmStars.text = $"Nivel {card.stars}    Estrellas: {card.starA} / {card.starB}";
+            int a = curAtk >= 0 ? curAtk : card.baseAtk;
+            int d = curDef >= 0 ? curDef : card.baseDef;
+            _cmStats.text = $"<color=#FFD98A>ATK</color> {a}      <color=#8AC7FF>DEF</color> {d}";
+        }
+        else
+        {
+            _cmStars.gameObject.SetActive(false);
+            _cmStats.gameObject.SetActive(false);
+        }
+        string desc = card.DisplayDescription;
+        _cmDesc.text = string.IsNullOrEmpty(desc) ? "—" : desc;
+    }
+
+    public void HideCardModal()
+    {
+        if (_cardModal != null) _cardModal.SetActive(false);
+        if (_cardModalCard != null) { Destroy(_cardModalCard.gameObject); _cardModalCard = null; }
+    }
+
+    private void EnsureCardModal()
+    {
+        if (_cardModal != null) return;
+        var parent = CineParent;
+        if (parent == null) return;
+
+        // Fondo que oscurece y bloquea clics detrás.
+        var root = new GameObject("CardModal", typeof(RectTransform), typeof(Image));
+        root.transform.SetParent(parent, false);
+        StretchFull((RectTransform)root.transform);
+        var backdrop = root.GetComponent<Image>();
+        backdrop.color = new Color(0f, 0f, 0f, 0.82f);
+        backdrop.raycastTarget = true;
+
+        // Panel central con borde dorado.
+        var border = MakeSolid(root.transform, CmGold);
+        var brt = (RectTransform)border.transform;
+        brt.anchorMin = new Vector2(0.14f, 0.17f); brt.anchorMax = new Vector2(0.86f, 0.83f);
+        brt.offsetMin = brt.offsetMax = Vector2.zero;
+        var panel = MakeSolid(border.transform, new Color(0.06f, 0.07f, 0.12f, 0.99f));
+        var prt = (RectTransform)panel.transform;
+        prt.anchorMin = Vector2.zero; prt.anchorMax = Vector2.one;
+        prt.offsetMin = new Vector2(3f, 3f); prt.offsetMax = new Vector2(-3f, -3f);
+
+        // IZQUIERDA: contenedor de la imagen (carta).
+        var holder = new GameObject("CardImage", typeof(RectTransform));
+        holder.transform.SetParent(panel.transform, false);
+        _cardModalImageHolder = (RectTransform)holder.transform;
+        _cardModalImageHolder.anchorMin = new Vector2(0.03f, 0.05f);
+        _cardModalImageHolder.anchorMax = new Vector2(0.40f, 0.95f);
+        _cardModalImageHolder.offsetMin = _cardModalImageHolder.offsetMax = Vector2.zero;
+
+        // DERECHA: columna de información.
+        var info = new GameObject("Info", typeof(RectTransform));
+        info.transform.SetParent(panel.transform, false);
+        var irt = (RectTransform)info.transform;
+        irt.anchorMin = new Vector2(0.44f, 0.05f); irt.anchorMax = new Vector2(0.97f, 0.95f);
+        irt.offsetMin = irt.offsetMax = Vector2.zero;
+
+        _cmName     = MakeModalText(irt, 0.86f, 1.00f, 46, CmGoldBright, TextAlignmentOptions.Left, true, false);
+        _cmCategory = MakeModalText(irt, 0.77f, 0.85f, 27, CmGold,       TextAlignmentOptions.Left, false, false);
+        _cmStars    = MakeModalText(irt, 0.68f, 0.76f, 26, CmTextLight,  TextAlignmentOptions.Left, false, false);
+        _cmStats    = MakeModalText(irt, 0.57f, 0.67f, 38, CmTextLight,  TextAlignmentOptions.Left, true,  false);
+        MakeModalDivider(irt, 0.545f);
+        _cmDesc     = MakeModalText(irt, 0.02f, 0.53f, 25, CmTextLight,  TextAlignmentOptions.TopLeft, false, true);
+
+        // Pista de cierre (abajo).
+        var hint = MakeModalText((RectTransform)root.transform, 0.10f, 0.145f, 24, new Color(0.8f, 0.82f, 0.9f), TextAlignmentOptions.Center, false, false);
+        hint.text = "F / Esc — cerrar";
+
+        _cardModal = root;
+    }
+
+    private TextMeshProUGUI MakeModalText(RectTransform parent, float yMin, float yMax, float size,
+        Color color, TextAlignmentOptions align, bool bold, bool wrap)
+    {
+        var go = new GameObject("T", typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        var rt = (RectTransform)go.transform;
+        rt.anchorMin = new Vector2(0.01f, yMin); rt.anchorMax = new Vector2(0.99f, yMax);
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
+        var t = go.AddComponent<TextMeshProUGUI>();
+        if (TMP_Settings.defaultFontAsset != null) t.font = TMP_Settings.defaultFontAsset;
+        t.fontSize = size; t.color = color; t.alignment = align;
+        t.fontStyle = bold ? FontStyles.Bold : FontStyles.Normal;
+        t.raycastTarget = false; t.enableWordWrapping = wrap;
+        return t;
+    }
+
+    private void MakeModalDivider(RectTransform parent, float y)
+    {
+        var line = MakeSolid(parent, new Color(0.86f, 0.72f, 0.35f, 0.5f));
+        var rt = (RectTransform)line.transform;
+        rt.anchorMin = new Vector2(0.01f, y); rt.anchorMax = new Vector2(0.99f, y);
+        rt.sizeDelta = new Vector2(0f, 2f);
+        rt.anchoredPosition = Vector2.zero;
+    }
+
     public struct CombatCine
     {
         public bool attackerDies;
@@ -1311,24 +1483,40 @@ public class DuelScreen : MonoBehaviour
                                      Vector2 home, Vector2 target, Color color, float severity)
     {
         Vector3 baseS = card.localScale;
-        Vector2 lungeTo = Vector2.Lerp(home, target, 0.5f);   // avanza hacia el resplandor
+        float cw = card.rect.width * card.localScale.x;
+        Vector2 lungeTo = Vector2.Lerp(home, target, 0.55f);           // avanza hacia el resplandor
+        Vector2 windup  = home + (home - target).normalized * (cw * 0.14f);
 
-        var screenFlash = MakeSolid(root, new Color(color.r, color.g, color.b, 0f));
+        var screenFlash = MakeSolid(root, WithA(color, 0f));
         StretchFull((RectTransform)screenFlash.transform);
 
-        const float dur = 0.42f;
-        const float peak = 0.45f;   // fracción de ida (embestida) vs. vuelta
+        // 1) Windup: la carta retrocede un poco antes de embestir.
+        const float wDur = 0.14f;
+        for (float e = 0f; e < wDur; e += Time.deltaTime)
+        { float k = Mathf.SmoothStep(0f, 1f, e / wDur); card.anchoredPosition = Vector2.Lerp(home, windup, k); yield return null; }
+
+        // 2) Embestida + impacto (chispas + sacudida al llegar al punto del resplandor).
+        bool sparked = false;
+        const float dur = 0.4f, peak = 0.4f;
         for (float e = 0f; e < dur; e += Time.deltaTime)
         {
             float k = e / dur;
             float m = k < peak
-                ? Mathf.Pow(k / peak, 2f)                                   // ida acelerada
-                : 1f - Mathf.SmoothStep(0f, 1f, (k - peak) / (1f - peak));  // vuelta suave
-            card.anchoredPosition = Vector2.LerpUnclamped(home, lungeTo, m);
+                ? Mathf.Pow(k / peak, 2f)
+                : 1f - Mathf.SmoothStep(0f, 1f, (k - peak) / (1f - peak));
+            card.anchoredPosition = Vector2.LerpUnclamped(windup, lungeTo, m);
 
-            float hit = Mathf.Clamp01(1f - Mathf.Abs(k - peak) / 0.3f);
-            screenFlash.color = new Color(color.r, color.g, color.b, hit * Mathf.Lerp(0.25f, 0.6f, severity));
-            card.localScale = baseS * (1f + 0.05f * hit);
+            float hit = Mathf.Clamp01(1f - Mathf.Abs(k - peak) / 0.28f);
+            screenFlash.color = WithA(color, hit * Mathf.Lerp(0.3f, 0.62f, severity));
+            card.localScale = baseS * (1f + 0.07f * hit);
+            if (!sparked && k >= peak)
+            {
+                sparked = true;
+                StartCoroutine(CineSparks(root, target, color, Mathf.RoundToInt(Mathf.Lerp(10f, 18f, severity)),
+                                          root.rect.width * (0.1f + 0.08f * severity), root.rect.width * 0.045f, 0.5f));
+                StartCoroutine(CineRingBurst(root, target, WithA(color, 1f), cw * 0.4f, cw * (2f + 1.4f * severity), 0.45f, 0.85f));
+                StartCoroutine(CineShake(root, root.rect.width * Mathf.Lerp(0.006f, 0.022f, severity), 0.26f));
+            }
             yield return null;
         }
         card.anchoredPosition = home; card.localScale = baseS;
@@ -1342,56 +1530,60 @@ public class DuelScreen : MonoBehaviour
     {
         DuelAudio.Play(DuelAudio.Sfx.Damage);
         float rw = root.rect.width;
-        float glowSize = rw * Mathf.Lerp(0.34f, 0.66f, severity);   // más grande a más daño
+        float glowSize = rw * Mathf.Lerp(0.34f, 0.72f, severity);   // más grande a más daño
 
-        // Anillo de choque que se expande (más notorio a mayor daño).
-        var ring = MakeGlow(root, new Color(color.r, color.g, color.b, 0f));
-        var rrt = (RectTransform)ring.transform;
-        rrt.pivot = rrt.anchorMin = rrt.anchorMax = new Vector2(0.5f, 0.5f);
-        rrt.sizeDelta = new Vector2(glowSize, glowSize);
-        rrt.anchoredPosition = pos;
+        // Fogonazo breve de TODA la pantalla, del color del daño.
+        var flash = MakeSolid(root, WithA(color, 0f));
+        StretchFull((RectTransform)flash.transform);
 
-        // Núcleo del resplandor.
-        var glow = MakeGlow(root, new Color(color.r, color.g, color.b, 0f));
-        var grt = (RectTransform)glow.transform;
-        grt.pivot = grt.anchorMin = grt.anchorMax = new Vector2(0.5f, 0.5f);
-        grt.sizeDelta = new Vector2(glowSize, glowSize);
-        grt.anchoredPosition = pos;
+        // Halo del color del daño + núcleo BLANCO-CALIENTE (dos capas).
+        var halo = MakeGlow(root, WithA(color, 0f));
+        var hrt = (RectTransform)halo.transform;
+        hrt.pivot = hrt.anchorMin = hrt.anchorMax = new Vector2(0.5f, 0.5f);
+        hrt.sizeDelta = new Vector2(glowSize, glowSize);
+        hrt.anchoredPosition = pos;
+        var core = MakeGlow(root, WithA(Color.white, 0f));
+        var crt = (RectTransform)core.transform;
+        crt.pivot = crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
+        crt.sizeDelta = new Vector2(glowSize * 0.55f, glowSize * 0.55f);
+        crt.anchoredPosition = pos;
 
-        // Número de daño (más grande cuanto mayor el daño), del color del semáforo.
-        var numGO = new GameObject("DmgNum", typeof(RectTransform));
-        numGO.transform.SetParent(root, false);
-        var nrt = (RectTransform)numGO.transform;
-        nrt.pivot = nrt.anchorMin = nrt.anchorMax = new Vector2(0.5f, 0.5f);
-        nrt.sizeDelta = new Vector2(rw * 0.5f, 300f);
-        nrt.anchoredPosition = pos;
-        var num = numGO.AddComponent<TextMeshProUGUI>();
-        if (TMP_Settings.defaultFontAsset != null) num.font = TMP_Settings.defaultFontAsset;
-        num.fontStyle = FontStyles.Bold;
-        num.alignment = TextAlignmentOptions.Center;
-        num.raycastTarget = false;
-        num.color = color;
-        num.fontSize = Mathf.Lerp(100f, 200f, severity);
+        // Número de daño con SOMBRA (para leerse sobre el resplandor).
+        var shadow = MakeCineNumber(root, pos + new Vector2(5f, -5f), rw, severity, new Color(0f, 0f, 0f, 0.85f));
+        var num    = MakeCineNumber(root, pos, rw, severity, color);
+        var srt = shadow.rectTransform; var nrt = num.rectTransform;
 
-        // Impacto: el número cuenta de 0 al daño mientras el resplandor pulsa y el
-        // anillo de choque se expande (todo más intenso cuanto mayor el daño).
+        // Estallido: dos anillos escalonados + metralla de chispas + sacudida de pantalla.
+        StartCoroutine(CineRingBurst(root, pos, color, glowSize * 0.4f, glowSize * (2.2f + 1.6f * severity), 0.6f, 0.9f));
+        StartCoroutine(CineRingBurst(root, pos, WithA(Color.white, 1f), glowSize * 0.3f, glowSize * (1.5f + 1.1f * severity), 0.42f, 0.85f));
+        StartCoroutine(CineSparks(root, pos, color, Mathf.RoundToInt(Mathf.Lerp(11f, 24f, severity)), glowSize * (0.55f + 0.5f * severity), glowSize * 0.13f, 0.6f));
+        StartCoroutine(CineShake(root, rw * Mathf.Lerp(0.008f, 0.032f, severity), 0.42f));
+        shadow.transform.SetAsLastSibling(); num.transform.SetAsLastSibling();   // número al frente
+
+        // Impacto: el número cuenta de 0 al daño mientras el núcleo/halo pulsan y tiemblan.
         const float upDur = 0.55f;
+        float shakeAmp = rw * (0.006f + 0.014f * severity);
         for (float e = 0f; e < upDur; e += Time.deltaTime)
         {
             float k = e / upDur;
             int val = Mathf.RoundToInt(Mathf.Lerp(0f, amount, Mathf.SmoothStep(0f, 1f, k)));
-            num.text = $"-{val}";
+            num.text = $"-{val}"; shadow.text = num.text;
             float pulse = Mathf.Sin(Mathf.Clamp01(k / 0.5f) * Mathf.PI);
-            float aCore = Mathf.Lerp(0.25f, 1f, k) * (0.7f + 0.3f * pulse);
-            glow.color = new Color(color.r, color.g, color.b, aCore);
-            grt.localScale = Vector3.one * Mathf.Lerp(0.6f, 1.3f + 0.6f * severity, k);
-            // anillo: se expande y se desvanece
-            ring.color = new Color(color.r, color.g, color.b, Mathf.Lerp(0.7f, 0f, k) * (0.5f + 0.5f * severity));
-            rrt.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.6f + 1.5f * severity, k);
-            nrt.localScale = Vector3.one * Mathf.Lerp(1.4f, 1f, Mathf.Clamp01(k / 0.3f));
+            halo.color = WithA(color, Mathf.Lerp(0.3f, 1f, k) * (0.7f + 0.3f * pulse));
+            hrt.localScale = Vector3.one * Mathf.Lerp(0.6f, 1.4f + 0.6f * severity, k);
+            core.color = WithA(Color.white, Mathf.Lerp(0.9f, 0f, k));
+            crt.localScale = Vector3.one * Mathf.Lerp(0.5f, 1.8f, k);
+            flash.color = WithA(color, Mathf.Clamp01(1f - k * 3f) * Mathf.Lerp(0.15f, 0.4f, severity));
+            // temblor del número al contar
+            Vector2 j = (Vector2)(UnityEngine.Random.insideUnitCircle * shakeAmp * (1f - k));
+            nrt.anchoredPosition = pos + j;
+            srt.anchoredPosition = pos + j + new Vector2(5f, -5f);
+            float ns = Mathf.Lerp(1.5f, 1f, Mathf.Clamp01(k / 0.3f));
+            nrt.localScale = srt.localScale = Vector3.one * ns;
             yield return null;
         }
-        num.text = $"-{amount}";
+        num.text = shadow.text = $"-{amount}";
+        flash.color = WithA(color, 0f);
 
         yield return new WaitForSeconds(0.35f);
 
@@ -1399,11 +1591,32 @@ public class DuelScreen : MonoBehaviour
         for (float e = 0f; e < outDur; e += Time.deltaTime)
         {
             float a = 1f - e / outDur;
-            var c = num.color; c.a = a; num.color = c;
-            glow.color = new Color(color.r, color.g, color.b, a * 0.85f);
+            var cc = num.color; cc.a = a; num.color = cc;
+            var sc = shadow.color; sc.a = a * 0.85f; shadow.color = sc;
+            halo.color = WithA(color, a * 0.85f);
             yield return null;
         }
-        Destroy(ring.gameObject); Destroy(glow.gameObject); Destroy(numGO);
+        Destroy(halo.gameObject); Destroy(core.gameObject); Destroy(flash.gameObject);
+        Destroy(num.gameObject); Destroy(shadow.gameObject);
+    }
+
+    /// <summary>Crea un número grande (TMP) centrado para las cinemáticas de daño.</summary>
+    private TextMeshProUGUI MakeCineNumber(RectTransform root, Vector2 pos, float rw, float severity, Color color)
+    {
+        var go = new GameObject("DmgNum", typeof(RectTransform));
+        go.transform.SetParent(root, false);
+        var rt = (RectTransform)go.transform;
+        rt.pivot = rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = new Vector2(rw * 0.5f, 320f);
+        rt.anchoredPosition = pos;
+        var t = go.AddComponent<TextMeshProUGUI>();
+        if (TMP_Settings.defaultFontAsset != null) t.font = TMP_Settings.defaultFontAsset;
+        t.fontStyle = FontStyles.Bold;
+        t.alignment = TextAlignmentOptions.Center;
+        t.raycastTarget = false;
+        t.color = color;
+        t.fontSize = Mathf.Lerp(110f, 220f, severity);
+        return t;
     }
 
     /// <summary>
@@ -1570,6 +1783,137 @@ public class DuelScreen : MonoBehaviour
         return _cineGlow;
     }
 
+    /// <summary>Imagen con sprite de ANILLO (aro) — para ondas de choque expansivas.</summary>
+    private static Image MakeRing(Transform parent, Color color)
+    {
+        var img = MakeSolid(parent, color);
+        img.sprite = CineRingSprite();
+        return img;
+    }
+
+    private static Sprite _cineRing;
+    private static Sprite CineRingSprite()
+    {
+        if (_cineRing != null) return _cineRing;
+        const int S = 128;
+        var tex = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+        var px = new Color32[S * S];
+        for (int y = 0; y < S; y++)
+            for (int x = 0; x < S; x++)
+            {
+                float dx = (x - 63.5f) / 63.5f, dy = (y - 63.5f) / 63.5f;
+                float r = Mathf.Sqrt(dx * dx + dy * dy);
+                float a = Mathf.Clamp01(1f - Mathf.Abs(r - 0.80f) / 0.20f);   // aro fino en r≈0.8
+                a = a * a;
+                px[y * S + x] = new Color32(255, 255, 255, (byte)(a * 255));
+            }
+        tex.SetPixels32(px); tex.Apply();
+        _cineRing = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 64f);
+        return _cineRing;
+    }
+
+    // ── "Juice" reutilizable para las cinemáticas ────────────────────────
+
+    /// <summary>Onda de choque: un aro que se expande desde <paramref name="pos"/> y se apaga.</summary>
+    private IEnumerator CineRingBurst(RectTransform root, Vector2 pos, Color color,
+                                      float startSize, float endSize, float dur, float startAlpha)
+    {
+        var ring = MakeRing(root, WithA(color, 0f));
+        var rt = (RectTransform)ring.transform;
+        rt.pivot = rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = pos;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            float s = Mathf.Lerp(startSize, endSize, 1f - (1f - k) * (1f - k));   // out-quad
+            rt.sizeDelta = new Vector2(s, s);
+            ring.color = WithA(color, Mathf.Lerp(startAlpha, 0f, k));
+            yield return null;
+        }
+        Destroy(ring.gameObject);
+    }
+
+    /// <summary>Estallido de CHISPAS: N motas de luz salen disparadas radialmente y se apagan.
+    /// Fire-and-forget (arráncalo con StartCoroutine para que corra en paralelo).</summary>
+    private IEnumerator CineSparks(RectTransform root, Vector2 pos, Color color,
+                                   int count, float dist, float size, float dur)
+    {
+        var rts = new RectTransform[count];
+        var imgs = new Image[count];
+        var dirs = new Vector2[count];
+        for (int i = 0; i < count; i++)
+        {
+            float ang = (i / (float)count) * Mathf.PI * 2f + UnityEngine.Random.Range(-0.35f, 0.35f);
+            var sp = MakeGlow(root, color);
+            var rt = (RectTransform)sp.transform;
+            rt.pivot = rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            float s = size * UnityEngine.Random.Range(0.55f, 1.25f);
+            rt.sizeDelta = new Vector2(s, s);
+            rt.anchoredPosition = pos;
+            dirs[i] = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * dist * UnityEngine.Random.Range(0.7f, 1.25f);
+            rts[i] = rt; imgs[i] = sp;
+        }
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            float ease = 1f - (1f - k) * (1f - k);
+            for (int i = 0; i < count; i++)
+            {
+                if (rts[i] == null) continue;
+                rts[i].anchoredPosition = pos + dirs[i] * ease + Vector2.down * (60f * k * k); // leve gravedad
+                imgs[i].color = WithA(color, Mathf.Clamp01(1f - k));
+                rts[i].localScale = Vector3.one * Mathf.Lerp(1f, 0.25f, k);
+            }
+            yield return null;
+        }
+        for (int i = 0; i < count; i++) if (rts[i] != null) Destroy(rts[i].gameObject);
+    }
+
+    /// <summary>Sacude un RectTransform (p. ej. el root = sacudida de pantalla) que se atenúa.</summary>
+    private IEnumerator CineShake(RectTransform rt, float amount, float dur)
+    {
+        Vector2 baseP = rt.anchoredPosition;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = 1f - e / dur;
+            rt.anchoredPosition = baseP + (Vector2)(UnityEngine.Random.insideUnitCircle * amount * k);
+            yield return null;
+        }
+        rt.anchoredPosition = baseP;
+    }
+
+    /// <summary>Columna de MOTAS que ascienden desde un punto (aura ascendente).</summary>
+    private IEnumerator RisingMotes(RectTransform root, Vector2 pos, Color color, float spreadX, float rise, int count, float size)
+    {
+        var rts = new RectTransform[count];
+        var imgs = new Image[count];
+        var phase = new float[count];
+        for (int i = 0; i < count; i++)
+        {
+            var m = MakeGlow(root, color);
+            var rt = (RectTransform)m.transform;
+            rt.pivot = rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            float s = size * UnityEngine.Random.Range(0.5f, 1.1f);
+            rt.sizeDelta = new Vector2(s, s);
+            rts[i] = rt; imgs[i] = m; phase[i] = UnityEngine.Random.value;
+        }
+        const float dur = 0.9f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                float k = Mathf.Repeat(e / dur + phase[i], 1f);
+                float x = Mathf.Sin((phase[i] + k) * 12f) * spreadX;
+                rts[i].anchoredPosition = pos + new Vector2(x + (phase[i] - 0.5f) * spreadX * 2f, k * rise);
+                imgs[i].color = WithA(color, Mathf.Sin(k * Mathf.PI) * 0.8f);
+                rts[i].localScale = Vector3.one * Mathf.Lerp(1f, 0.4f, k);
+            }
+            yield return null;
+        }
+        for (int i = 0; i < count; i++) if (rts[i] != null) Destroy(rts[i].gameObject);
+    }
+
     private RectTransform BuildCineCard(Transform parent, CardData card, float targetWidth)
     {
         var go = Instantiate(handTemplate.gameObject, parent);
@@ -1624,6 +1968,11 @@ public class DuelScreen : MonoBehaviour
         var screenFlash = MakeSolid(root, new Color(1f, 1f, 1f, 0f));
         StretchFull((RectTransform)screenFlash.transform);
 
+        // Onda de choque + metralla de chispas + sacudida de pantalla en el impacto.
+        StartCoroutine(CineRingBurst(root, c, new Color(1f, 0.95f, 0.8f, 1f), cw * 0.5f, cw * 2.6f, 0.42f, 0.85f));
+        StartCoroutine(CineSparks(root, c, new Color(1f, 0.9f, 0.55f), 16, cw * 0.95f, cw * 0.12f, 0.5f));
+        StartCoroutine(CineShake(root, cw * 0.022f, 0.3f));
+
         const float dur = 0.34f;
         Vector2 from = c + new Vector2(-cw * 0.95f, ch * 0.95f);
         Vector2 to   = c + new Vector2( cw * 0.95f, -ch * 0.95f);
@@ -1666,11 +2015,35 @@ public class DuelScreen : MonoBehaviour
         Destroy(flash.gameObject);
     }
 
-    /// <summary>Boost de Estrella Guardiana: un brillo dorado baja a la carta y el ATK
-    /// DE LA PROPIA CARTA (no una etiqueta aparte) sube de <paramref name="atk"/> a
-    /// atk+boost, con un "+boost ★" que destella y se desvanece.</summary>
+    /// <summary>Una chispa que vuela DESDE fuera HACIA <paramref name="target"/> (convergencia).</summary>
+    private IEnumerator ConvergeSpark(RectTransform root, Vector2 target, Color color, float reach)
+    {
+        float ang = UnityEngine.Random.value * Mathf.PI * 2f;
+        Vector2 from = target + new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * reach * UnityEngine.Random.Range(1.1f, 1.8f);
+        var sp = MakeGlow(root, WithA(color, 0f));
+        var rt = (RectTransform)sp.transform;
+        rt.pivot = rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        float s = reach * 0.10f * UnityEngine.Random.Range(0.6f, 1.2f);
+        rt.sizeDelta = new Vector2(s, s);
+        float dur = UnityEngine.Random.Range(0.28f, 0.5f);
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            rt.anchoredPosition = Vector2.LerpUnclamped(from, target, k * k);   // acelera al centro
+            sp.color = WithA(color, Mathf.Clamp01(k * 1.6f));
+            rt.localScale = Vector3.one * Mathf.Lerp(1f, 0.5f, k);
+            yield return null;
+        }
+        Destroy(rt.gameObject);
+    }
+
+    /// <summary>Boost de Estrella Guardiana (mejorado): chispas CONVERGEN en la carta, un
+    /// AURA dorada crece, y al impactar estalla un anillo + chispas + motas ascendentes +
+    /// sacudida mientras el ATK DE LA CARTA sube contando de <paramref name="atk"/> a
+    /// atk+boost, con un "+boost ★" que destella.</summary>
     private IEnumerator StarBoostFx(RectTransform root, RectTransform card, int atk, int boost)
     {
+        DuelAudio.Play(DuelAudio.Sfx.GuardianStar);
         float cw = card.rect.width * card.localScale.x, ch = card.rect.height * card.localScale.y;
         Vector2 c = card.anchoredPosition;
         Vector3 baseS = card.localScale;
@@ -1678,57 +2051,76 @@ public class DuelScreen : MonoBehaviour
         var view = card.GetComponent<DuelHandCardView>();
         int def = (view != null && view.Display != null) ? view.Display.GetCurrentDef() : 0;
 
-        var glow = MakeGlow(root, new Color(1f, 0.85f, 0.3f, 0f));
-        var grt = (RectTransform)glow.transform;
-        grt.pivot = grt.anchorMin = grt.anchorMax = new Vector2(0.5f, 0.5f);
-        grt.sizeDelta = new Vector2(cw * 2.2f, cw * 2.2f);
-        Vector2 gFrom = c + new Vector2(0f, ch * 0.95f);
-        grt.anchoredPosition = gFrom;
+        var gold = new Color(1f, 0.85f, 0.35f);
+        var goldBright = new Color(1f, 0.96f, 0.62f);
 
-        // Etiqueta pequeña "+boost ★" (solo el incremento; el total va en la carta).
+        // Aura envolvente detrás de la carta + viñeta dorada en los bordes.
+        var aura = MakeGlow(root, WithA(gold, 0f));
+        var art = (RectTransform)aura.transform;
+        art.pivot = art.anchorMin = art.anchorMax = new Vector2(0.5f, 0.5f);
+        art.sizeDelta = new Vector2(cw * 2.7f, cw * 2.7f);
+        art.anchoredPosition = c;
+        var vignette = MakeGlow(root, WithA(gold, 0f));
+        StretchFull((RectTransform)vignette.transform);
+
+        // Etiqueta "+boost ★".
         var numGO = new GameObject("BoostNum", typeof(RectTransform));
         numGO.transform.SetParent(root, false);
         var nrt = (RectTransform)numGO.transform;
         nrt.pivot = nrt.anchorMin = nrt.anchorMax = new Vector2(0.5f, 0.5f);
-        nrt.sizeDelta = new Vector2(cw * 1.3f, 200f);
-        nrt.anchoredPosition = c + new Vector2(0f, ch * 0.62f);
+        nrt.sizeDelta = new Vector2(cw * 1.4f, 220f);
+        nrt.anchoredPosition = c + new Vector2(0f, ch * 0.66f);
         var num = numGO.AddComponent<TextMeshProUGUI>();
         if (TMP_Settings.defaultFontAsset != null) num.font = TMP_Settings.defaultFontAsset;
-        num.fontSize = 90; num.fontStyle = FontStyles.Bold;
+        num.fontSize = 96; num.fontStyle = FontStyles.Bold;
         num.alignment = TextAlignmentOptions.Center;
-        num.color = new Color(1f, 0.86f, 0.4f); num.raycastTarget = false;
+        num.color = goldBright; num.raycastTarget = false;
+        num.enableVertexGradient = false;
         num.text = $"+{boost} ★";
+        num.gameObject.SetActive(false);
 
-        // 1) el brillo baja a la carta
-        const float inDur = 0.35f;
-        for (float e = 0f; e < inDur; e += Time.deltaTime)
+        // 1) CARGA: chispas convergen hacia la carta mientras el aura crece.
+        const float chargeDur = 0.5f;
+        for (float e = 0f; e < chargeDur; e += Time.deltaTime)
         {
-            float k = Mathf.SmoothStep(0f, 1f, e / inDur);
-            grt.anchoredPosition = Vector2.LerpUnclamped(gFrom, c, k);
-            glow.color = new Color(1f, 0.85f, 0.3f, Mathf.Lerp(0f, 0.9f, k));
-            grt.localScale = Vector3.one * Mathf.Lerp(1.3f, 0.7f, k);
+            float k = e / chargeDur;
+            if (UnityEngine.Random.value < 0.55f) StartCoroutine(ConvergeSpark(root, c, gold, cw * 0.9f));
+            aura.color = WithA(gold, Mathf.Lerp(0f, 0.5f, k));
+            art.localScale = Vector3.one * Mathf.Lerp(0.75f, 1.02f, k);
+            vignette.color = WithA(gold, Mathf.Lerp(0f, 0.13f, k));
+            card.localScale = baseS * (1f + 0.03f * k);
             yield return null;
         }
-        // 2) impacto: el ATK DE LA CARTA sube de atk a atk+boost; la carta late.
-        const float upDur = 0.6f;
+
+        // 2) IMPACTO: anillo + chispas + motas + sacudida; el ATK sube contando.
+        num.gameObject.SetActive(true);
+        StartCoroutine(CineRingBurst(root, c, goldBright, cw * 0.6f, cw * 2.7f, 0.55f, 0.95f));
+        StartCoroutine(CineSparks(root, c, goldBright, 16, cw * 1.15f, cw * 0.14f, 0.55f));
+        StartCoroutine(CineShake(root, cw * 0.02f, 0.32f));
+        StartCoroutine(RisingMotes(root, c + Vector2.down * ch * 0.35f, gold, cw * 0.55f, ch * 0.95f, 10, cw * 0.09f));
+        numGO.transform.SetAsLastSibling();   // "+boost ★" al frente
+
+        const float upDur = 0.7f;
         for (float e = 0f; e < upDur; e += Time.deltaTime)
         {
             float k = e / upDur;
-            int val = Mathf.RoundToInt(Mathf.Lerp(atk, atk + boost, k));
+            int val = Mathf.RoundToInt(Mathf.Lerp(atk, atk + boost, Mathf.SmoothStep(0f, 1f, k)));
             if (view != null) view.SetCurrentStats(val, def);
-            glow.color = new Color(1f, 0.85f, 0.3f, Mathf.Lerp(0.9f, 0f, k));
-            grt.localScale = Vector3.one * Mathf.Lerp(0.7f, 1.6f, k);
-            card.localScale = baseS * (1f + 0.06f * Mathf.Sin(k * Mathf.PI));
-            nrt.localScale = Vector3.one * Mathf.Lerp(1.3f, 1f, Mathf.Clamp01(k / 0.3f));
+            aura.color = WithA(goldBright, Mathf.Lerp(0.85f, 0f, k));
+            art.localScale = Vector3.one * Mathf.Lerp(1.02f, 1.7f, k);
+            card.localScale = baseS * (1f + 0.09f * Mathf.Sin(Mathf.Clamp01(k / 0.5f) * Mathf.PI));
+            nrt.localScale = Vector3.one * Mathf.Lerp(1.6f, 1f, Mathf.Clamp01(k / 0.3f));
+            vignette.color = WithA(gold, Mathf.Lerp(0.13f, 0f, k));
             yield return null;
         }
         if (view != null) view.SetCurrentStats(atk + boost, def);
         card.localScale = baseS;
-        yield return new WaitForSeconds(0.3f);
+
+        yield return new WaitForSeconds(0.25f);
         const float outDur = 0.3f;
         for (float e = 0f; e < outDur; e += Time.deltaTime)
         { var col = num.color; col.a = 1f - e / outDur; num.color = col; yield return null; }
-        Destroy(glow.gameObject); Destroy(numGO);
+        Destroy(aura.gameObject); Destroy(vignette.gameObject); Destroy(numGO);
     }
 
     /// <summary>LP perdidos que emergen del brillo, suben y se desvanecen.</summary>
@@ -2126,7 +2518,368 @@ public class DuelScreen : MonoBehaviour
         UpdateLP(playerTarget, opponentTarget);
     }
 
-    // ── Resultado ────────────────────────────────────────────────────────
+    // ── Fin del duelo: desaparecer HUD + manos ───────────────────────────
+
+    /// <summary>Desvanece el HUD (CAMPO, LP, nombre/fase/turno, log) y las MANOS (jugador
+    /// y rival), dejando solo el campo 3D. Para el cierre del duelo.</summary>
+    public IEnumerator FadeOutHudAndHands(float duration)
+    {
+        var groups = new List<CanvasGroup>();
+        void Add(Component c)
+        {
+            if (c == null) return;
+            var cg = c.gameObject.GetComponent<CanvasGroup>();
+            if (cg == null) cg = c.gameObject.AddComponent<CanvasGroup>();
+            groups.Add(cg);
+        }
+        if (terrainText != null) Add(terrainText.transform.parent.parent);   // caja CAMPO
+        if (playerLPText != null) Add(playerLPText.transform.parent.parent); // caja LP
+        Add(opponentNameText); Add(phaseText); Add(turnText);
+        if (logText != null) Add(logText.transform.parent);                  // panel de log
+        if (handContainer != null) Add(handContainer);
+        if (_oppHandContainer != null) Add(_oppHandContainer);
+        HideCardInfo(); HideFieldBar(); HideTargetBar();
+
+        for (float e = 0f; e < duration; e += Time.deltaTime)
+        {
+            float a = 1f - e / duration;
+            foreach (var g in groups) if (g != null) g.alpha = a;
+            yield return null;
+        }
+        foreach (var g in groups) if (g != null) g.alpha = 0f;
+    }
+
+    /// <summary>
+    /// "GANASTE"/"PERDISTE": las letras entran DESDE LOS COSTADOS girando en VÓRTICE
+    /// (espiral hacia el centro) hasta formar la palabra en medio de la pantalla, con
+    /// un pulso final; luego sube y se desvanece para dar paso al modal de detalles.
+    /// </summary>
+    public IEnumerator PlayWinLoseVortex(bool win)
+    {
+        var parent = CineParent;
+        if (parent == null) yield break;
+
+        string word = win ? "GANASTE" : "PERDISTE";
+        Color col = win ? new Color(1f, 0.87f, 0.45f) : new Color(0.90f, 0.33f, 0.35f);
+
+        var root = new GameObject("WinLoseVortex", typeof(RectTransform)).GetComponent<RectTransform>();
+        root.SetParent(parent, false);
+        StretchFull(root);
+        root.SetAsLastSibling();
+
+        float rw = root.rect.width, rh = root.rect.height;
+        float letterH = Mathf.Min(rw, rh) * 0.16f;      // alto de cada letra de píxeles
+        float letterW = letterH * (7f / 9f);            // el glifo mide 7×9 (5×7 + contorno)
+        float step = letterW * 1.4f;                    // separación entre letras
+
+        int n = word.Length;
+        var lts = new RectTransform[n];
+        var imgs = new Image[n];
+        var finals = new Vector2[n];
+        float x0 = -(n - 1) * step * 0.5f;
+        for (int i = 0; i < n; i++)
+        {
+            var img = MakeSolid(root, col);             // Image; el color tiñe el CUERPO de la letra
+            img.sprite = PixelLetterSprite(word[i]);    // fuente de PÍXELES retro (con contorno negro)
+            var rt = (RectTransform)img.transform;
+            rt.pivot = rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(letterW, letterH);
+            lts[i] = rt; imgs[i] = img;
+            finals[i] = new Vector2(x0 + i * step, 0f);
+        }
+
+        float R0 = Mathf.Max(rw, rh) * 0.8f;    // radio inicial (fuera de pantalla, a los costados)
+        const float turns = 3f;                 // vueltas del vórtice (más = giro más largo)
+        DuelAudio.Play(win ? DuelAudio.Sfx.TurnStart : DuelAudio.Sfx.Phase);
+
+        const float dur = 2.7f;                 // más lento
+        const float stagStep = 0.055f;          // cascada entre letras
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float g = Mathf.Clamp01(e / dur);
+            for (int i = 0; i < n; i++)
+            {
+                float li = Mathf.Clamp01((g - i * stagStep) / (1f - (n - 1) * stagStep));
+                float ease = li * li * (3f - 2f * li);            // smoothstep (arranque y frenado suaves)
+                float swirl = 1f - li;                            // desenrollado del ángulo
+
+                Vector2 fp = finals[i];
+                float Rf = fp.magnitude;
+                float Af = fp.x >= 0f ? 0f : Mathf.PI;            // final sobre el eje horizontal
+                if (Rf > 1f) Af = Mathf.Atan2(fp.y, fp.x);
+                float A = Af + turns * Mathf.PI * 2f * swirl * swirl;
+                float R = Mathf.Lerp(R0, Rf, ease);
+                Vector2 spiral = new Vector2(Mathf.Cos(A), Mathf.Sin(A)) * R;
+                lts[i].anchoredPosition = Vector2.Lerp(spiral, fp, ease * ease);
+                lts[i].localRotation = Quaternion.Euler(0f, 0f, 900f * swirl);
+                lts[i].localScale = Vector3.one * Mathf.Lerp(0.15f, 1f, ease);
+                imgs[i].color = new Color(col.r, col.g, col.b, Mathf.Clamp01(li * 1.8f));
+            }
+            yield return null;
+        }
+        for (int i = 0; i < n; i++)
+        {
+            lts[i].anchoredPosition = finals[i];
+            lts[i].localRotation = Quaternion.identity;
+            lts[i].localScale = Vector3.one; imgs[i].color = col;
+        }
+
+        // Pulso de toda la palabra ya formada.
+        const float pDur = 0.4f;
+        for (float e = 0f; e < pDur; e += Time.deltaTime)
+        {
+            float p = Mathf.Sin(e / pDur * Mathf.PI);
+            for (int i = 0; i < n; i++) lts[i].localScale = Vector3.one * (1f + 0.2f * p);
+            yield return null;
+        }
+        for (int i = 0; i < n; i++) lts[i].localScale = Vector3.one;
+
+        yield return new WaitForSeconds(1.2f);
+
+        // Sube y se desvanece para dar paso al modal de detalles.
+        const float outDur = 0.5f;
+        for (float e = 0f; e < outDur; e += Time.deltaTime)
+        {
+            float k = e / outDur;
+            for (int i = 0; i < n; i++)
+            {
+                lts[i].anchoredPosition = finals[i] + new Vector2(0f, rh * 0.12f * k);
+                imgs[i].color = new Color(col.r, col.g, col.b, 1f - k);
+            }
+            yield return null;
+        }
+        Destroy(root.gameObject);
+    }
+
+    // ── Fuente de PÍXELES retro (5×7 con contorno) para GANASTE/PERDISTE ──
+
+    private static Dictionary<char, Sprite> _pixelLetters;
+
+    private static Sprite PixelLetterSprite(char ch)
+    {
+        if (_pixelLetters == null) _pixelLetters = new Dictionary<char, Sprite>();
+        if (_pixelLetters.TryGetValue(ch, out var cached)) return cached;
+
+        string[] rows = PixelFont(ch);
+        const int W = 5, H = 7, PAD = 1;
+        int tw = W + PAD * 2, th = H + PAD * 2;
+
+        var lit = new bool[tw, th];
+        for (int r = 0; r < H; r++)
+            for (int c = 0; c < W; c++)
+                if (rows[r][c] == '1')
+                    lit[PAD + c, (th - 1 - PAD) - r] = true;   // fila 0 = arriba (Texture2D es bottom-up)
+
+        var tex = new Texture2D(tw, th, TextureFormat.RGBA32, false)
+        { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+        var px = new Color32[tw * th];
+        for (int y = 0; y < th; y++)
+            for (int x = 0; x < tw; x++)
+            {
+                Color32 c;
+                if (lit[x, y]) c = new Color32(255, 255, 255, 255);                 // cuerpo (se tiñe)
+                else if ((x > 0 && lit[x - 1, y]) || (x < tw - 1 && lit[x + 1, y]) ||
+                         (y > 0 && lit[x, y - 1]) || (y < th - 1 && lit[x, y + 1]))
+                    c = new Color32(0, 0, 0, 255);                                    // contorno negro
+                else c = new Color32(0, 0, 0, 0);                                     // transparente
+                px[y * tw + x] = c;
+            }
+        tex.SetPixels32(px); tex.Apply();
+        var sp = Sprite.Create(tex, new Rect(0, 0, tw, th), new Vector2(0.5f, 0.5f), 16f);
+        _pixelLetters[ch] = sp;
+        return sp;
+    }
+
+    /// <summary>Bitmap 5×7 (7 filas de 5 bits, fila 0 = arriba) de las letras de las palabras.</summary>
+    private static string[] PixelFont(char ch) => ch switch
+    {
+        'A' => new[] { "01110", "10001", "10001", "11111", "10001", "10001", "10001" },
+        'D' => new[] { "11110", "10001", "10001", "10001", "10001", "10001", "11110" },
+        'E' => new[] { "11111", "10000", "10000", "11110", "10000", "10000", "11111" },
+        'G' => new[] { "01110", "10001", "10000", "10111", "10001", "10001", "01110" },
+        'I' => new[] { "11111", "00100", "00100", "00100", "00100", "00100", "11111" },
+        'N' => new[] { "10001", "11001", "10101", "10011", "10001", "10001", "10001" },
+        'P' => new[] { "11110", "10001", "10001", "11110", "10000", "10000", "10000" },
+        'R' => new[] { "11110", "10001", "10001", "11110", "10100", "10010", "10001" },
+        'S' => new[] { "01111", "10000", "10000", "01110", "00001", "00001", "11110" },
+        'T' => new[] { "11111", "00100", "00100", "00100", "00100", "00100", "00100" },
+        _   => new[] { "00000", "00000", "00000", "00000", "00000", "00000", "00000" },
+    };
+
+    // ── Modal de resultado con PESTAÑAS (Resumen / Puntuación / Recompensas) ──
+
+    private GameObject _resultModal;
+
+    /// <summary>
+    /// Modal final del duelo con tres pestañas: RESUMEN (tabla TÚ vs RIVAL), PUNTUACIÓN
+    /// (desglose del rango) y RECOMPENSAS (starships + drops). Botones Revancha/Menú por
+    /// callback. Se construye entero al vuelo (se muestra una vez por duelo).
+    /// </summary>
+    public void ShowResultModal(bool win, DuelScore score, string statsTable,
+        List<CardData> rewards, int starshipsEarned, int starshipsTotal,
+        System.Action onRematch, System.Action onMenu, bool allowRematch)
+    {
+        if (_resultModal != null) Destroy(_resultModal);
+        var parent = CineParent;
+        if (parent == null) return;
+
+        var root = new GameObject("ResultModal", typeof(RectTransform), typeof(Image));
+        root.transform.SetParent(parent, false);
+        StretchFull((RectTransform)root.transform);
+        root.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.5f);   // deja ver el campo girando detrás
+        root.transform.SetAsLastSibling();
+        _resultModal = root;
+
+        var border = MakeSolid(root.transform, CmGold);
+        var brt = (RectTransform)border.transform;
+        brt.anchorMin = new Vector2(0.11f, 0.09f); brt.anchorMax = new Vector2(0.89f, 0.91f);
+        brt.offsetMin = brt.offsetMax = Vector2.zero;
+        var panel = MakeSolid(border.transform, new Color(0.05f, 0.06f, 0.11f, 0.995f));
+        var P = (RectTransform)panel.transform;
+        P.anchorMin = Vector2.zero; P.anchorMax = Vector2.one;
+        P.offsetMin = new Vector2(3f, 3f); P.offsetMax = new Vector2(-3f, -3f);
+
+        // ── Cabecera: título (izq) + rango·puntos (der) ──
+        var title = MakeModalText(P, 0.90f, 0.99f, 46, win ? CmGoldBright : new Color(0.92f, 0.42f, 0.44f),
+            TextAlignmentOptions.Left, true, false);
+        title.text = win ? "¡DUELO GANADO!" : "DUELO PERDIDO";
+        title.rectTransform.anchorMin = new Vector2(0.03f, 0.90f); title.rectTransform.anchorMax = new Vector2(0.6f, 0.99f);
+        var rankT = MakeModalText(P, 0.90f, 0.99f, 40, RankColor(score.rank), TextAlignmentOptions.Right, true, false);
+        rankT.text = $"{RankEvaluator.RankLabel(score.rank)}   ·   {score.score}/99";
+        rankT.rectTransform.anchorMin = new Vector2(0.55f, 0.90f); rankT.rectTransform.anchorMax = new Vector2(0.97f, 0.99f);
+
+        // ── Páginas ──
+        var pageResumen = MakeModalPage(P);
+        var pagePuntos  = MakeModalPage(P);
+        var pagePremios = MakeModalPage(P);
+        void ShowPage(int idx)
+        {
+            pageResumen.SetActive(idx == 0);
+            pagePuntos.SetActive(idx == 1);
+            pagePremios.SetActive(idx == 2);
+        }
+
+        // ── Pestañas ──
+        MakeModalButtonRaw(P, "RESUMEN",     0.03f, 0.35f, 0.815f, 0.885f, () => ShowPage(0));
+        MakeModalButtonRaw(P, "PUNTUACIÓN",  0.355f, 0.68f, 0.815f, 0.885f, () => ShowPage(1));
+        MakeModalButtonRaw(P, "RECOMPENSAS", 0.685f, 0.97f, 0.815f, 0.885f, () => ShowPage(2));
+
+        // RESUMEN: tabla TÚ vs RIVAL (usa tabuladores <mspace>).
+        var st = MakeModalText((RectTransform)pageResumen.transform, 0f, 1f, 24, CmTextLight,
+            TextAlignmentOptions.Top, false, false);
+        st.richText = true; st.text = statsTable;
+
+        // PUNTUACIÓN: desglose.
+        BuildScorePage((RectTransform)pagePuntos.transform, score);
+
+        // RECOMPENSAS: starships + drops.
+        BuildRewardsPage((RectTransform)pagePremios.transform, rewards, starshipsEarned, starshipsTotal, win);
+
+        ShowPage(0);
+
+        // ── Botones ──
+        if (allowRematch)
+        {
+            MakeModalButtonRaw(P, "Revancha", 0.30f, 0.49f, 0.02f, 0.10f, () => onRematch?.Invoke());
+            MakeModalButtonRaw(P, "Volver al Menú", 0.51f, 0.70f, 0.02f, 0.10f, () => onMenu?.Invoke());
+        }
+        else
+        {
+            MakeModalButtonRaw(P, "Volver al Menú", 0.40f, 0.60f, 0.02f, 0.10f, () => onMenu?.Invoke());
+        }
+
+        StartCoroutine(FadeInResultPanel(root));
+    }
+
+    private GameObject MakeModalPage(RectTransform panel)
+    {
+        var go = new GameObject("Page", typeof(RectTransform));
+        go.transform.SetParent(panel, false);
+        var rt = (RectTransform)go.transform;
+        rt.anchorMin = new Vector2(0.03f, 0.12f); rt.anchorMax = new Vector2(0.97f, 0.79f);
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
+        go.SetActive(false);
+        return go;
+    }
+
+    private void MakeModalButtonRaw(RectTransform parent, string label,
+        float xMin, float xMax, float yMin, float yMax, System.Action onClick)
+    {
+        var go = new GameObject("Btn", typeof(RectTransform), typeof(Image), typeof(Button));
+        go.transform.SetParent(parent, false);
+        var rt = (RectTransform)go.transform;
+        rt.anchorMin = new Vector2(xMin, yMin); rt.anchorMax = new Vector2(xMax, yMax);
+        rt.offsetMin = new Vector2(4f, 3f); rt.offsetMax = new Vector2(-4f, -3f);
+        var img = go.GetComponent<Image>(); img.color = new Color(0.13f, 0.15f, 0.26f, 0.96f);
+        var btn = go.GetComponent<Button>(); btn.targetGraphic = img;
+        var cb = btn.colors; cb.highlightedColor = new Color(0.22f, 0.26f, 0.44f); cb.pressedColor = new Color(0.18f, 0.2f, 0.36f); btn.colors = cb;
+        var t = MakeModalText(rt, 0f, 1f, 24, CmTextLight, TextAlignmentOptions.Center, true, false);
+        t.text = label;
+        btn.onClick.AddListener(() => onClick?.Invoke());
+    }
+
+    private void BuildScorePage(RectTransform page, DuelScore score)
+    {
+        string s = "<mspace=0.6em>";
+        s += $"{"Base inicial",-28}<color=#CFCFCF>+50</color>\n";
+        foreach (var l in score.lines)
+        {
+            string d = l.delta >= 0 ? $"<color=#8CE08C>+{l.delta}</color>" : $"<color=#F08C8C>{l.delta}</color>";
+            s += $"{l.label,-28}{d}\n";
+        }
+        s += "</mspace>";
+        var t = MakeModalText(page, 0.16f, 1f, 22, CmTextLight, TextAlignmentOptions.TopLeft, false, false);
+        t.richText = true; t.text = s;
+
+        var total = MakeModalText(page, 0.0f, 0.14f, 30, RankColor(score.rank), TextAlignmentOptions.Left, true, false);
+        total.text = $"TOTAL: {score.score}/99   →   {RankEvaluator.RankLabel(score.rank)}";
+    }
+
+    private void BuildRewardsPage(RectTransform page, List<CardData> rewards, int earned, int total, bool win)
+    {
+        var head = MakeModalText(page, 0.87f, 1f, 27, CmGoldBright, TextAlignmentOptions.Left, true, false);
+        head.text = win ? $"★ StarShips  +{earned}   (total: {total})" : "Derrota — sin recompensas.";
+
+        if (!win || rewards == null || rewards.Count == 0)
+        {
+            var none = MakeModalText(page, 0.4f, 0.6f, 26, CmTextLight, TextAlignmentOptions.Center, false, false);
+            none.text = win ? "No cayó ninguna carta esta vez." : "";
+            return;
+        }
+
+        int n = Mathf.Min(rewards.Count, 4);
+        float cw = 1f / n;
+        for (int i = 0; i < n; i++)
+        {
+            var card = rewards[i];
+            var holder = new GameObject("Reward", typeof(RectTransform));
+            holder.transform.SetParent(page, false);
+            var rt = (RectTransform)holder.transform;
+            rt.anchorMin = new Vector2(i * cw + 0.03f, 0.10f); rt.anchorMax = new Vector2((i + 1) * cw - 0.03f, 0.82f);
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+
+            var art = MakeSolid(holder.transform, Color.white);
+            art.preserveAspect = true;
+            art.sprite = card != null ? card.Artwork : null;
+            if (art.sprite == null) art.color = new Color(0.18f, 0.2f, 0.3f);
+            var art_rt = (RectTransform)art.transform;
+            art_rt.anchorMin = new Vector2(0f, 0.24f); art_rt.anchorMax = new Vector2(1f, 1f);
+            art_rt.offsetMin = art_rt.offsetMax = Vector2.zero;
+
+            var nm = MakeModalText(rt, 0f, 0.22f, 21, CmTextLight, TextAlignmentOptions.Top, false, true);
+            nm.text = (card != null ? card.cardName : "—") +
+                      (i == 0 ? "\n<size=15><color=#8CE08C>garantizado</color></size>" : "");
+        }
+    }
+
+    private static Color RankColor(DuelRank r)
+    {
+        bool tec = r == DuelRank.STec || r == DuelRank.ATec || r == DuelRank.BTec ||
+                   r == DuelRank.CTec || r == DuelRank.DTec;
+        return tec ? new Color(0.45f, 0.75f, 1f) : new Color(1f, 0.82f, 0.4f);
+    }
+
+    // ── Resultado (LEGADO: banner + panel viejos, ya no se usan) ──────────
 
     /// <summary>
     /// Banner animado de victoria/derrota: el texto aparece enorme y cae a su
@@ -2157,15 +2910,45 @@ public class DuelScreen : MonoBehaviour
         resultBanner.SetActive(false);
     }
 
-    /// <summary>Caja final: título, estadísticas del duelo y botones.</summary>
+    /// <summary>Caja final: título, estadísticas del duelo y botones (aparece con fade + pop).</summary>
     public void ShowResultPanel(string title, string stats, bool allowRematch)
     {
-        if (resultPanel != null) resultPanel.SetActive(true);
+        if (resultPanel != null) { resultPanel.SetActive(true); StartCoroutine(FadeInResultPanel(resultPanel)); }
         if (resultTitleText != null) resultTitleText.text = title;
-        if (statsText != null) statsText.text = stats;
+        if (statsText != null)
+        {
+            statsText.text = stats;
+            statsText.richText = true;
+            statsText.fontSize = 24;
+            statsText.alignment = TextAlignmentOptions.Top;   // tabla centrada arriba
+            statsText.enableWordWrapping = false;
+            var le = statsText.GetComponent<LayoutElement>();
+            if (le != null) le.minHeight = 380f;
+            // Agranda la caja para que quepan todas las filas.
+            if (statsText.transform.parent is RectTransform card)
+                card.sizeDelta = new Vector2(960f, 930f);
+        }
         if (rankText != null) rankText.text = "";
         if (rewardGroup != null) rewardGroup.SetActive(false);
         SetActive(btnRematch, allowRematch);
+    }
+
+    /// <summary>El panel de resultado aparece con un desvanecido + "pop" de la caja.</summary>
+    private IEnumerator FadeInResultPanel(GameObject panel)
+    {
+        var cg = panel.GetComponent<CanvasGroup>();
+        if (cg == null) cg = panel.AddComponent<CanvasGroup>();
+        RectTransform card = panel.transform.childCount > 0
+            ? (RectTransform)panel.transform.GetChild(0) : (RectTransform)panel.transform;
+        const float dur = 0.35f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            cg.alpha = k;
+            card.localScale = Vector3.one * Mathf.Lerp(0.85f, 1f, 1f - (1f - k) * (1f - k));
+            yield return null;
+        }
+        cg.alpha = 1f; card.localScale = Vector3.one;
     }
 
     public void ShowRank(DuelRank rank, int score)

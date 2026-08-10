@@ -22,9 +22,9 @@ MonoBehaviour:
   isBoss: 0
   deck:
   - {fileID: 11400000, guid: 84ca3af2134c86049834d0bfcb396b81, type: 2}
-  - {fileID: 11400000, guid: 7017f7f761ce1eb4b9d306b4865ab606, type: 2}
-  - {fileID: 11400000, guid: 2ef25e05b1ac4f04eacdf3fdc639dca6, type: 2}
-  - {fileID: 11400000, guid: 7017f7f761ce1eb4b9d306b4865ab606, type: 2}
+  - {fileID: 11400000, guid: 582f249d5c89de64683974395bd6d870, type: 2}
+  - {fileID: 11400000, guid: 2c711419999eac942af492474474d8c0, type: 2}
+  - {fileID: 11400000, guid: b48c7ed4162a1504cb4479aee50941aa, type: 2}
   - {fileID: 11400000, guid: 7017f7f761ce1eb4b9d306b4865ab606, type: 2}
   - {fileID: 11400000, guid: 4d2dff8644e5abc4f9ac492e85b91c7e, type: 2}
   - {fileID: 11400000, guid: 7017f7f761ce1eb4b9d306b4865ab606, type: 2}
@@ -41,7 +41,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 15605f72e23c65141b39a2ddd07727a6, type: 2}
   - {fileID: 11400000, guid: 15605f72e23c65141b39a2ddd07727a6, type: 2}
   - {fileID: 11400000, guid: 84ca3af2134c86049834d0bfcb396b81, type: 2}
-  - {fileID: 11400000, guid: 2ef25e05b1ac4f04eacdf3fdc639dca6, type: 2}
+  - {fileID: 11400000, guid: a061f9ac1d80a4f4bb871cfea15b9b7c, type: 2}
   - {fileID: 11400000, guid: d64594917f8e04b4f93047077866bd11, type: 2}
   - {fileID: 11400000, guid: d64594917f8e04b4f93047077866bd11, type: 2}
   - {fileID: 11400000, guid: 2ef25e05b1ac4f04eacdf3fdc639dca6, type: 2}
@@ -59,22 +59,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d64594917f8e04b4f93047077866bd11, type: 2}
   - {fileID: 11400000, guid: 84ca3af2134c86049834d0bfcb396b81, type: 2}
   - {fileID: 11400000, guid: 7017f7f761ce1eb4b9d306b4865ab606, type: 2}
-  - {fileID: 11400000, guid: 2ef25e05b1ac4f04eacdf3fdc639dca6, type: 2}
+  - {fileID: 11400000, guid: 953acc4a762c0c141bd3bb0a9918e7f7, type: 2}
   - {fileID: 11400000, guid: 809e510f940129b4e96300fe930a333c, type: 2}
   aiStrategy: 0
   aiLevel: 1
   arena: 0
   arenaScene: 
   battleMusic: {fileID: 0}
-  normalVictoryRewards:
+  guaranteedDrop: {fileID: 0}
+  powRewards:
     entries:
-    - card: {fileID: 11400000, guid: 4d2dff8644e5abc4f9ac492e85b91c7e, type: 2}
-      probability: 0.113
-  technicalVictoryRewards:
-    entries:
-    - card: {fileID: 11400000, guid: 4d2dff8644e5abc4f9ac492e85b91c7e, type: 2}
-      probability: 0
-  perfectVictoryRewards:
-    entries:
-    - card: {fileID: 11400000, guid: 4d2dff8644e5abc4f9ac492e85b91c7e, type: 2}
-      probability: 0
+    - card: {fileID: 11400000, guid: 74def291e0dc79a40b24b13c7b2450a5, type: 2}
+      probability: 1
+  tecRewards:
+    entries: []

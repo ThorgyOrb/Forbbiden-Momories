@@ -398,7 +398,7 @@ public class DuelBoard3D : MonoBehaviour
         }
 
         // Fase 6: asentar exactamente en la vista de juego, todo encendido.
-        cam.SetPositionAndRotation(cameraPlayPoint.position, cameraPlayPoint.rotation);
+        cam.SetPositionAndRotation(PlayCamPos, cameraPlayPoint.rotation);
         ApplyLighting(1f);
         SetTableY(_tableTargetY);
         _introDone = true;   // a partir de aquí el neón "respira" (latido en Update)
@@ -413,9 +413,9 @@ public class DuelBoard3D : MonoBehaviour
     private void GetIntroPose(float s, out Vector3 pos, out Quaternion rot)
     {
         // Parámetros de destino (la vista de juego), relativos al pivote.
-        Vector3 relEnd = cameraPlayPoint.position - IntroPivot;
+        Vector3 relEnd = PlayCamPos - IntroPivot;
         float radiusEnd = new Vector2(relEnd.x, relEnd.z).magnitude;
-        float heightEnd = cameraPlayPoint.position.y;
+        float heightEnd = PlayCamPos.y;
         // Yaw exacto del punto de juego. OJO con los signos: la posición usa
         // -radius·sin(yaw) en X y -radius·cos(yaw) en Z, así que el yaw se
         // deriva de (-relEnd.x, -relEnd.z); con el signo mal, la órbita termina
@@ -464,9 +464,13 @@ public class DuelBoard3D : MonoBehaviour
 
     public enum CameraView { Play, MonsterZone, PlayerField, OpponentField, OpponentHand, OpponentMonsterZone, PlayerFieldFromOpp }
 
-    // Centro del tablero (punto medio entre las vistas cenitales de ambos campos).
-    // Se usa como pivote de la órbita y como eje de espejo para la vista del rival.
-    private static readonly Vector3 BoardCenter = new Vector3(0f, 0f, -0.54f);
+    // Vista de juego (mano del jugador): EXPLÍCITA en runtime para no depender del
+    // transform horneado (queda en z=-17 aunque no se reconstruya la escena).
+    private static readonly Vector3 PlayCamPos = new Vector3(-0.22f, 3.51f, -17f);
+
+    // Pivote de la órbita de cambio de turno: el ORIGEN, donde ambas cámaras de mano
+    // (jugador z=-17, rival z=+17) están a la MISMA distancia → arco simétrico y limpio.
+    private static readonly Vector3 OrbitPivot = Vector3.zero;
 
     /// <summary>Mueve la cámara con animación a una de las vistas del duelo.</summary>
     public IEnumerator MoveCamera(CameraView view, float duration = 0.55f)
@@ -491,7 +495,7 @@ public class DuelBoard3D : MonoBehaviour
         Vector3 startPos = mainCamera.transform.position;
         Quaternion startRot = mainCamera.transform.rotation;
 
-        Vector3 sOff = startPos - BoardCenter, eOff = endPos - BoardCenter;
+        Vector3 sOff = startPos - OrbitPivot, eOff = endPos - OrbitPivot;
         float sAng = Mathf.Atan2(sOff.x, sOff.z) * Mathf.Rad2Deg;
         float eAng = Mathf.Atan2(eOff.x, eOff.z) * Mathf.Rad2Deg;
         float dAng = Mathf.DeltaAngle(sAng, eAng);
@@ -516,12 +520,50 @@ public class DuelBoard3D : MonoBehaviour
             float ang = (sAng + dAng * k) * Mathf.Deg2Rad;
             float rad = Mathf.Lerp(sRad, eRad, k);
             float h = Mathf.Lerp(sOff.y, eOff.y, k);
-            mainCamera.transform.position = BoardCenter + new Vector3(Mathf.Sin(ang) * rad, h, Mathf.Cos(ang) * rad);
+            mainCamera.transform.position = OrbitPivot + new Vector3(Mathf.Sin(ang) * rad, h, Mathf.Cos(ang) * rad);
             mainCamera.transform.rotation = Quaternion.Slerp(startRot, endRot, k);
             yield return null;
         }
         mainCamera.transform.SetPositionAndRotation(endPos, endRot);
         if (boardYaw.HasValue && !yawApplied) SetBoardCardsYaw(boardYaw.Value);
+    }
+
+    // ── Órbita continua alrededor del campo (para el resultado del duelo) ──
+    private Coroutine _fieldOrbit;
+
+    /// <summary>Empieza a girar la cámara lentamente alrededor del campo (para el modal final).</summary>
+    public void StartFieldOrbit()
+    {
+        if (_fieldOrbit != null || mainCamera == null) return;
+        _fieldOrbit = StartCoroutine(FieldOrbitLoop());
+    }
+
+    public void StopFieldOrbit()
+    {
+        if (_fieldOrbit != null) { StopCoroutine(_fieldOrbit); _fieldOrbit = null; }
+    }
+
+    private IEnumerator FieldOrbitLoop()
+    {
+        Vector3 pivot = new Vector3(0f, 0.4f, 0f);
+        const float targetRadius = 13.5f, targetHeight = 6.5f, speed = 9f; // grados/seg
+        var cam = mainCamera.transform;
+        Vector3 off = cam.position - pivot;
+        float ang = Mathf.Atan2(off.x, off.z) * Mathf.Rad2Deg;
+        float r0 = new Vector2(off.x, off.z).magnitude, h0 = cam.position.y;
+        float t = 0f;
+        while (true)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 1.6f));   // entra suave a la órbita
+            float radius = Mathf.Lerp(r0, targetRadius, k);
+            float height = Mathf.Lerp(h0, targetHeight, k);
+            ang += speed * Time.deltaTime;
+            float rad = ang * Mathf.Deg2Rad;
+            Vector3 pos = pivot + new Vector3(Mathf.Sin(rad) * radius, height, Mathf.Cos(rad) * radius);
+            cam.SetPositionAndRotation(pos, Quaternion.LookRotation((pivot - pos).normalized, Vector3.up));
+            yield return null;
+        }
     }
 
     private void GetViewPose(CameraView v, out Vector3 pos, out Quaternion rot)
@@ -532,20 +574,18 @@ public class DuelBoard3D : MonoBehaviour
             // la batalla — "siempre las coordenadas del campo del jugador".
             case CameraView.MonsterZone:
             case CameraView.PlayerField:
-                pos = new Vector3(0f, 7.45f, -4.43f); rot = Quaternion.Euler(90f, 0f, 0f); break;
+                pos = new Vector3(0f, 7.7f, -4.43f); rot = Quaternion.Euler(90f, 0f, 0f); break;
             case CameraView.OpponentField:  // cenital sobre el campo del rival (TÚ eliges objetivo)
-                pos = new Vector3(0f, 7.45f, 3.35f); rot = Quaternion.Euler(90f, 0f, 0f); break;
+                pos = new Vector3(0f, 7.7f, 3.35f); rot = Quaternion.Euler(90f, 0f, 0f); break;
             case CameraView.OpponentMonsterZone:  // cenital del campo del rival, orientada A SU LADO
-                pos = new Vector3(0f, 7.45f, 3.35f); rot = Quaternion.Euler(90f, 180f, 0f); break;
+                pos = new Vector3(0f, 7.7f, 3.35f); rot = Quaternion.Euler(90f, 180f, 0f); break;
             case CameraView.PlayerFieldFromOpp:   // cenital del campo del JUGADOR, orientada al rival
-                pos = new Vector3(0f, 7.45f, -4.43f); rot = Quaternion.Euler(90f, 180f, 0f); break;
-            case CameraView.OpponentHand:   // frente a la mano del rival: espejo del punto de juego
-                pos = new Vector3(2f * BoardCenter.x - cameraPlayPoint.position.x,
-                                  cameraPlayPoint.position.y,
-                                  2f * BoardCenter.z - cameraPlayPoint.position.z);
+                pos = new Vector3(0f, 7.7f, -4.43f); rot = Quaternion.Euler(90f, 180f, 0f); break;
+            case CameraView.OpponentHand:   // frente a la mano del rival (simétrica al punto de juego respecto al origen)
+                pos = new Vector3(0.22f, 3.51f, 17f);
                 rot = Quaternion.Euler(0f, 180f, 0f) * cameraPlayPoint.rotation; break;
             default:                        // vista de juego normal (con la mano del jugador)
-                pos = cameraPlayPoint.position; rot = cameraPlayPoint.rotation; break;
+                pos = PlayCamPos; rot = cameraPlayPoint.rotation; break;
         }
     }
 
@@ -780,7 +820,7 @@ public class DuelBoard3D : MonoBehaviour
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = "SlotCursor";
             go.transform.SetParent(transform, false);
-            go.transform.localScale = new Vector3(1.7f, 0.015f, 2.6f);
+            go.transform.localScale = new Vector3(1.85f, 0.015f, 2.6f);   // acorde a la casilla más ancha (TileX)
             Destroy(go.GetComponent<Collider>());
             var mat = new Material(Shader.Find("Sprites/Default"))
             { color = new Color(1f, 0.85f, 0.35f, 0.45f) };
@@ -898,6 +938,12 @@ public class DuelBoard3D : MonoBehaviour
     /// <summary>Posición de mundo de una casilla de monstruo del rival.</summary>
     public Vector3 GetOpponentMonsterSlotWorld(int slot) => SlotPos(opponentMonsterAnchors[slot]);
 
+    /// <summary>Posición de mundo de una casilla de magias del jugador.</summary>
+    public Vector3 GetPlayerSpellSlotWorld(int slot) => SlotPos(playerSpellAnchors[slot]);
+
+    /// <summary>Posición de mundo de una casilla de magias del rival.</summary>
+    public Vector3 GetOpponentSpellSlotWorld(int slot) => SlotPos(opponentSpellAnchors[slot]);
+
     /// <summary>Posición EN PANTALLA (píxeles) de la carta de un monstruo del campo, con la
     /// cámara actual — para que la cinemática de combate arranque desde ahí.</summary>
     public Vector2 MonsterSlotScreenPos(bool playerSide, int slot)
@@ -985,8 +1031,10 @@ public class DuelBoard3D : MonoBehaviour
     /// </summary>
     // Posición fija de las cartas ANTES de invocar (showcase) y durante la FUSIÓN.
     // Centrada en X (la del fusionPoint), con Y/Z fijas para que queden bien encuadradas.
-    private const float FusionAnchorY = 1.586f;
-    private const float FusionAnchorZ = -7.53f;
+    // Y/Z se movieron con la cámara de la mano (Δ +0.31 en Y, −1.0 en Z: cámara -16→-17,
+    // 3.2→3.51) para conservar el MISMO encuadre de la presentación frente a la mano.
+    private const float FusionAnchorY = 1.896f;
+    private const float FusionAnchorZ = -8.53f;
 
     /// <summary>Punto base del showcase/fusión: X centrada, Y/Z fijas (FusionAnchorY/Z).</summary>
     private Vector3 FusionAnchor()
@@ -996,12 +1044,14 @@ public class DuelBoard3D : MonoBehaviour
     }
 
     /// <summary>Ancla del showcase para un lado: la del jugador, o su ESPEJO (rival),
-    /// para que la carta se alce frente a la cámara de ese lado.</summary>
+    /// para que la carta se alce frente a la cámara de ese lado. El espejo es respecto al
+    /// ORIGEN, para casar con las cámaras de mano simétricas al origen (jugador z=-17,
+    /// rival z=+17) — así ambas presentaciones quedan con idéntico encuadre.</summary>
     private Vector3 FusionAnchorFor(bool playerSide)
     {
         Vector3 a = FusionAnchor();
         if (playerSide) return a;
-        return new Vector3(2f * BoardCenter.x - a.x, a.y, 2f * BoardCenter.z - a.z);
+        return new Vector3(-a.x, a.y, -a.z);
     }
 
     // Escenografía de la fusión en coordenadas de PANTALLA (fracción horizontal 0..1).

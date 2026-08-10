@@ -44,31 +44,28 @@ public class OpponentData : ScriptableObject
     public string arenaScene = "";
     public AudioClip battleMusic;
 
-    [Header("Recompensas por tipo de victoria")]
-    [Tooltip("Su 'colección personal': qué cartas puede soltar y con qué probabilidad. " +
-             "Rareza alta → probabilidad baja.")]
-    public RewardTable normalVictoryRewards = new();
-    public RewardTable technicalVictoryRewards = new();
-    public RewardTable perfectVictoryRewards = new();
+    [Header("Recompensas por RANGO (POW / TEC)")]
+    [Tooltip("Drop 100% garantizado al ganar. Si se deja vacío, el drop garantizado se toma " +
+             "ponderado de la tabla del rango (POW o TEC).")]
+    public CardData guaranteedDrop;
+    [Tooltip("Cartas que puede soltar con rango POW (favorece MONSTRUOS). Cada una con su probabilidad.")]
+    public RewardTable powRewards = new();
+    [Tooltip("Cartas que puede soltar con rango TEC (favorece MAGIAS/TRAMPAS/EQUIPOS).")]
+    public RewardTable tecRewards = new();
 
-    /// <summary>Devuelve la tabla de recompensas correspondiente al tipo de victoria.</summary>
-    public RewardTable GetRewardTable(VictoryTier tier) => tier switch
-    {
-        VictoryTier.Perfect => perfectVictoryRewards,
-        VictoryTier.Technical => technicalVictoryRewards,
-        _ => normalVictoryRewards
-    };
+    /// <summary>Tabla de drops según el RANGO: POW (monstruos) o TEC (magias/trampas/equipos).</summary>
+    public RewardTable GetRankTable(bool isTec) => isTec ? tecRewards : powRewards;
 
     /// <summary>
-    /// Todas las cartas distintas que este oponente puede soltar (unión de sus
-    /// tres tablas). Útil para el Duelo Libre: "cartas descubiertas 18/26".
+    /// Todas las cartas distintas que este oponente puede soltar (garantizado + POW + TEC).
+    /// Útil para el Duelo Libre: "cartas descubiertas 18/26".
     /// </summary>
     public IEnumerable<CardData> AllRewardCards()
     {
         var set = new HashSet<CardData>();
-        AddCards(set, normalVictoryRewards);
-        AddCards(set, technicalVictoryRewards);
-        AddCards(set, perfectVictoryRewards);
+        if (guaranteedDrop != null) set.Add(guaranteedDrop);
+        AddCards(set, powRewards);
+        AddCards(set, tecRewards);
         return set;
     }
 

@@ -20,6 +20,17 @@ public class PlayerCollection : MonoBehaviour
     private Dictionary<int, PlayerCardEntry> _entries = new();
     private Dictionary<int, OpponentProgress> _opponents = new();
 
+    /// <summary>StarShips acumulados (estrellas que se ganan al duelar). Se guardan.</summary>
+    public int Starships { get; private set; }
+
+    /// <summary>Suma StarShips al total y guarda.</summary>
+    public void AddStarships(int amount)
+    {
+        if (amount <= 0) return;
+        Starships += amount;
+        Save();
+    }
+
     // Guardado diferido para operaciones masivas — ver BeginBatch/EndBatch.
     private int _batchDepth;
     private bool _savePending;
@@ -202,6 +213,7 @@ public class PlayerCollection : MonoBehaviour
     {
         public List<PlayerCardEntry> entries = new();
         public List<OpponentProgress> opponents = new();
+        public int starships;
         // Legado: saves antiguos guardaban solo ids desbloqueados. Se migra al cargar.
         public List<int> unlockedOpponents = new();
     }
@@ -241,7 +253,8 @@ public class PlayerCollection : MonoBehaviour
         var data = new SaveData
         {
             entries = _entries.Values.ToList(),
-            opponents = _opponents.Values.ToList()
+            opponents = _opponents.Values.ToList(),
+            starships = Starships
         };
         // Sin prettyPrint: con el catálogo completo el save pasa de unos pocos KB a varios
         // MB, y el sangrado casi duplica el tamaño y el tiempo de serialización.
@@ -273,6 +286,8 @@ public class PlayerCollection : MonoBehaviour
             string json = File.ReadAllText(SavePath);
             var data = JsonUtility.FromJson<SaveData>(json);
             if (data == null) return;
+
+            Starships = data.starships;
 
             foreach (var e in data.entries)
                 _entries[e.cardId] = e;

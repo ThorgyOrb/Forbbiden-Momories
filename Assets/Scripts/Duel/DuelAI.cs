@@ -84,14 +84,90 @@ public class DuelAI
             }
         }
 
-        // 4. No pudo invocar/fusionar (campo lleno o sin monstruos): juega una magia útil
-        //    (cualquier perfil) para no quedarse pasivo en fases avanzadas.
+        // 4. Equipar un monstruo del campo desde la MANO (cualquier perfil).
+        if (ai.MonsterZone.Any(m => m != null))
+        {
+            var equipAction = TryEquipFieldMonster(ai);
+            if (equipAction != null) return equipAction;
+        }
+
+        // 5. Activar un EQUIPO ya colocado sobre un monstruo compatible.
+        var setEquip = TryActivateSetEquip(ai);
+        if (setEquip != null) return setEquip;
+
+        // 6. Magia útil (cualquier perfil).
         var fallbackSpell = PickUsefulSpell(ai, player);
         if (fallbackSpell != null)
             return new AIAction { Type = AIActionType.PlaySpell, Card = fallbackSpell };
 
-        // 5. Nada útil que hacer.
+        // 7. Colocar una TRAMPA o EQUIPO boca abajo (la trampa se dispara sola; el equipo se
+        //    activará cuando tenga un monstruo compatible). Así una mano de esas cartas SÍ se usa.
+        var toSet = PickCardToSet(ai);
+        if (toSet != null)
+            return new AIAction { Type = AIActionType.SetTrap, Card = toSet };
+
+        // 8. Cualquier magia jugable (mejor una acción que pasar).
+        var anySpell = ai.Hand.FirstOrDefault(c => c != null && c.IsSpell);
+        if (anySpell != null)
+            return new AIAction { Type = AIActionType.PlaySpell, Card = anySpell };
+
+        // 9. ÚLTIMO RECURSO: zona de magias llena → combinar una S/T/E sobre una ocupada.
+        var spellFuse = PickSpellFuse(ai);
+        if (spellFuse != null) return spellFuse;
+
         return new AIAction { Type = AIActionType.Pass };
+    }
+
+    /// <summary>
+    /// Una carta para COLOCAR boca abajo en la zona de magias (si hay hueco): trampa o
+    /// equipo. Las magias se activan desde la mano (PlaySpell), no se setean aquí.
+    /// </summary>
+    private static CardData PickCardToSet(Duelist ai)
+    {
+        if (!HasFreeSlot(ai.SpellZone)) return null;
+        return ai.Hand.FirstOrDefault(c => c != null && c.IsTrap)
+            ?? ai.Hand.FirstOrDefault(c => c != null && c.IsEquip);
+    }
+
+    /// <summary>
+    /// Si hay un EQUIPO ya colocado (boca abajo) en la zona de magias y un monstruo propio
+    /// COMPATIBLE en el campo, lo activa sobre el de mayor ATK. Devuelve la acción o null.
+    /// </summary>
+    private static AIAction TryActivateSetEquip(Duelist ai)
+    {
+        for (int s = 0; s < 5; s++)
+        {
+            var eq = ai.SpellZone[s];
+            if (eq == null || !eq.IsEquip) continue;
+            if (eq.equipAtkBonus <= 0 && eq.equipDefBonus <= 0) continue;
+
+            int bestSlot = -1, bestAtk = -1;
+            for (int m = 0; m < 5; m++)
+            {
+                var mon = ai.MonsterZone[m];
+                if (mon == null || !eq.EquipAppliesTo(mon)) continue;
+                if (ai.MonsterCurrentAtk[m] > bestAtk) { bestAtk = ai.MonsterCurrentAtk[m]; bestSlot = m; }
+            }
+            if (bestSlot >= 0)
+                return new AIAction { Type = AIActionType.ActivateSetEquip, Card = eq, SpellSlot = s, TargetSlot = bestSlot };
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// ÚLTIMO recurso cuando la zona de magias está LLENA: coloca una S/T/E de la mano sobre
+    /// una casilla ocupada para "combinarla" (fusión de magias). Garantiza que el rival actúe
+    /// aunque su mano sea solo de trampas/equipos y no le quepan más. Devuelve la acción o null.
+    /// </summary>
+    private static AIAction PickSpellFuse(Duelist ai)
+    {
+        if (HasFreeSlot(ai.SpellZone)) return null;   // solo con la zona llena
+        var incoming = ai.Hand.FirstOrDefault(c => c != null && (c.IsTrap || c.IsEquip || c.IsSpell));
+        if (incoming == null) return null;
+        for (int s = 0; s < 5; s++)
+            if (ai.SpellZone[s] != null)
+                return new AIAction { Type = AIActionType.SpellFuse, Card = incoming, SpellSlot = s };
+        return null;
     }
 
     /// <summary>
@@ -147,12 +223,29 @@ public class DuelAI
             if (equipAction != null) return equipAction;
         }
 
-        // 4. Magia útil.
+        // 4. Activar un EQUIPO ya colocado sobre un monstruo compatible.
+        var setEquip = TryActivateSetEquip(ai);
+        if (setEquip != null) return setEquip;
+
+        // 5. Magia útil.
         var spell = PickUsefulSpell(ai, player);
         if (spell != null)
             return new AIAction { Type = AIActionType.PlaySpell, Card = spell };
 
-        // 5. Nada útil.
+        // 6. Colocar una TRAMPA o EQUIPO boca abajo (reactiva / para activar luego).
+        var toSet = PickCardToSet(ai);
+        if (toSet != null)
+            return new AIAction { Type = AIActionType.SetTrap, Card = toSet };
+
+        // 7. Cualquier magia jugable.
+        var anySpell = ai.Hand.FirstOrDefault(c => c != null && c.IsSpell);
+        if (anySpell != null)
+            return new AIAction { Type = AIActionType.PlaySpell, Card = anySpell };
+
+        // 8. ÚLTIMO RECURSO: zona de magias llena → combinar una S/T/E sobre una ocupada.
+        var spellFuse = PickSpellFuse(ai);
+        if (spellFuse != null) return spellFuse;
+
         return new AIAction { Type = AIActionType.Pass };
     }
 
@@ -286,6 +379,33 @@ public class DuelAI
         return attacks;
     }
 
+    /// <summary>
+    /// Ataque de ÚLTIMO RECURSO (ignora el umbral del perfil): el mejor disponible entre los
+    /// monstruos propios en ATAQUE que aún no atacaron, para garantizar que el rival haga algo
+    /// cuando no pudo jugar cartas ni encontró ataques "rentables". (-1,-1) si no hay atacante.
+    /// </summary>
+    public (int atkSlot, int defSlot) ForceAnyAttack(Duelist ai, Duelist player)
+    {
+        bool playerHasMonsters = player.MonsterZone.Any(m => m != null);
+        int bestAtk = -1, bestDef = -1, bestScore = int.MinValue;
+        for (int a = 0; a < 5; a++)
+        {
+            if (ai.MonsterZone[a] == null) continue;
+            if (ai.MonsterPositions[a] != CardPosition.FaceUpAttack) continue;
+            if (ai.MonsterHasAttacked[a]) continue;
+
+            if (!playerHasMonsters) return (a, -1);   // ataque directo garantizado
+
+            for (int d = 0; d < 5; d++)
+            {
+                if (player.MonsterZone[d] == null) continue;
+                int s = EvaluateAttack(ai, a, player, d);
+                if (s > bestScore) { bestScore = s; bestAtk = a; bestDef = d; }
+            }
+        }
+        return (bestAtk, bestDef);
+    }
+
     /// <summary>Qué tan favorable debe ser un ataque para lanzarlo (según el perfil).</summary>
     private int AttackThreshold() => _strategy switch
     {
@@ -407,7 +527,13 @@ public enum AIStrategy
 
 // ── DTOs de acción ─────────────────────────────────────────────────────────
 
-public enum AIActionType { Pass, Summon, Fuse, PlaySpell, Equip }
+public enum AIActionType
+{
+    Pass, Summon, Fuse, PlaySpell, Equip, SetTrap,
+    // ── Añadido (append-only) ──
+    ActivateSetEquip,  // activar un equipo YA colocado sobre un monstruo propio compatible
+    SpellFuse          // colocar S/T/E sobre una casilla de magias ocupada (se combinan)
+}
 
 public class AIAction
 {
@@ -416,5 +542,6 @@ public class AIAction
     public CardData          FuseResult;
     public List<CardData>    FuseMaterials;
     public CardPosition      SummonPosition = CardPosition.FaceUpAttack;
-    public int               TargetSlot = -1;   // Equip: casilla del monstruo propio a equipar
+    public int               TargetSlot = -1;   // Equip/ActivateSetEquip: casilla del monstruo propio a equipar
+    public int               SpellSlot  = -1;   // ActivateSetEquip: casilla del equipo · SpellFuse: casilla ocupada destino
 }
