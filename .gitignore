@@ -68,3 +68,7 @@ crashlytics-build.properties
 .DS_Store
 Thumbs.db
 desktop.ini
+Packages/packages-lock.json
+ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
+ProjectSettings/ProjectVersion.txt
+Packages/manifest.json
