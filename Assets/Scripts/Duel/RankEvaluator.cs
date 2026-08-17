@@ -107,7 +107,8 @@ public static class RankEvaluator
 
     /// <summary>
     /// Cartas de recompensa: el DROP GARANTIZADO del rival (100%) + una carta extra
-    /// probabilística de la tabla del RANGO (POW o TEC). Prioriza un override de historia.
+    /// probabilística de la tabla del RANGO exacto (POW / TEC / B-C-D). Prioriza un
+    /// override de historia.
     /// </summary>
     public static List<CardData> SelectRewards(DuelScore score, OpponentData opponent, DuelConfig overrides)
     {
@@ -115,19 +116,23 @@ public static class RankEvaluator
         if (opponent == null) return result;
 
         // 1) DROP GARANTIZADO (100%): el configurado; si no hay, se elige uno PONDERADO
-        //    (por probabilidad) de la tabla del rango o de cualquier tabla del rival. Al
-        //    ganar SIEMPRE cae al menos una carta (si el rival tiene alguna tabla con cartas).
+        //    (por probabilidad) de la tabla del rango o de cualquier otra tabla del rival.
+        //    Al ganar SIEMPRE cae al menos una carta (si el rival tiene alguna tabla con cartas).
         CardData guaranteed = opponent.guaranteedDrop
-                           ?? PickWeighted(opponent.GetRankTable(score.isTec)?.entries)
-                           ?? PickWeighted(opponent.GetRankTable(!score.isTec)?.entries);
+                           ?? PickWeighted(opponent.GetRewardTable(score.rank)?.entries)
+                           ?? PickWeighted(opponent.powRewards?.entries)
+                           ?? PickWeighted(opponent.tecRewards?.entries)
+                           ?? PickWeighted(opponent.bcdRewards?.entries);
         if (guaranteed != null) result.Add(guaranteed);
 
-        // 2) Carta EXTRA probabilística: override de historia, o la tabla del rango (POW/TEC).
+        // 2) Carta EXTRA probabilística: override de historia, o ruleta ponderada de la
+        //    tabla del rango (estas tablas pueden tener decenas de entradas — la ruleta
+        //    ponderada respeta el peso real de cada una, a diferencia de un roll por fila).
         CardData extra = null;
         if (overrides != null && overrides.rewardOverride != null && overrides.rewardOverride.entries.Count > 0)
             extra = RollTable(overrides.rewardOverride.entries);
         if (extra == null)
-            extra = RollTable(opponent.GetRankTable(score.isTec)?.entries);
+            extra = PickWeighted(opponent.GetRewardTable(score.rank)?.entries);
 
         if (extra != null && !result.Contains(extra)) result.Add(extra);
         return result;

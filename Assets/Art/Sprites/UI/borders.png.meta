@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -100,10 +100,10 @@ TextureImporter:
       name: borders_0
       rect:
         serializedVersion: 2
-        x: 949
-        y: 448
-        width: 573
-        height: 222
+        x: 942
+        y: 449
+        width: 580
+        height: 224
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,8 +111,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 037c4f6dbc613c741b3a04743725d511
-      internalID: 400082309
+      spriteID: ef7b6f9fc1c405043840cd17295896cb
+      internalID: 215284591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: borders_1
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 7
+        width: 525
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16f5ce83319dc1c438afa3b495c9b297
+      internalID: -42302344
       vertices: []
       indices: 
       edges: []
@@ -120,7 +141,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: c31709f23792d67498495eec41a96a30
+    spriteID: 349bb06c3b2c36248b66492cfbf3b44d
     internalID: 0
     vertices: []
     indices: 
@@ -128,7 +149,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      borders_0: 400082309
+      borders_0: 215284591
+      borders_1: -42302344
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

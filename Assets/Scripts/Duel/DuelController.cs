@@ -765,7 +765,8 @@ public class DuelController : MonoBehaviour
         _busy = true;
         var card = Player.Hand[_raisedIndex];
         screen.ShowFlipArrows(false);
-        board.ClearShowcase();   // retira la carta 3D del showcase
+        // La carta crece y se desvanece; su efecto/animación arranca cuando desaparece.
+        yield return board.ShowcaseActivateFade();
 
         Player.Hand.RemoveAt(_raisedIndex);
         _raisedIndex = -1;
@@ -1490,6 +1491,8 @@ public class DuelController : MonoBehaviour
         // Magia seteada: se activa y se consume.
         Player.SpellZone[slot] = null;
         Player.RegisterSpell();
+        // La carta crece y se desvanece; su efecto/animación arranca cuando desaparece.
+        yield return board.FieldCardActivateFade(slot);
         string msg = card.IsFieldSpell
             ? SetTerrain(card.fieldTerrain)
             : SpellEffectResolver.Resolve(card, Player, Opponent);
@@ -2658,10 +2661,32 @@ public class DuelController : MonoBehaviour
 
     private string SetTerrain(TerrainType terrain)
     {
+        TerrainType oldTerrain = _terrain;
         _terrain = terrain;
         screen.SetTerrain(terrain);
         board.SetTerrain(terrain);
+
+        // El terreno solo bonifica ATK. Los monstruos YA en campo (de ambos
+        // duelistas) tenían el bono del terreno ANTERIOR "congelado" en
+        // MonsterCurrentAtk; aquí se aplica el DELTA (nuevo - viejo) para que
+        // el cambio de escenario también les afecte, sin perder bonos de equipo.
+        ApplyTerrainDelta(Player, oldTerrain, terrain);
+        ApplyTerrainDelta(Opponent, oldTerrain, terrain);
+        board.SyncField(Player, Opponent);
+
         return $"El terreno cambia a {terrain}.";
+    }
+
+    private static void ApplyTerrainDelta(Duelist d, TerrainType oldTerrain, TerrainType newTerrain)
+    {
+        for (int i = 0; i < d.MonsterZone.Length; i++)
+        {
+            var card = d.MonsterZone[i];
+            if (card == null) continue;
+            int oldBonus = CombatCalculator.GetTerrainBonus(card, oldTerrain);
+            int newBonus = CombatCalculator.GetTerrainBonus(card, newTerrain);
+            d.MonsterCurrentAtk[i] += newBonus - oldBonus;
+        }
     }
 
     // ── Mazos (con diagnóstico claro) ─────────────────────────────────────

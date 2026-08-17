@@ -288,7 +288,8 @@ public class DuelBoard3D : MonoBehaviour
     {
         if (_styleAnim != null) { StopCoroutine(_styleAnim); _styleAnim = null; }
         if (!animated || !Application.isPlaying) { ApplyStyleInstant(target); return; }
-        _styleAnim = StartCoroutine(StyleTransition(_style, target, 0.7f));
+        _styleAnim = StartCoroutine(StyleTransition(_style, target, 1.1f));
+        StartCoroutine(TerrainChangeFx(target));
     }
 
     private IEnumerator StyleTransition(FieldStyle from, FieldStyle to, float dur)
@@ -302,6 +303,149 @@ public class DuelBoard3D : MonoBehaviour
         }
         ApplyStyleInstant(to);
         _styleAnim = null;
+    }
+
+    /// <summary>
+    /// Efecto de cambio de TERRENO (versión "clímax"): rayos giratorios y fogonazo
+    /// blanco en el centro, sacudida de cámara, varias ondas de choque concéntricas
+    /// y columnas de luz brotando de TODAS las casillas en onda expansiva desde el
+    /// centro hacia afuera, teñidas con la paleta del NUEVO estilo. Corre en paralelo
+    /// a <see cref="StyleTransition"/> y se apaga cuando el campo ya re-tematizó.
+    /// </summary>
+    private IEnumerator TerrainChangeFx(FieldStyle target)
+    {
+        Color glow = target.frameGlow;
+        Color accent = target.accentGlow;
+        Vector3 core = Vector3.up * 1.4f;
+
+        // Ondas de choque concéntricas: una blanca al frente (el "golpe") seguida de
+        // dos más con la paleta del nuevo terreno, barriendo todo el tablero.
+        StartCoroutine(Shockwave(Vector3.up * 0.05f, 0f, Color.white, 0.75f));
+        StartCoroutine(Shockwave(Vector3.up * 0.05f, 0.18f, glow, 0.75f));
+        StartCoroutine(Shockwave(Vector3.up * 0.05f, 0.40f, accent, 0.75f));
+        StartCoroutine(Shockwave(Vector3.up * 0.05f, 0.65f, glow, 0.75f));
+
+        // Rayos giratorios (starburst) en el centro, como el clímax de una fusión.
+        var rays = SpawnFx(RaysSprite(), core, out var raysSr);
+        raysSr.color = new Color(1f, 1f, 1f, 0f);
+        StartCoroutine(SpinRays(rays, raysSr, glow, accent, 1.75f));
+
+        // Fogonazo blanco que cubre brevemente la vista (impacto).
+        var flash = SpawnMote(core, out var flashSr);
+        flashSr.color = new Color(1f, 1f, 1f, 0f);
+        StartCoroutine(ScreenFlash(flash, flashSr));
+        StartCoroutine(CameraKick(0.18f, 0.5f));
+
+        // Fogonazo puntual (luz real) en el centro de la mesa.
+        var light = SpawnFusionLight(core, glow);
+        StartCoroutine(FlashLight(light, 11f, 1.3f));
+
+        // Columnas de luz que brotan de TODAS las casillas (varias por casilla), en
+        // onda expansiva desde el centro hacia afuera (según distancia al origen).
+        const int pillarsPerTile = 3;
+        if (boardTiles != null)
+            foreach (var t in boardTiles)
+            {
+                if (t == null) continue;
+                Vector3 basePos = t.transform.position;
+                float dist = new Vector2(basePos.x, basePos.z).magnitude;
+                float waveDelay = dist * 0.07f;
+                for (int p = 0; p < pillarsPerTile; p++)
+                {
+                    Vector3 jitter = new Vector3(
+                        UnityEngine.Random.Range(-0.35f, 0.35f), 0f,
+                        UnityEngine.Random.Range(-0.35f, 0.35f));
+                    float delay = waveDelay + p * 0.1f + UnityEngine.Random.Range(0f, 0.12f);
+                    Color c = Color.Lerp(glow, accent, UnityEngine.Random.value);
+                    StartCoroutine(TilePillar(basePos + jitter, c, delay));
+                }
+            }
+
+        yield return new WaitForSeconds(2.4f);
+        if (light != null) Destroy(light.gameObject);
+        if (rays != null) Destroy(rays.gameObject);
+        if (flash != null) Destroy(flash.gameObject);
+    }
+
+    /// <summary>Rayos giratorios (starburst) que aparecen, giran a pleno brillo y se disipan.</summary>
+    private IEnumerator SpinRays(Transform rays, SpriteRenderer sr, Color glow, Color accent, float dur)
+    {
+        float angle = 0f;
+        float inD = dur * 0.18f, holdD = dur * 0.42f, outD = dur - inD - holdD;
+
+        for (float e = 0f; e < inD; e += Time.deltaTime)
+        {
+            float k = e / inD;
+            angle += 260f * Time.deltaTime;
+            rays.localScale = Vector3.one * Mathf.Lerp(2f, 16f, k);
+            Color c = Color.Lerp(Color.white, glow, k); c.a = k * 0.9f;
+            sr.color = c;
+            BillboardFull(rays); rays.Rotate(0f, 0f, angle, Space.Self);
+            yield return null;
+        }
+        for (float e = 0f; e < holdD; e += Time.deltaTime)
+        {
+            float t = e / holdD;
+            angle += 210f * Time.deltaTime;
+            rays.localScale = Vector3.one * Mathf.Lerp(16f, 19f, t);
+            Color c = Color.Lerp(glow, accent, Mathf.PingPong(t * 2f, 1f)); c.a = 0.9f;
+            sr.color = c;
+            BillboardFull(rays); rays.Rotate(0f, 0f, angle, Space.Self);
+            yield return null;
+        }
+        for (float e = 0f; e < outD; e += Time.deltaTime)
+        {
+            float k = e / outD;
+            angle += 150f * Time.deltaTime;
+            rays.localScale = Vector3.one * Mathf.Lerp(19f, 23f, k);
+            var c = sr.color; c.a = Mathf.Lerp(0.9f, 0f, k); sr.color = c;
+            BillboardFull(rays); rays.Rotate(0f, 0f, angle, Space.Self);
+            yield return null;
+        }
+    }
+
+    /// <summary>Fogonazo blanco que estalla cubriendo buena parte de la vista y se disipa.</summary>
+    private IEnumerator ScreenFlash(Transform flash, SpriteRenderer sr)
+    {
+        const float up = 0.2f, hold = 0.08f, down = 0.6f;
+        for (float e = 0f; e < up; e += Time.deltaTime)
+        {
+            float k = e / up;
+            flash.localScale = Vector3.one * Mathf.Lerp(2f, 24f, k);
+            var c = sr.color; c.a = Mathf.Lerp(0f, 0.8f, k); sr.color = c;
+            BillboardFull(flash);
+            yield return null;
+        }
+        yield return new WaitForSeconds(hold);
+        for (float e = 0f; e < down; e += Time.deltaTime)
+        {
+            float k = e / down;
+            flash.localScale = Vector3.one * Mathf.Lerp(24f, 28f, k);
+            var c = sr.color; c.a = Mathf.Lerp(0.8f, 0f, k); sr.color = c;
+            BillboardFull(flash);
+            yield return null;
+        }
+    }
+
+    /// <summary>Columna de luz que brota de una casilla, sube y se desvanece (más alta/brillante).</summary>
+    private IEnumerator TilePillar(Vector3 basePos, Color color, float delay)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        var mote = SpawnMote(basePos, out var sr);
+        sr.color = new Color(color.r, color.g, color.b, 0f);
+        const float dur = 1.4f;
+        for (float e = 0f; e < dur; e += Time.deltaTime)
+        {
+            float k = e / dur;
+            float rise = Mathf.SmoothStep(0f, 1f, k);
+            mote.position = basePos + Vector3.up * Mathf.Lerp(0.05f, 8f, rise);
+            float sizeK = Mathf.Sin(k * Mathf.PI);   // crece y luego se encoge
+            mote.localScale = new Vector3(0.7f, Mathf.Lerp(1.5f, 9f, sizeK), 1f);
+            var c = sr.color; c.a = sizeK; sr.color = c;
+            BillboardUpright(mote);
+            yield return null;
+        }
+        if (mote != null) Destroy(mote.gameObject);
     }
 
     /// <summary>
@@ -1475,6 +1619,45 @@ public class DuelBoard3D : MonoBehaviour
         if (_showcaseView != null) { Destroy(_showcaseView.gameObject); _showcaseView = null; }
     }
 
+    // ── Activación de MAGIA (no equipo): crece y se desvanece ────────────
+    // Antes de resolver su efecto, la carta activada CRECE mientras se disuelve
+    // (fade), para dar tiempo a que "se consuma" antes de que arranque la
+    // animación propia del efecto (cambio de terreno, destello de daño/cura…).
+
+    /// <summary>Crece y se desvanece la carta de showcase (magia alzada desde la mano).</summary>
+    public IEnumerator ShowcaseActivateFade()
+    {
+        if (_showcaseView == null) yield break;
+        var v = _showcaseView;
+        _showcaseView = null;
+        yield return FadeGrowOut(v);
+    }
+
+    /// <summary>Crece y se desvanece una magia SETEADA que se activa desde su casilla
+    /// de campo (ya centrada por <see cref="AnimateFieldCardToCenter"/>).</summary>
+    public IEnumerator FieldCardActivateFade(int slot)
+    {
+        var v = _playerSpells[slot];
+        if (v == null) yield break;
+        _playerSpells[slot] = null;
+        yield return FadeGrowOut(v);
+    }
+
+    /// <summary>Escala hacia arriba mientras se desvanece (CanvasGroup si existe,
+    /// si no colapsa en escala); al terminar, destruye la pieza 3D.</summary>
+    private IEnumerator FadeGrowOut(Duel3DCardView v)
+    {
+        const float dur = 0.5f;
+        Vector3 growScale = v.transform.localScale * 1.6f;
+        var fade = v.CanvasGroup != null
+            ? DuelTween.FadeCanvas(v.CanvasGroup, 1f, 0f, dur)
+            : DuelTween.ScaleTo(v.transform, Vector3.zero, dur);
+        yield return DuelTween.Parallel(this,
+            DuelTween.ScaleTo(v.transform, growScale, dur),
+            fade);
+        if (v != null) Destroy(v.gameObject);
+    }
+
     // ── Presentación centrada de la carta a invocar (antes de la estrella) ────
     // Unifica invocación simple y fusión: la carta que se va a invocar SIEMPRE se
     // coloca CENTRADA (mismo punto/tamaño) y hace un "flourish" antes de que se elija
@@ -2297,13 +2480,13 @@ public class DuelBoard3D : MonoBehaviour
     }
 
     /// <summary>Onda de choque: un anillo que se expande y se desvanece (de cara a la cámara).</summary>
-    private IEnumerator Shockwave(Vector3 pos, float delay, Color? color = null)
+    private IEnumerator Shockwave(Vector3 pos, float delay, Color? color = null, float duration = 0.5f)
     {
         if (delay > 0f) yield return new WaitForSeconds(delay);
         var ring = SpawnFx(RingSprite(), pos, out var sr);
         Color baseC = color ?? new Color(0.7f, 0.95f, 1f);
         sr.color = new Color(baseC.r, baseC.g, baseC.b, 0.9f);
-        const float dur = 0.5f;
+        float dur = duration;
         for (float e = 0f; e < dur; e += Time.deltaTime)
         {
             float k = e / dur;

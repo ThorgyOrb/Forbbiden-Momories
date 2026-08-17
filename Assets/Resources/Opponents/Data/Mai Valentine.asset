@@ -1,0 +1,333 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a21dfc9622c1fd4f99f415abf6a0ab3, type: 3}
+  m_Name: Mai Valentine
+  m_EditorClassIdentifier: 
+  opponentId: 11
+  opponentName: Mai Valentine
+  portrait: {fileID: 0}
+  story: 
+  difficultyLevel: 1
+  appearanceOrder: 11
+  region: 
+  isBoss: 0
+  deck:
+  - {fileID: 11400000, guid: 067f984aef11d114d9bfbd5cf1fe5ef0, type: 2}
+  - {fileID: 11400000, guid: cb72a2a64067cea4a9822963f15b4afb, type: 2}
+  - {fileID: 11400000, guid: cbdf0c9dffee3d348a1253892a6c734a, type: 2}
+  - {fileID: 11400000, guid: 7a8d888609d80ca49b262681066f1448, type: 2}
+  - {fileID: 11400000, guid: 449a60d921fd2ac469dab60db6a9e6bf, type: 2}
+  - {fileID: 11400000, guid: 003cda8d3f2707945b8555b80f96c2a5, type: 2}
+  - {fileID: 11400000, guid: 64f0da6cbddd7e541b176dd3558e3243, type: 2}
+  - {fileID: 11400000, guid: cb72a2a64067cea4a9822963f15b4afb, type: 2}
+  - {fileID: 11400000, guid: 78b2140a24bff7847a56c5a16eceb5b6, type: 2}
+  - {fileID: 11400000, guid: ada749c6b8797644d88ccd3b5a20b268, type: 2}
+  - {fileID: 11400000, guid: dffb33cc94da4844891de765d355615d, type: 2}
+  - {fileID: 11400000, guid: fbd2393359b9ce147986345655c2cd9f, type: 2}
+  - {fileID: 11400000, guid: 4dcb431d396e87e48a9ce893b40dbccf, type: 2}
+  - {fileID: 11400000, guid: c9b92390bb86037448d9675469d67376, type: 2}
+  - {fileID: 11400000, guid: 5ff3f885f1120564681bda8f73fad12c, type: 2}
+  - {fileID: 11400000, guid: 0a6a4afd0c1462846bdb96f7e84eee76, type: 2}
+  - {fileID: 11400000, guid: c5eeac88812f41240866734510248ac1, type: 2}
+  - {fileID: 11400000, guid: 9c118a1af60b1614c9b83414c075e03f, type: 2}
+  - {fileID: 11400000, guid: cb72a2a64067cea4a9822963f15b4afb, type: 2}
+  - {fileID: 11400000, guid: 78b2140a24bff7847a56c5a16eceb5b6, type: 2}
+  - {fileID: 11400000, guid: 64f0da6cbddd7e541b176dd3558e3243, type: 2}
+  - {fileID: 11400000, guid: a4e9205d3fcb5144dab082f31c5163d2, type: 2}
+  - {fileID: 11400000, guid: fbb6fffed00ff374e9cfd85f073308b0, type: 2}
+  - {fileID: 11400000, guid: 35ece26d65b870746bce57b6210fd0f6, type: 2}
+  - {fileID: 11400000, guid: 495ee758fd541504faa00579bd54dab9, type: 2}
+  - {fileID: 11400000, guid: 4dcb431d396e87e48a9ce893b40dbccf, type: 2}
+  - {fileID: 11400000, guid: 04a976f524f41b940b7b143b7bda1bb0, type: 2}
+  - {fileID: 11400000, guid: 3a40edbf2d5d49f4f9def84e8418b6e9, type: 2}
+  - {fileID: 11400000, guid: 35f848bf024513e4aa3283506fd31ecc, type: 2}
+  - {fileID: 11400000, guid: 0c4e41516a2c68245a7df30dc39c0588, type: 2}
+  - {fileID: 11400000, guid: dba5a3331d1f287409911bf54283ed83, type: 2}
+  - {fileID: 11400000, guid: 0a6a4afd0c1462846bdb96f7e84eee76, type: 2}
+  - {fileID: 11400000, guid: b5dbce418f81f9a43a1b2826b8529c89, type: 2}
+  - {fileID: 11400000, guid: 64f0da6cbddd7e541b176dd3558e3243, type: 2}
+  - {fileID: 11400000, guid: 7ed4702bfa92ff24d949754ba88d1222, type: 2}
+  - {fileID: 11400000, guid: 1c1fe395d0bf90040af4bc9daf01bb85, type: 2}
+  - {fileID: 11400000, guid: cbdf0c9dffee3d348a1253892a6c734a, type: 2}
+  - {fileID: 11400000, guid: 205db61c49df68d44b8faf6c92f20a4e, type: 2}
+  - {fileID: 11400000, guid: 0c4e41516a2c68245a7df30dc39c0588, type: 2}
+  - {fileID: 11400000, guid: b5663800672d10142b35ef552e4b0e41, type: 2}
+  aiStrategy: 0
+  aiLevel: 1
+  arena: 0
+  arenaScene: 
+  battleMusic: {fileID: 0}
+  guaranteedDrop: {fileID: 0}
+  powRewards:
+    entries:
+    - card: {fileID: 11400000, guid: 1c43abb18e02b504bbcdf9cb2a13befb, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 7f82b6a3f7dd1ba4aa5e2d1308889963, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 722d7914ffaa1774db111e85fb7468e4, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 019b4af781637084c9fc81e6af4b4291, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 2a0ce2a4b9329e14c9b62e37faaa817f, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: a4e9205d3fcb5144dab082f31c5163d2, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 9c118a1af60b1614c9b83414c075e03f, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 74db51d3b6fa6454fa7e5e5fedf8d0bf, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 9802261b4efb39c46927462beff87159, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: fc33991c49925714994e3bdf5c9b57a6, type: 2}
+      probability: 0.045900002
+    - card: {fileID: 11400000, guid: a7ce8e80c422f0f47abdcb786755afb1, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 32ad7fec32195e749b76e86b5210f312, type: 2}
+      probability: 0.045900002
+    - card: {fileID: 11400000, guid: 0e4fec9676afd2c42b1bffe21abf230d, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 35ece26d65b870746bce57b6210fd0f6, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: a6bbc5edf92aa004f9eb2aceacd1c412, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: dba5a3331d1f287409911bf54283ed83, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: cb72a2a64067cea4a9822963f15b4afb, type: 2}
+      probability: 0.045900002
+    - card: {fileID: 11400000, guid: bda5e8b807f62274391c83c5cbb2d638, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 35412053d50239742a77cfcdd752b3b8, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 136d668dc5e1d014eb8fc1a18e97a1ca, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 307ef8e5d71ae7945a0d21986f2fccc1, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 109d21428656ef84dab85228b9b8e9dd, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: b5663800672d10142b35ef552e4b0e41, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 6fc1fe04954e9e84d8e7781ec4560835, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: b48c7ed4162a1504cb4479aee50941aa, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 79bba4dfed8fcd7488ede42c38e3bd2c, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 0d26963f5cb5b8d46bcd38a497c20793, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: c5ab52e29f1749d448f5fb32249fc1e7, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 84f6a95cd3b0c484bb717c21da9db0e2, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 438882c35dfd839448e3cc506b8e8c7c, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 2c4b6f2023e774a4dbc75afaa22bb21b, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 7e1e38daed884a94eb1bca28d3e12df6, type: 2}
+      probability: 0.030299999
+    - card: {fileID: 11400000, guid: 1c1fe395d0bf90040af4bc9daf01bb85, type: 2}
+      probability: 0.045900002
+    - card: {fileID: 11400000, guid: 8ecaf5b5eb404ca46abc5e4dfb0a80d8, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 205db61c49df68d44b8faf6c92f20a4e, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 3a40edbf2d5d49f4f9def84e8418b6e9, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 2697f4dac2bf3da439bf71dc9f6070d4, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: dffb33cc94da4844891de765d355615d, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 9cb8be4b4d799784f90c32d8b233ddf1, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 0aa8d210a9dc5d045ab02622a03bd074, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: e6b1de557cb5b3d40b196b4158ad94a4, type: 2}
+      probability: 0.030299999
+    - card: {fileID: 11400000, guid: 739aaa10923547a4b83db9ae11d2b248, type: 2}
+      probability: 0.030299999
+    - card: {fileID: 11400000, guid: 31fb3b9c762ed0445b6fb627c130fc12, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: b870bed687250484d836ca3b3331f921, type: 2}
+      probability: 0.030299999
+    - card: {fileID: 11400000, guid: 0c4e41516a2c68245a7df30dc39c0588, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: 903b18be98c0d554681eec6e73cbc8bc, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 7eb9fefc936b5ca478ec5929cad9403a, type: 2}
+      probability: 0.0146
+    - card: {fileID: 11400000, guid: fc442ac653306ba419162e36d1100eea, type: 2}
+      probability: 0.030299999
+    - card: {fileID: 11400000, guid: 4d6d821048a587b4cb1b5a45191b11c8, type: 2}
+      probability: 0.030299999
+    - card: {fileID: 11400000, guid: 352a503ec4a684941af35e0bea2d53ff, type: 2}
+      probability: 0.0039
+    - card: {fileID: 11400000, guid: a467f5df55a48c34ea3385dacaa8f712, type: 2}
+      probability: 0.0088
+    - card: {fileID: 11400000, guid: 5fdca2c44eea4ad48875ff6a4a48bb69, type: 2}
+      probability: 0.0195
+  tecRewards:
+    entries:
+    - card: {fileID: 11400000, guid: 1c43abb18e02b504bbcdf9cb2a13befb, type: 2}
+      probability: 0.022
+    - card: {fileID: 11400000, guid: 019b4af781637084c9fc81e6af4b4291, type: 2}
+      probability: 0.0225
+    - card: {fileID: 11400000, guid: 9c118a1af60b1614c9b83414c075e03f, type: 2}
+      probability: 0.0225
+    - card: {fileID: 11400000, guid: cb72a2a64067cea4a9822963f15b4afb, type: 2}
+      probability: 0.0645
+    - card: {fileID: 11400000, guid: 109d21428656ef84dab85228b9b8e9dd, type: 2}
+      probability: 0.0225
+    - card: {fileID: 11400000, guid: 6fc1fe04954e9e84d8e7781ec4560835, type: 2}
+      probability: 0.022
+    - card: {fileID: 11400000, guid: 7e1e38daed884a94eb1bca28d3e12df6, type: 2}
+      probability: 0.043899998
+    - card: {fileID: 11400000, guid: 1c1fe395d0bf90040af4bc9daf01bb85, type: 2}
+      probability: 0.0664
+    - card: {fileID: 11400000, guid: 2697f4dac2bf3da439bf71dc9f6070d4, type: 2}
+      probability: 0.0225
+    - card: {fileID: 11400000, guid: dffb33cc94da4844891de765d355615d, type: 2}
+      probability: 0.0225
+    - card: {fileID: 11400000, guid: 0aa8d210a9dc5d045ab02622a03bd074, type: 2}
+      probability: 0.022
+    - card: {fileID: 11400000, guid: e6b1de557cb5b3d40b196b4158ad94a4, type: 2}
+      probability: 0.043899998
+    - card: {fileID: 11400000, guid: 739aaa10923547a4b83db9ae11d2b248, type: 2}
+      probability: 0.043899998
+    - card: {fileID: 11400000, guid: b870bed687250484d836ca3b3331f921, type: 2}
+      probability: 0.043899998
+    - card: {fileID: 11400000, guid: 0c4e41516a2c68245a7df30dc39c0588, type: 2}
+      probability: 0.022
+    - card: {fileID: 11400000, guid: fc442ac653306ba419162e36d1100eea, type: 2}
+      probability: 0.043899998
+    - card: {fileID: 11400000, guid: 4d6d821048a587b4cb1b5a45191b11c8, type: 2}
+      probability: 0.043899998
+    - card: {fileID: 11400000, guid: 352a503ec4a684941af35e0bea2d53ff, type: 2}
+      probability: 0.0049
+    - card: {fileID: 11400000, guid: a467f5df55a48c34ea3385dacaa8f712, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: fec959a526a054349abdb48853f5ca62, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 6f8f5c818230b3147825553457c31cfe, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 35f848bf024513e4aa3283506fd31ecc, type: 2}
+      probability: 0.0313
+    - card: {fileID: 11400000, guid: 3ee5b9580a5d7ba4aaaeefb5d85c1ade, type: 2}
+      probability: 0.0352
+    - card: {fileID: 11400000, guid: 5b00feb460b267344bd324d13a159ab6, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: d1db26635db89c5459690b359e0a8283, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 2b94ddf98ba56e74b9665072890f853e, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 5fdca2c44eea4ad48875ff6a4a48bb69, type: 2}
+      probability: 0.0313
+    - card: {fileID: 11400000, guid: 42836739ca76e48458b29e2f21ddba40, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 288a9429e623dcf438cbb46c99bbdb89, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 78223a2aeb59cb141ac7747724b9cbf1, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 57be4c68f7f85ad4b8a9fe83cc92cbf3, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 41682e6f86eaaf746be46a0d1bda707c, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: fecd44bac8c2242498919e67ac1d2c49, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 7a8d888609d80ca49b262681066f1448, type: 2}
+      probability: 0.0313
+    - card: {fileID: 11400000, guid: c0577e1bfdc1ed942ae05d40a296305f, type: 2}
+      probability: 0.0156
+    - card: {fileID: 11400000, guid: 0b47bbe7978163244b9d1dee6519fb08, type: 2}
+      probability: 0.0176
+    - card: {fileID: 11400000, guid: 04e49430da3b9164593e7c3f45ea0dfa, type: 2}
+      probability: 0.0176
+    - card: {fileID: 11400000, guid: fbd2393359b9ce147986345655c2cd9f, type: 2}
+      probability: 0.0156
+  bcdRewards:
+    entries:
+    - card: {fileID: 11400000, guid: 1c43abb18e02b504bbcdf9cb2a13befb, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 722d7914ffaa1774db111e85fb7468e4, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 9c118a1af60b1614c9b83414c075e03f, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 32ad7fec32195e749b76e86b5210f312, type: 2}
+      probability: 0.0586
+    - card: {fileID: 11400000, guid: 0e4fec9676afd2c42b1bffe21abf230d, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 35ece26d65b870746bce57b6210fd0f6, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: a6bbc5edf92aa004f9eb2aceacd1c412, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: dba5a3331d1f287409911bf54283ed83, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: cb72a2a64067cea4a9822963f15b4afb, type: 2}
+      probability: 0.0586
+    - card: {fileID: 11400000, guid: bda5e8b807f62274391c83c5cbb2d638, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 35412053d50239742a77cfcdd752b3b8, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 307ef8e5d71ae7945a0d21986f2fccc1, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 109d21428656ef84dab85228b9b8e9dd, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: b5663800672d10142b35ef552e4b0e41, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 6fc1fe04954e9e84d8e7781ec4560835, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 79bba4dfed8fcd7488ede42c38e3bd2c, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 0d26963f5cb5b8d46bcd38a497c20793, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 84f6a95cd3b0c484bb717c21da9db0e2, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 438882c35dfd839448e3cc506b8e8c7c, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 7e1e38daed884a94eb1bca28d3e12df6, type: 2}
+      probability: 0.039100002
+    - card: {fileID: 11400000, guid: 1c1fe395d0bf90040af4bc9daf01bb85, type: 2}
+      probability: 0.0586
+    - card: {fileID: 11400000, guid: 8ecaf5b5eb404ca46abc5e4dfb0a80d8, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 205db61c49df68d44b8faf6c92f20a4e, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 3a40edbf2d5d49f4f9def84e8418b6e9, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 2697f4dac2bf3da439bf71dc9f6070d4, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: dffb33cc94da4844891de765d355615d, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 9cb8be4b4d799784f90c32d8b233ddf1, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: 0aa8d210a9dc5d045ab02622a03bd074, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: e6b1de557cb5b3d40b196b4158ad94a4, type: 2}
+      probability: 0.039100002
+    - card: {fileID: 11400000, guid: 739aaa10923547a4b83db9ae11d2b248, type: 2}
+      probability: 0.039100002
+    - card: {fileID: 11400000, guid: b870bed687250484d836ca3b3331f921, type: 2}
+      probability: 0.039100002
+    - card: {fileID: 11400000, guid: 0c4e41516a2c68245a7df30dc39c0588, type: 2}
+      probability: 0.0195
+    - card: {fileID: 11400000, guid: fc442ac653306ba419162e36d1100eea, type: 2}
+      probability: 0.039100002
+    - card: {fileID: 11400000, guid: 4d6d821048a587b4cb1b5a45191b11c8, type: 2}
+      probability: 0.039100002
+    - card: {fileID: 11400000, guid: 352a503ec4a684941af35e0bea2d53ff, type: 2}
+      probability: 0.0049
+    - card: {fileID: 11400000, guid: a467f5df55a48c34ea3385dacaa8f712, type: 2}
+      probability: 0.0127
+    - card: {fileID: 11400000, guid: fec959a526a054349abdb48853f5ca62, type: 2}
+      probability: 0.0127
+    - card: {fileID: 11400000, guid: 35f848bf024513e4aa3283506fd31ecc, type: 2}
+      probability: 0.0293
+    - card: {fileID: 11400000, guid: 5fdca2c44eea4ad48875ff6a4a48bb69, type: 2}
+      probability: 0.0293

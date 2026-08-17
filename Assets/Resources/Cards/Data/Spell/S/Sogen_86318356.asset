@@ -32,10 +32,11 @@ MonoBehaviour:
   spellKind: 1
   spellEffect: 0
   spellValue: 0
-  fieldTerrain: 1
+  fieldTerrain: 6
   spellDescription: 
   equipAtkBonus: 0
   equipDefBonus: 0
+  equipTargets: {fileID: 0}
   equipRestrictToType: 0
   equipMonsterType: 0
   ritualMaterials: []

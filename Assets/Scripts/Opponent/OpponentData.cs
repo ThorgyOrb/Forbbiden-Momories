@@ -52,12 +52,19 @@ public class OpponentData : ScriptableObject
     public RewardTable powRewards = new();
     [Tooltip("Cartas que puede soltar con rango TEC (favorece MAGIAS/TRAMPAS/EQUIPOS).")]
     public RewardTable tecRewards = new();
+    [Tooltip("Cartas que puede soltar con rango B/C/D (rango medio-bajo, sin distinguir POW/TEC).")]
+    public RewardTable bcdRewards = new();
 
-    /// <summary>Tabla de drops según el RANGO: POW (monstruos) o TEC (magias/trampas/equipos).</summary>
-    public RewardTable GetRankTable(bool isTec) => isTec ? tecRewards : powRewards;
+    /// <summary>Tabla de drops según el RANGO: S/A-POW → powRewards, S/A-TEC → tecRewards, B/C/D → bcdRewards.</summary>
+    public RewardTable GetRewardTable(DuelRank rank) => rank switch
+    {
+        DuelRank.SPow or DuelRank.APow => powRewards,
+        DuelRank.STec or DuelRank.ATec => tecRewards,
+        _ => bcdRewards
+    };
 
     /// <summary>
-    /// Todas las cartas distintas que este oponente puede soltar (garantizado + POW + TEC).
+    /// Todas las cartas distintas que este oponente puede soltar (garantizado + POW + TEC + B/C/D).
     /// Útil para el Duelo Libre: "cartas descubiertas 18/26".
     /// </summary>
     public IEnumerable<CardData> AllRewardCards()
@@ -66,6 +73,7 @@ public class OpponentData : ScriptableObject
         if (guaranteedDrop != null) set.Add(guaranteedDrop);
         AddCards(set, powRewards);
         AddCards(set, tecRewards);
+        AddCards(set, bcdRewards);
         return set;
     }
 
