@@ -21,6 +21,11 @@ public class Duelist
     public CardData[] MonsterZone { get; } = new CardData[5];
     public CardData[] SpellZone { get; } = new CardData[5];
 
+    // Cara de cada carta de la zona de magias: false = boca abajo (colocada/seteada,
+    // por defecto), true = boca arriba (p. ej. una trampa continua ya revelada). Las
+    // magias/trampas/equipos permanecen BOCA ABAJO hasta que se activan.
+    public bool[] SpellFaceUp { get; } = new bool[5];
+
     // Estado visual de cada slot monstruo
     public CardPosition[] MonsterPositions { get; } = new CardPosition[5]
     {
@@ -222,7 +227,11 @@ public class Duelist
     public void RevealMonster(int slot)
     {
         if (!IsMonsterFaceDown(slot)) return;
-        MonsterPositions[slot] = CardPosition.FaceUpDefense;
+        // Respeta la ORIENTACIÓN que tenía boca abajo: FaceDownAttack → FaceUpAttack,
+        // FaceDownDefense → FaceUpDefense (antes siempre quedaba en Defensa).
+        MonsterPositions[slot] = MonsterPositions[slot] == CardPosition.FaceDownAttack
+            ? CardPosition.FaceUpAttack
+            : CardPosition.FaceUpDefense;
     }
 
     /// <summary>
@@ -256,18 +265,28 @@ public class Duelist
             if (SpellZone[i] == null)
             {
                 SpellZone[i] = card;
+                SpellFaceUp[i] = false;   // se coloca boca abajo
                 return i;
             }
         }
         return -1;
     }
 
-    /// <summary>Coloca una magia/trampa en un slot CONCRETO de la zona de magias.</summary>
+    /// <summary>Coloca una magia/trampa en un slot CONCRETO de la zona de magias (boca abajo).</summary>
     public bool PlaceSpellAt(int slot, CardData card)
     {
         if (slot < 0 || slot >= 5 || SpellZone[slot] != null) return false;
         SpellZone[slot] = card;
+        SpellFaceUp[slot] = false;   // se coloca boca abajo
         return true;
+    }
+
+    /// <summary>Quita la carta de una casilla de magias y normaliza su cara.</summary>
+    public void ClearSpell(int slot)
+    {
+        if (slot < 0 || slot >= 5) return;
+        SpellZone[slot] = null;
+        SpellFaceUp[slot] = false;
     }
 
     /// <summary>Cuenta una magia usada para las estadísticas del rango.</summary>

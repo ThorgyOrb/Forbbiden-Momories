@@ -1026,6 +1026,15 @@ public class DuelScreen : MonoBehaviour
         bar.type.sprite = tSprite; bar.type.enabled = tSprite != null;
     }
 
+    // Sprite de fondo de las barras de info (Assets/Resources/UI/banner_wide.png), cacheado.
+    private static Sprite _bannerWide;
+    private static bool _bannerWideTried;
+    private static Sprite BannerWideSprite()
+    {
+        if (!_bannerWideTried) { _bannerWideTried = true; _bannerWide = Resources.Load<Sprite>("UI/banner_wide"); }
+        return _bannerWide;
+    }
+
     /// <summary>Construye una barra con el MISMO diseño que el InfoBar de la mano.</summary>
     private InfoBar BuildInfoBar(string name)
     {
@@ -1035,7 +1044,11 @@ public class DuelScreen : MonoBehaviour
 
         var fill = new GameObject(name, typeof(RectTransform), typeof(Image));
         fill.transform.SetParent(border.transform, false);
-        var fImg = fill.GetComponent<Image>(); fImg.color = BarFill; fImg.raycastTarget = false;
+        var fImg = fill.GetComponent<Image>(); fImg.raycastTarget = false;
+        // Fondo del bar: sprite banner_wide (blanco). Si no está en Resources, color liso.
+        var banner = BannerWideSprite();
+        if (banner != null) { fImg.sprite = banner; fImg.type = Image.Type.Simple; fImg.color = Color.white; }
+        else fImg.color = BarFill;
         var fillRT = (RectTransform)fill.transform;
         fillRT.anchorMin = Vector2.zero; fillRT.anchorMax = Vector2.one;
         fillRT.offsetMin = new Vector2(3, 3); fillRT.offsetMax = new Vector2(-3, -3);
@@ -1318,6 +1331,7 @@ public class DuelScreen : MonoBehaviour
         public int  defenderAtk;
         public int  defenderDef;
         public int  defenderBoost;
+        public bool attackerIsPlayer;  // true = atacas TÚ (tu carta va a la IZQUIERDA, el rival a la DERECHA)
     }
 
     [SerializeField] private float cineCardWidthFrac = 0.42f;   // ancho de cada carta (fracción del canvas)
@@ -1343,8 +1357,12 @@ public class DuelScreen : MonoBehaviour
 
         float rw = root.rect.width;
         float cardW = cineCardWidthFrac * rw;
-        Vector2 rightPos = new Vector2( rw * 0.24f, 0f);   // ATACANTE
-        Vector2 leftPos  = new Vector2(-rw * 0.24f, 0f);   // ATACADA
+        // El JUGADOR siempre a la IZQUIERDA y el RIVAL siempre a la DERECHA (sin importar
+        // quién ataque): el atacante va a su lado según sea el jugador o el rival.
+        Vector2 playerPos = new Vector2(-rw * 0.24f, 0f);
+        Vector2 rivalPos  = new Vector2( rw * 0.24f, 0f);
+        Vector2 atkPos = outcome.attackerIsPlayer ? playerPos : rivalPos;   // posición del ATACANTE
+        Vector2 defPos = outcome.attackerIsPlayer ? rivalPos : playerPos;   // posición de la ATACADA
 
         var atkRT = BuildCineCard(root, attackerCard, cardW);
         var defRT = BuildCineCard(root, defenderCard, cardW);
@@ -1365,15 +1383,15 @@ public class DuelScreen : MonoBehaviour
         {
             float k = Mathf.SmoothStep(0f, 1f, e / inDur);
             bg.color = new Color(0f, 0f, 0f, Mathf.Lerp(0f, 0.92f, k));
-            atkRT.anchoredPosition = Vector2.LerpUnclamped(atkStart, rightPos, k);
-            defRT.anchoredPosition = Vector2.LerpUnclamped(defStart, leftPos, k);
+            atkRT.anchoredPosition = Vector2.LerpUnclamped(atkStart, atkPos, k);
+            defRT.anchoredPosition = Vector2.LerpUnclamped(defStart, defPos, k);
             atkRT.localScale = Vector3.one * Mathf.Lerp(0.12f, atkFull, k);
             defRT.localScale = Vector3.one * Mathf.Lerp(0.12f, defFull, k);
             yield return null;
         }
         bg.color = new Color(0f, 0f, 0f, 0.92f);
-        atkRT.anchoredPosition = rightPos; atkRT.localScale = Vector3.one * atkFull;
-        defRT.anchoredPosition = leftPos;  defRT.localScale = Vector3.one * defFull;
+        atkRT.anchoredPosition = atkPos; atkRT.localScale = Vector3.one * atkFull;
+        defRT.anchoredPosition = defPos;  defRT.localScale = Vector3.one * defFull;
         yield return new WaitForSeconds(0.15f);
 
         // ── Boost de Estrella Guardiana (glow + número que sube), ya en posición ──
@@ -1385,13 +1403,13 @@ public class DuelScreen : MonoBehaviour
         {
             yield return FlashOver(root, defRT);   // solo destello sobre la atacada
             yield return SlashOver(root, atkRT);   // luego corte sobre el atacante
-            if (outcome.lpLost > 0) yield return ShowCineLP(root, outcome.lpLost, rightPos);
+            if (outcome.lpLost > 0) yield return ShowCineLP(root, outcome.lpLost, atkPos);
         }
         else
         {
             yield return SlashOver(root, defRT);   // corte sobre la atacada
             if (outcome.attackerDies) yield return SlashOver(root, atkRT); // empate: también al atacante
-            if (outcome.lpLost > 0) yield return ShowCineLP(root, outcome.lpLost, leftPos);
+            if (outcome.lpLost > 0) yield return ShowCineLP(root, outcome.lpLost, defPos);
         }
 
         // ── Fuego sobre las destruidas ──
@@ -1419,7 +1437,8 @@ public class DuelScreen : MonoBehaviour
     /// mayor sea el daño. Luego la carta vuelve a su sitio.
     /// </summary>
     public IEnumerator PlayDirectAttackCinematic(
-        CardData attackerCard, Vector2 attackerFieldScreen, int damage, int atkShown, int defShown)
+        CardData attackerCard, Vector2 attackerFieldScreen, int damage, int atkShown, int defShown,
+        bool attackerIsPlayer = true)
     {
         var parent = CineParent;
         if (parent == null || handTemplate == null) yield break;
@@ -1434,8 +1453,10 @@ public class DuelScreen : MonoBehaviour
 
         float rw = root.rect.width;
         float cardW = cineCardWidthFrac * rw;
-        Vector2 leftPos  = new Vector2(-rw * 0.22f, 0f);   // CARTA a la izquierda
-        Vector2 rightPos = new Vector2( rw * 0.24f, 0f);   // RESPLANDOR + DAÑO a la derecha
+        // JUGADOR a la IZQUIERDA, RIVAL a la DERECHA: la carta atacante va a su lado y el
+        // resplandor de daño estalla en el lado del que recibe (el otro).
+        Vector2 cardPos = attackerIsPlayer ? new Vector2(-rw * 0.22f, 0f) : new Vector2( rw * 0.22f, 0f);
+        Vector2 dmgPos  = attackerIsPlayer ? new Vector2( rw * 0.24f, 0f) : new Vector2(-rw * 0.24f, 0f);
 
         // Semáforo de daño: 0 → verde, medio → amarillo, alto → rojo (HSV de hue 0.33→0).
         float sev = Mathf.Clamp01(damage / 3000f);
@@ -1454,19 +1475,19 @@ public class DuelScreen : MonoBehaviour
         {
             float k = Mathf.SmoothStep(0f, 1f, e / inDur);
             bg.color = new Color(0f, 0f, 0f, Mathf.Lerp(0f, 0.92f, k));
-            atkRT.anchoredPosition = Vector2.LerpUnclamped(atkStart, leftPos, k);
+            atkRT.anchoredPosition = Vector2.LerpUnclamped(atkStart, cardPos, k);
             atkRT.localScale = Vector3.one * Mathf.Lerp(0.12f, atkFull, k);
             yield return null;
         }
         bg.color = new Color(0f, 0f, 0f, 0.92f);
-        atkRT.anchoredPosition = leftPos; atkRT.localScale = Vector3.one * atkFull;
+        atkRT.anchoredPosition = cardPos; atkRT.localScale = Vector3.one * atkFull;
         yield return new WaitForSeconds(0.12f);
 
-        // Embestida de la carta hacia la derecha + fogonazo del color del daño.
-        yield return DirectStrike(root, atkRT, leftPos, rightPos, dmgColor, sev);
+        // Embestida de la carta hacia el lado contrario + fogonazo del color del daño.
+        yield return DirectStrike(root, atkRT, cardPos, dmgPos, dmgColor, sev);
 
-        // Resplandor + daño (a la derecha), del color del semáforo.
-        if (damage > 0) yield return ShowDamageBurst(root, damage, rightPos, dmgColor, sev);
+        // Resplandor + daño (en el lado del que recibe), del color del semáforo.
+        if (damage > 0) yield return ShowDamageBurst(root, damage, dmgPos, dmgColor, sev);
 
         // La carta vuelve a su sitio del campo y el fondo se aclara.
         yield return CineReturn(atkRT, ScreenToLocal(root, attackerFieldScreen));

@@ -48,6 +48,22 @@ public static class CardStyleKemet
         _                    => FrameCommon
     };
 
+    // ── Cuerpo (CardBase) por CATEGORÍA: obsidiana por defecto (monstruo), magia/equipo
+    //    verde y trampa rosa. La silueta del CardBase es blanca → el color la tiñe limpio.
+    public static readonly Color BaseObsidian   = new Color(0.047f, 0.043f, 0.063f); // por defecto
+    public static readonly Color BaseSpellEquip = new Color(0.09f, 0.30f, 0.15f);    // verde
+    public static readonly Color BaseTrap       = new Color(0.34f, 0.09f, 0.20f);    // rosa
+
+    /// <summary>Color del CUERPO (CardBase) según categoría: magia/equipo=verde,
+    /// trampa=rosa; el resto (monstruo/ritual/especial) obsidiana.</summary>
+    public static Color CardBaseColorFor(CardCategory category) => category switch
+    {
+        CardCategory.Spell => BaseSpellEquip,
+        CardCategory.Equip => BaseSpellEquip,
+        CardCategory.Trap  => BaseTrap,
+        _                  => BaseObsidian
+    };
+
     // ── Intensidades del shader (valores del estilo, fijados por código
     //    para que el material asset viejo no arrastre su tuning anterior) ──
     public const float AuroraTintAmount = 0.35f;

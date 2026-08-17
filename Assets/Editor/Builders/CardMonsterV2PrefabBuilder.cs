@@ -159,19 +159,11 @@ public static class CardMonsterV2PrefabBuilder
         ((RectTransform)typeIcon.transform).sizeDelta = new Vector2(19, 19);
         typeIcon.preserveAspect = true; typeIcon.raycastTarget = false;
 
-        // Estrellas de nivel (centro) — CardDisplay las instancia y posiciona a mano
-        // (centradas, tamaño fijo). NO se usa LayoutGroup a propósito.
-        var stars = Rect(topBar, "LevelStars", V(0.16f, 0f), V(0.84f, 1f), Vector2.zero, Vector2.zero);
-
-        // Número de nivel (derecha): círculo carmesí con aro dorado.
-        var lvlBadge = Rect(topBar, "LevelBadge", V(1, 0.5f), V(1, 0.5f), Vector2.zero, Vector2.zero);
-        lvlBadge.sizeDelta = new Vector2(28, 28);
-        lvlBadge.anchoredPosition = new Vector2(-14, 0);
-        var lbImg = AddImg(lvlBadge, new Color(0.45f, 0.06f, 0.11f, 0.95f));
-        lbImg.sprite = knob; lbImg.raycastTarget = false;
-        Outline(lvlBadge, Gold);
-        var lvlNum = Label(lvlBadge, "LevelNumber", "8", 15,
-                           new Color(1f, 0.92f, 0.72f), TextAlignmentOptions.Center, FontStyles.Bold);
+        // Estrellas de nivel — CardDisplay las instancia y posiciona a mano, ALINEADAS
+        // A LA DERECHA. El contenedor arranca DESPUÉS del TypeBadge (inset fijo de 34px:
+        // 28 del badge + margen) para que ni con nivel 12 se solapen. CardDisplay encoge
+        // las estrellas para que quepan en este ancho. (Se quitó el LevelBadge.)
+        var stars = Rect(topBar, "LevelStars", V(0f, 0f), V(1f, 1f), new Vector2(34, 0), new Vector2(-6, 0));
 
         // ═══════════ Placa de nombre (centrada, más compacta) ═══════════
         var namePlate = Rect(front, "NamePlate", V(0, 0.21f), V(1, 0.295f), new Vector2(9, 0), new Vector2(-9, 0));
@@ -292,7 +284,7 @@ public static class CardMonsterV2PrefabBuilder
         Set(display, "iconConfig", iconCfg);
         Set(display, "levelStarsContainer", stars);
         Set(display, "levelStarSprite", starSprite);
-        Set(display, "levelNumberText", lvlNum);
+        // levelNumberText ya no se cablea: se quitó el LevelBadge.
         Set(display, "subtypeText", subtype);
         Set(display, "monsterOverlay", overlay.gameObject);
         // La carta NO muestra el efecto (según la referencia): effectText queda sin cablear.

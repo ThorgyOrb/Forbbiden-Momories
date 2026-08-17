@@ -462,7 +462,7 @@ public class DuelBoard3D : MonoBehaviour
 
     // ── Vistas de cámara del duelo ───────────────────────────────────────
 
-    public enum CameraView { Play, MonsterZone, PlayerField, OpponentField, OpponentHand, OpponentMonsterZone, PlayerFieldFromOpp }
+    public enum CameraView { Play, MonsterZone, PlayerField, OpponentField, OpponentHand, OpponentMonsterZone, PlayerFieldFromOpp, PlayerSpellZone }
 
     // Vista de juego (mano del jugador): EXPLÍCITA en runtime para no depender del
     // transform horneado (queda en z=-17 aunque no se reconstruya la escena).
@@ -581,6 +581,10 @@ public class DuelBoard3D : MonoBehaviour
                 pos = new Vector3(0f, 7.7f, 3.35f); rot = Quaternion.Euler(90f, 180f, 0f); break;
             case CameraView.PlayerFieldFromOpp:   // cenital del campo del JUGADOR, orientada al rival
                 pos = new Vector3(0f, 7.7f, -4.43f); rot = Quaternion.Euler(90f, 180f, 0f); break;
+            case CameraView.PlayerSpellZone:      // baja y CENTRA sobre la fila de magias/trampas del jugador
+            {
+                pos = new Vector3(0f, 7.7f, -7.1f); rot = Quaternion.Euler(90f, 0f, 0f); break;
+            }
             case CameraView.OpponentHand:   // frente a la mano del rival (simétrica al punto de juego respecto al origen)
                 pos = new Vector3(0.22f, 3.51f, 17f);
                 rot = Quaternion.Euler(0f, 180f, 0f) * cameraPlayPoint.rotation; break;
@@ -677,9 +681,11 @@ public class DuelBoard3D : MonoBehaviour
             if (views[i] == null)
                 views[i] = SpawnView(SlotPos(anchors[i]));
 
-            // Las trampas esperan boca abajo (se ve el dorso).
+            // Magias/trampas/equipos permanecen BOCA ABAJO hasta activarse (se ve el dorso).
+            // Solo se muestran boca arriba las marcadas así (p. ej. trampa continua revelada).
+            bool faceUp = owner.SpellFaceUp[i];
             views[i].transform.position = SlotPos(anchors[i]);
-            views[i].Show(card, card.IsTrap ? CardPosition.FaceDownAttack : CardPosition.FaceUpAttack);
+            views[i].Show(card, faceUp ? CardPosition.FaceUpAttack : CardPosition.FaceDownAttack);
             views[i].SetTableYaw(_boardYaw);
             views[i].SetStats("");
         }
@@ -1036,12 +1042,19 @@ public class DuelBoard3D : MonoBehaviour
     private const float FusionAnchorY = 1.896f;
     private const float FusionAnchorZ = -8.53f;
 
+    // Lado en el que ocurre la fusión ACTUAL (lo fija AnimateFusionGather). Permite que la
+    // fusión del rival se escenifique frente a SU mano (espejo), no la del jugador.
+    private bool _fusionSide = true;
+
     /// <summary>Punto base del showcase/fusión: X centrada, Y/Z fijas (FusionAnchorY/Z).</summary>
     private Vector3 FusionAnchor()
     {
         float x = fusionPoint != null ? fusionPoint.position.x : 0f;
         return new Vector3(x, FusionAnchorY, FusionAnchorZ);
     }
+
+    /// <summary>Ancla de fusión del lado ACTIVO (jugador o su espejo para el rival).</summary>
+    private Vector3 FusAnchor() => FusionAnchorFor(_fusionSide);
 
     /// <summary>Ancla del showcase para un lado: la del jugador, o su ESPEJO (rival),
     /// para que la carta se alce frente a la cámara de ese lado. El espejo es respecto al
@@ -1071,8 +1084,8 @@ public class DuelBoard3D : MonoBehaviour
     private Vector3 FusionScreenX(float sx)
     {
         if (mainCamera == null)
-            return FusionAnchor() + Vector3.right * ((sx - 0.5f) * 9f);
-        Vector3 a = mainCamera.WorldToScreenPoint(FusionAnchor());
+            return FusAnchor() + Vector3.right * ((sx - 0.5f) * 9f);
+        Vector3 a = mainCamera.WorldToScreenPoint(FusAnchor());
         return mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * sx, a.y, a.z));
     }
 
@@ -1103,8 +1116,10 @@ public class DuelBoard3D : MonoBehaviour
     /// (uno por material), cada carta ARRANCA ahí (p. ej. desde su carta de la mano) y sube
     /// en arco; si no, salen del punto de aparición del jugador.
     /// </summary>
-    public IEnumerator AnimateFusionGather(List<CardData> materials, List<Vector3> worldStarts = null)
+    public IEnumerator AnimateFusionGather(List<CardData> materials, List<Vector3> worldStarts = null,
+                                           bool playerSide = true)
     {
+        _fusionSide = playerSide;
         ClearFusionQueue();
 
         // Con 3 o más materiales, apilamos: el primero va al escenario (izquierda) y el
@@ -1125,13 +1140,13 @@ public class DuelBoard3D : MonoBehaviour
             }
             else
             {
-                target = FusionAnchor() + new Vector3(x0 + i * spacing, 0f, 0f);
+                target = FusAnchor() + new Vector3(x0 + i * spacing, 0f, 0f);
                 targetScale = fusionCardScale;
             }
 
             Vector3 start = (worldStarts != null && i < worldStarts.Count)
                 ? worldStarts[i]
-                : playerSpawnPoint.position;
+                : (playerSide ? playerSpawnPoint.position : opponentSpawnPoint.position);
             var view = SpawnView(start);
             view.Show(materials[i], CardPosition.FaceUpAttack);
             view.SetStats("");
@@ -1303,7 +1318,7 @@ public class DuelBoard3D : MonoBehaviour
             float x0 = -(_fusionQueue.Count - 1) * spacing * 0.5f;
             for (int i = 0; i < _fusionQueue.Count; i++)
             {
-                Vector3 target = FusionAnchor() + new Vector3(x0 + i * spacing, 0f, 0f);
+                Vector3 target = FusAnchor() + new Vector3(x0 + i * spacing, 0f, 0f);
                 routines.Add(DuelTween.MoveTo(_fusionQueue[i].transform, target, 0.25f));
             }
         }
@@ -1328,7 +1343,7 @@ public class DuelBoard3D : MonoBehaviour
         }
         else
         {
-            view = SpawnView(FusionAnchor());
+            view = SpawnView(FusAnchor());
         }
 
         views[slot] = view;

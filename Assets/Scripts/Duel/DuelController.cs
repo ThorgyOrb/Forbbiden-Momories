@@ -62,7 +62,9 @@ public class DuelController : MonoBehaviour
     private int _targetCursor;
     private int _attackerSlot = -1;
     private int _equipCursor;          // EquipTarget: casilla de monstruo propio a equipar
-    private int _equipSlot = -1;       // EquipTarget: casilla de magias donde está el equipo
+    private int _equipSlot = -1;       // EquipTarget (desde campo): casilla de magias del equipo
+    private bool _equipFromHand;       // EquipTarget: el equipo viene de la MANO (no del campo)
+    private int _equipHandIndex = -1;  // EquipTarget (desde mano): índice del equipo en la mano
     private int _fieldSlot = -1;            // magia/trampa del campo alzada
     private bool _fieldRaisedFaceDown;
     private int _playerTurnCount;           // sin ataque directo en el turno 1
@@ -167,15 +169,22 @@ public class DuelController : MonoBehaviour
                 if (_boardRow == 0)
                 {
                     var m = Player.MonsterZone[_boardCursor];
+                    // Son TUS cartas: se pueden consultar aunque estén boca abajo.
                     if (m != null)
-                        return (m, !Player.IsMonsterFaceDown(_boardCursor),
+                        return (m, true,
                                 Player.MonsterCurrentAtk[_boardCursor], Player.MonsterCurrentDef[_boardCursor]);
                 }
                 else
                 {
                     var s = Player.SpellZone[_boardCursor];
-                    if (s != null) return (s, !s.IsTrap, -1, -1);   // trampa seteada = boca abajo
+                    if (s != null) return (s, true, -1, -1);   // tuya: consultable aunque esté boca abajo
                 }
+                break;
+
+            case KeyCtx.EquipTarget:
+                var em = Player.MonsterZone[_equipCursor];
+                if (em != null)
+                    return (em, true, Player.MonsterCurrentAtk[_equipCursor], Player.MonsterCurrentDef[_equipCursor]);
                 break;
 
             case KeyCtx.Target:
@@ -519,7 +528,10 @@ public class DuelController : MonoBehaviour
         }
         else if (card.IsEquip && !_raisedFaceDown)
         {
-            screen.Log("Los equipos se colocan BOCA ABAJO; luego actívalos sobre un monstruo (voltéalo con ←/→).");
+            // Equipo BOCA ARRIBA desde la mano → se aplica YA a un monstruo del campo.
+            if (!System.Array.Exists(Player.MonsterZone, m => m != null))
+            { screen.Log("No hay monstruos en el campo. Coloca el equipo boca abajo (←/→) o invoca un monstruo."); return; }
+            EnterEquipTargetFromHand(_raisedIndex);
         }
         else
         {
@@ -549,10 +561,11 @@ public class DuelController : MonoBehaviour
     {
         _busy = true;
         screen.ShowFlipArrows(false);
-        // Vista cenital del campo (muestra las dos filas). La info de la carta a
-        // invocar SIGUE en el InfoBar de la mano (la mano aún está visible).
+        // La info de la carta a invocar SIGUE en el InfoBar de la mano (la mano aún visible).
+        // Monstruos → vista del campo; magias/trampas → cámara BAJA a la zona de magias.
         if (_raisedIndex >= 0) screen.ShowCardInfo(Player.Hand[_raisedIndex]);
-        yield return board.MoveCamera(DuelBoard3D.CameraView.MonsterZone, 0.5f);
+        yield return board.MoveCamera(
+            monsterRow ? DuelBoard3D.CameraView.MonsterZone : DuelBoard3D.CameraView.PlayerSpellZone, 0.5f);
 
         _slotRowMonsters = monsterRow;
         _slotCursor = FirstFreeSlot(monsterRow ? Player.MonsterZone : Player.SpellZone);
@@ -846,6 +859,7 @@ public class DuelController : MonoBehaviour
 
             case SpellPlacement.FuseInPlace:
                 Player.SpellZone[slot] = plan.result;
+                Player.SpellFaceUp[slot] = false;   // el resultado queda boca abajo
                 if (plan.realFusion) Player.RegisterFusion();
                 if (plan.result.IsTrap) Player.RegisterTrapSet();
                 DuelAudio.Play(plan.realFusion ? DuelAudio.Sfx.Fuse : DuelAudio.Sfx.SetCard);
@@ -857,7 +871,7 @@ public class DuelController : MonoBehaviour
                 break;
 
             case SpellPlacement.FuseToMonster:
-                Player.SpellZone[slot] = null;
+                Player.ClearSpell(slot);
                 int mslot = Player.PlaceMonster(plan.result, CardPosition.FaceDownDefense,
                     CombatCalculator.CalculateAtk(plan.result, plan.result.starA, plan.result.starA, _terrain),
                     CombatCalculator.CalculateDef(plan.result), plan.result.starA);
@@ -1267,11 +1281,15 @@ public class DuelController : MonoBehaviour
         {
             // Monstruo: pasa a elegir objetivo en el campo rival.
             if (Player.MonsterZone[slot] == null) return;
-            if (Player.MonsterPositions[slot] != CardPosition.FaceUpAttack)
-            { screen.Log("Solo los monstruos boca arriba en Ataque pueden atacar."); return; }
+            var mpos = Player.MonsterPositions[slot];
+            bool canAttack = mpos == CardPosition.FaceUpAttack || mpos == CardPosition.FaceDownAttack;
+            if (!canAttack)
+            { screen.Log("Solo los monstruos en posición de Ataque pueden atacar."); return; }
             if (Player.MonsterHasAttacked[slot])
             { screen.Log($"{Player.MonsterZone[slot].cardName} ya atacó este turno."); return; }
 
+            // El monstruo se mantiene BOCA ABAJO durante la selección de objetivo;
+            // se revela solo al CONFIRMAR el ataque (ver PlayerAttackRoutine).
             StartCoroutine(EnterTargetRoutine(slot));
         }
         else
@@ -1284,7 +1302,7 @@ public class DuelController : MonoBehaviour
             {
                 if (!System.Array.Exists(Player.MonsterZone, m => m != null))
                 { screen.Log("No tienes ningún monstruo al que equipar."); return; }
-                EnterEquipTarget(slot);
+                EnterEquipTargetFromField(slot);
                 return;
             }
             // Magia/trampa seteada: se alza al centro (activar o re-setear).
@@ -1504,16 +1522,41 @@ public class DuelController : MonoBehaviour
     // Regla (jugador y rival): al activar un equipo colocado se selecciona un monstruo
     // propio. Si es COMPATIBLE se equipa (suma bonus); si NO lo es, el equipo se DESCARTA.
 
-    private void EnterEquipTarget(int spellSlot)
+    private void EnterEquipTargetFromField(int spellSlot)
+        => StartCoroutine(EnterEquipTargetRoutine(fromHand: false, spellSlot: spellSlot, handIndex: -1));
+
+    private void EnterEquipTargetFromHand(int handIndex)
+        => StartCoroutine(EnterEquipTargetRoutine(fromHand: true, spellSlot: -1, handIndex: handIndex));
+
+    private IEnumerator EnterEquipTargetRoutine(bool fromHand, int spellSlot, int handIndex)
     {
-        board.ClearSpellHighlights();
+        _busy = true;
+        _equipFromHand = fromHand;
         _equipSlot = spellSlot;
-        _ctx = KeyCtx.EquipTarget;
+        _equipHandIndex = handIndex;
+        board.ClearSpellHighlights();
+
+        if (fromHand)
+        {
+            // Venías de ALZAR el equipo en la mano: retira el showcase 3D y restaura la mano 2D.
+            screen.ShowFlipArrows(false);
+            board.ClearShowcase();
+            screen.RefreshHand(Player.Hand);
+            screen.HideHandCursor();
+            screen.HideCardInfo();
+        }
+
+        // Cámara al campo del jugador para elegir el monstruo.
+        yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerField, 0.5f);
+
         _equipCursor = 0;
         for (int i = 0; i < 5; i++)
             if (Player.MonsterZone[i] != null) { _equipCursor = i; break; }
+        _busy = false;
+        _ctx = KeyCtx.EquipTarget;
         RefreshEquipCursor();
-        screen.Log($"Equipar {Player.SpellZone[spellSlot].cardName}: elige un monstruo (A · S cancela).");
+        var eq = fromHand ? Player.Hand[handIndex] : Player.SpellZone[spellSlot];
+        screen.Log($"Equipar {eq.cardName}: elige un monstruo (A · S cancela).");
     }
 
     private void RefreshEquipCursor()
@@ -1549,9 +1592,22 @@ public class DuelController : MonoBehaviour
         {
             DuelAudio.Play(DuelAudio.Sfx.Cancel);
             board.ClearSelectionAnim();
-            _equipSlot = -1;
-            EnterBoardContext();
+            if (_equipFromHand) StartCoroutine(CancelEquipFromHandRoutine());
+            else { _equipSlot = -1; EnterBoardContext(); }
         }
+    }
+
+    /// <summary>Cancela un equip desde la MANO: la cámara vuelve a tu mano y sigues tu turno
+    /// (el equipo sigue en la mano, sin gastarse).</summary>
+    private IEnumerator CancelEquipFromHandRoutine()
+    {
+        _busy = true;
+        _equipHandIndex = -1;
+        _equipFromHand = false;
+        yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
+        screen.RefreshHand(Player.Hand);
+        _busy = false;
+        EnterHandContext();
     }
 
     /// <summary>
@@ -1566,9 +1622,13 @@ public class DuelController : MonoBehaviour
     {
         _busy = true;
         int mslot = _equipCursor;
+        bool fromHand = _equipFromHand;
         int spellSlot = _equipSlot;
+        int handIndex = _equipHandIndex;
         _equipSlot = -1;
-        var equip = Player.SpellZone[spellSlot];
+        _equipHandIndex = -1;
+        _equipFromHand = false;
+        var equip = fromHand ? Player.Hand[handIndex] : Player.SpellZone[spellSlot];
         var monster = Player.MonsterZone[mslot];
         board.ClearSelectionAnim();
         board.ClearHighlights();
@@ -1587,24 +1647,25 @@ public class DuelController : MonoBehaviour
         var chain = fusionDb.ResolveChain(materials);
         bool compatible = chain.Steps.Count > 0 && chain.Steps[0].Type == FusionStepType.Equip;
 
-        // Puntos de arranque en MUNDO: el monstruo sube de su casilla; el equipo de la suya.
-        var worldStarts = new List<Vector3>
-        {
-            board.GetPlayerMonsterSlotWorld(mslot),
-            board.GetPlayerSpellSlotWorld(spellSlot),
-        };
+        // Punto de arranque en MUNDO del EQUIPO: su casilla de magias, o su carta en la mano.
+        Vector3 equipStart = fromHand
+            ? board.HandStartWorld(screen.HandCardScreenPos(handIndex))
+            : board.GetPlayerSpellSlotWorld(spellSlot);
+        var worldStarts = new List<Vector3> { board.GetPlayerMonsterSlotWorld(mslot), equipStart };
 
-        // Retira ambos del tablero (lógico) para que la pila de fusión no los duplique.
+        // Retira el monstruo y el equipo de sus zonas (para que la pila no los duplique).
         Player.MonsterZone[mslot] = null;
-        Player.SpellZone[spellSlot] = null;
+        if (fromHand) { Player.Hand.RemoveAt(handIndex); _raisedIndex = -1; _fusionOrder.Clear(); screen.RefreshHand(Player.Hand); }
+        else Player.ClearSpell(spellSlot);
         board.SyncField(Player, Opponent);
 
         // Cámara a la MANO del jugador (misma vista que al fusionar desde la mano).
         yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
 
-        // Las cartas se LEVANTAN a la pila de fusión.
+        // Las cartas se LEVANTAN a la pila de fusión; el resto de la mano se retira.
         DuelAudio.Play(DuelAudio.Sfx.FusionStart);
         yield return board.AnimateFusionGather(materials, worldStarts);
+        if (fromHand) yield return screen.SlideHandDown(0.3f);
 
         // La carta acumuladora (el monstruo) parte con su ATK/DEF actual.
         board.SetFusionResultStats(fromAtk, fromDef);
@@ -1640,11 +1701,24 @@ public class DuelController : MonoBehaviour
 
         yield return board.AnimateFusionSummon(playerSide: true, mslot, Player);
         board.SyncField(Player, Opponent);
-
-        yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerField, 0.5f);
         screen.UpdateLP(Player.LP, Opponent.LP);
-        _busy = false;
-        EnterBoardContext();
+
+        if (fromHand)
+        {
+            // Equipaste desde la MANO durante tu fase principal: la mano vuelve y sigues tu turno.
+            yield return board.MoveCamera(DuelBoard3D.CameraView.Play, 0.5f);
+            screen.SetHandVisible(true);
+            screen.RefreshHand(Player.Hand);
+            _busy = false;
+            EnterHandContext();
+        }
+        else
+        {
+            // Activaste un equipo del campo durante la batalla: sigues en el tablero.
+            yield return board.MoveCamera(DuelBoard3D.CameraView.PlayerField, 0.5f);
+            _busy = false;
+            EnterBoardContext();
+        }
     }
 
     private IEnumerator RunEndPhase()
@@ -1669,6 +1743,15 @@ public class DuelController : MonoBehaviour
     {
         _busy = true;
         Player.MonsterHasAttacked[atkSlot] = true;
+
+        // Una carta boca abajo (en Ataque) SE VOLTEA al CONFIRMARSE el ataque (no antes).
+        if (Player.IsMonsterFaceDown(atkSlot))
+        {
+            Player.SetMonsterPosition(atkSlot, CardPosition.FaceUpAttack);
+            board.SyncField(Player, Opponent);
+            yield return new WaitForSeconds(0.35f);
+        }
+
         // ResolveCombatAnimated maneja la cámara (mano → cinemática → tablero).
         yield return ResolveCombatAnimated(Player, Opponent, attackerIsPlayer: true, atkSlot, defSlot);
         if (CheckDefeatedAndEnd()) { _busy = false; yield break; }
@@ -1854,10 +1937,14 @@ public class DuelController : MonoBehaviour
                 // los materiales (si no, se perderían de la mano).
                 if (FirstFreeSlot(Opponent.MonsterZone) < 0) { screen.Log($"{Opponent.Name} no tiene espacio para fusionar."); break; }
 
-                // Marca una a una (flecha) las cartas que el rival va a fusionar.
+                // Marca una a una (flecha) las cartas que el rival va a fusionar y CAPTURA su
+                // posición en pantalla (antes de quitarlas) para que suban desde SU mano.
+                var oppHandScreens = new List<Vector3>();
                 foreach (var m in materials)
                 {
-                    screen.ShowOpponentHandCursor(Opponent.Hand.IndexOf(m));
+                    int mi = Opponent.Hand.IndexOf(m);
+                    oppHandScreens.Add(screen.OpponentHandCardScreenPos(mi));
+                    screen.ShowOpponentHandCursor(mi);
                     DuelAudio.Play(DuelAudio.Sfx.Cursor);
                     yield return new WaitForSeconds(0.45f);
                 }
@@ -1867,9 +1954,16 @@ public class DuelController : MonoBehaviour
                     Opponent.Hand.Remove(m);
                 screen.RefreshOpponentHand(Opponent.Hand); // salen de su mano
 
+                // Cámara a la mano del RIVAL: la fusión se escenifica de SU lado (no del jugador).
+                yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentHand, 0.5f);
+                var oppWorldStarts = new List<Vector3>();
+                foreach (var sp in oppHandScreens)
+                    oppWorldStarts.Add(board.HandStartWorldFor(playerSide: false, sp));
+
                 screen.Log($"¡{Opponent.Name} inicia una fusión!");
                 DuelAudio.Play(DuelAudio.Sfx.FusionStart);
-                yield return board.AnimateFusionGather(materials); // sube de frente → revela las cartas
+                yield return board.AnimateFusionGather(materials, oppWorldStarts, playerSide: false);
+                yield return screen.SlideOpponentHandDown(0.3f);   // el resto de su mano se retira (como el jugador)
 
                 CardData stepCurrent = materials[0];
                 for (int i = 0; i < chain.Steps.Count; i++)
@@ -1962,7 +2056,7 @@ public class DuelController : MonoBehaviour
                 int toDef = fromDef + equip.equipDefBonus;
                 Opponent.MonsterCurrentAtk[mslot] = toAtk;
                 Opponent.MonsterCurrentDef[mslot] = toDef;
-                Opponent.SpellZone[sslot] = null;   // el equipo colocado se consume
+                Opponent.ClearSpell(sslot);   // el equipo colocado se consume
                 Opponent.RegisterEquip();
 
                 yield return board.MoveCamera(DuelBoard3D.CameraView.OpponentMonsterZone, 0.5f);
@@ -1995,7 +2089,7 @@ public class DuelController : MonoBehaviour
 
                 if (plan.kind == SpellPlacement.FuseToMonster)
                 {
-                    Opponent.SpellZone[sslot] = null;
+                    Opponent.ClearSpell(sslot);
                     Opponent.PlaceMonster(plan.result, CardPosition.FaceDownDefense,
                         CombatCalculator.CalculateAtk(plan.result, plan.result.starA, plan.result.starA, _terrain),
                         CombatCalculator.CalculateDef(plan.result), plan.result.starA);
@@ -2008,6 +2102,7 @@ public class DuelController : MonoBehaviour
                 else
                 {
                     Opponent.SpellZone[sslot] = plan.result;
+                    Opponent.SpellFaceUp[sslot] = false;   // el resultado queda boca abajo
                     if (plan.realFusion) Opponent.RegisterFusion();
                     if (plan.result.IsTrap) Opponent.RegisterTrapSet();
                     DuelAudio.Play(plan.realFusion ? DuelAudio.Sfx.Fuse : DuelAudio.Sfx.SetCard);
@@ -2208,8 +2303,10 @@ public class DuelController : MonoBehaviour
             // Resolver el efecto (aplica el estado lógico) ANTES de escenificarlo.
             var res = TrapEffectResolver.Resolve(trap, owner, foe, triggerSlot);
 
-            // Consumir: Normal/Counter se descartan; Continuous permanece en el campo.
-            if (trap.trapKind != TrapKind.Continuous) owner.SpellZone[slot] = null;
+            // Consumir: Normal/Counter se descartan; Continuous permanece en el campo, ya
+            // BOCA ARRIBA (revelada al activarse).
+            if (trap.trapKind != TrapKind.Continuous) owner.ClearSpell(slot);
+            else owner.SpellFaceUp[slot] = true;
 
             outcome.anyActivated = true;
             owner.RegisterTrapActivated();
@@ -2289,7 +2386,7 @@ public class DuelController : MonoBehaviour
             int dirDef = attacker.MonsterCurrentDef[atkSlot];
             defender.TakeDamage(damage);
             DuelAudio.Play(DuelAudio.Sfx.Attack);
-            yield return screen.PlayDirectAttackCinematic(directAttacker, atkScr, damage, damage, dirDef);
+            yield return screen.PlayDirectAttackCinematic(directAttacker, atkScr, damage, damage, dirDef, attackerIsPlayer);
 
             screen.UpdateLP(Player.LP, Opponent.LP);
             screen.Log($"{attackerName} ataca directamente: {damage} de daño.");
@@ -2413,6 +2510,7 @@ public class DuelController : MonoBehaviour
                 defenderAtk = defShown,
                 defenderDef = defDefShown,
                 defenderBoost = defBonus,
+                attackerIsPlayer = attackerIsPlayer,
             });
 
         screen.Log(logMsg);

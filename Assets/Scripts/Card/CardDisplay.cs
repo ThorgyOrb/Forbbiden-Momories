@@ -108,6 +108,13 @@ public class CardDisplay : MonoBehaviour
         // Efectos propios del prefab V2 (null en el clásico → no-op).
         if (_v2Effects != null)
             _v2Effects.Apply(data.rarity);
+
+        // Color del CUERPO (CardBase, V2) por categoría: magia/equipo = verde, trampa =
+        // rosa; monstruo/ritual/especial = obsidiana. La silueta del CardBase es blanca,
+        // así que el color la tiñe limpio. (En el clásico no hay "CardBase" → no-op.)
+        var cardBaseT = transform.Find("CardBase");
+        if (cardBaseT != null && cardBaseT.TryGetComponent<Image>(out var cardBaseImg))
+            cardBaseImg.color = CardStyleKemet.CardBaseColorFor(data.cardCategory);
     }
 
     /// <summary>
@@ -185,9 +192,10 @@ public class CardDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Instancia una estrella por cada nivel (8 ⇒ 8), a TAMAÑO FIJO y CENTRADAS en el
-    /// contenedor. Posición manual (sin LayoutGroup): con un HorizontalLayoutGroup las
-    /// estrellas heredaban un tamaño por defecto enorme y se solapaban.
+    /// Instancia una estrella por cada nivel (8 ⇒ 8), a TAMAÑO FIJO y ALINEADAS A LA
+    /// DERECHA del contenedor (la 1.ª pegada a la derecha, el resto hacia la izquierda).
+    /// Posición manual (sin LayoutGroup): con un HorizontalLayoutGroup las estrellas
+    /// heredaban un tamaño por defecto enorme y se solapaban.
     /// </summary>
     private void RebuildLevelStars(int level)
     {
@@ -199,19 +207,25 @@ public class CardDisplay : MonoBehaviour
         level = Mathf.Clamp(level, 0, 12);
         if (level == 0) return;
 
-        const float size = 11f, gap = 1.5f;
-        float step = size + gap;
-        float mid = (level - 1) / 2f; // índice central, para centrar la fila
+        // Tamaño/paso máximos; si con tantas estrellas no caben en el ancho del
+        // contenedor, se ENCOGEN para que la fila (nivel 12 incl.) quepa y no invada
+        // el TypeBadge. Usa el ancho real del contenedor; si aún no hay layout, un ancho
+        // de referencia (8 estrellas) para no apilarlas.
+        const float maxSize = 11f, gap = 1.5f;
+        float avail = levelStarsContainer.rect.width;
+        if (avail < 1f) avail = 8f * (maxSize + gap);
+        float step = Mathf.Min(maxSize + gap, avail / level);
+        float size = Mathf.Clamp(step - gap, 3f, maxSize);
 
         for (int i = 0; i < level; i++)
         {
             var go = new GameObject("Star", typeof(RectTransform), typeof(Image));
             var rt = (RectTransform)go.transform;
             rt.SetParent(levelStarsContainer, false);
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchorMin = rt.anchorMax = new Vector2(1f, 0.5f);   // ancla a la DERECHA
+            rt.pivot = new Vector2(1f, 0.5f);
             rt.sizeDelta = new Vector2(size, size);
-            rt.anchoredPosition = new Vector2((i - mid) * step, 0f);
+            rt.anchoredPosition = new Vector2(-i * step, 0f);      // i=0 a la derecha, crece a la izquierda
 
             var img = go.GetComponent<Image>();
             img.sprite = levelStarSprite;
