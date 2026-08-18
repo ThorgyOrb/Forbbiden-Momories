@@ -16,6 +16,9 @@ public class LibraryGodsController : MonoBehaviour
 {
     public enum Tab { All, Monsters, Spells, Traps, Divine, Favorites }
 
+    [Header("Chrome")]
+    [SerializeField] private Button backButton;
+
     [Header("Grilla")]
     [SerializeField] private RectTransform gridContent;
     [SerializeField] private GameObject cardSlotPrefab;   // LibraryCardSlot
@@ -122,6 +125,7 @@ public class LibraryGodsController : MonoBehaviour
 
     void Start()
     {
+        GameNavigator.EnsureExists();
         PlayerCollection.EnsureExists(); // singleton de progreso (carga guardado); si no, todo saldría bloqueado
         LibraryCatalog.EnsureLoaded();
 
@@ -132,10 +136,13 @@ public class LibraryGodsController : MonoBehaviour
 
         WireTabs();
 
-        if (view3DButton != null) view3DButton.onClick.AddListener(OnView3D);
+        if (view3DButton != null) { view3DButton.onClick.AddListener(OnView3D); UIButtonSfx.Hook(view3DButton); }
 
-        if (prevPageButton != null) prevPageButton.onClick.AddListener(() => GoToPage(_page - 1));
-        if (nextPageButton != null) nextPageButton.onClick.AddListener(() => GoToPage(_page + 1));
+        if (prevPageButton != null) { prevPageButton.onClick.AddListener(() => GoToPage(_page - 1)); UIButtonSfx.Hook(prevPageButton); }
+        if (nextPageButton != null) { nextPageButton.onClick.AddListener(() => GoToPage(_page + 1)); UIButtonSfx.Hook(nextPageButton); }
+
+        // El sonido de cancelar va DENTRO de Back().
+        if (backButton != null) { backButton.onClick.AddListener(Back); UIButtonSfx.HookHover(backButton.gameObject); }
 
         RefreshGrid();
         UpdateHeaderAndSidebar();
@@ -151,6 +158,7 @@ public class LibraryGodsController : MonoBehaviour
             if (tabButtons[i] == null) continue;
             Tab t = (Tab)i;
             tabButtons[i].onClick.AddListener(() => { _tab = t; RefreshGrid(); HighlightTabs(); SelectFirst(); });
+            UIButtonSfx.Hook(tabButtons[i]);
         }
         HighlightTabs();
     }
@@ -376,6 +384,12 @@ public class LibraryGodsController : MonoBehaviour
         rt.offsetMax = new Vector2(m, m);
         rt.localScale = Vector3.one;
         _selectionFx.SetActive(true);
+    }
+
+    private void Back()
+    {
+        GameAudio.Back();
+        GameNavigator.EnsureExists().ToMainMenu();
     }
 
     private void OnView3D()

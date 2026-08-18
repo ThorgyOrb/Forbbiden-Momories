@@ -52,8 +52,9 @@ public class StoryController : MonoBehaviour
         GameNavigator.EnsureExists();
         PlayerCollection.EnsureExists();
 
-        if (backButton != null) backButton.onClick.AddListener(Back);
-        if (duelButton != null) duelButton.onClick.AddListener(DuelSelected);
+        // El sonido de cancelar va DENTRO de Back() para que también suene con Escape.
+        if (backButton != null) { backButton.onClick.AddListener(Back); UIButtonSfx.HookHover(backButton.gameObject); }
+        if (duelButton != null) { duelButton.onClick.AddListener(DuelSelected); UIButtonSfx.Hook(duelButton); }
         if (chapterTemplate != null) chapterTemplate.gameObject.SetActive(false);
 
         _campaign = StoryService.GetCampaign();
@@ -162,7 +163,11 @@ public class StoryController : MonoBehaviour
         StoryService.StartStoryDuel(_campaign[_selectedIndex]);
     }
 
-    private void Back() => GameNavigator.EnsureExists().ToMainMenu();
+    private void Back()
+    {
+        GameAudio.Back();
+        GameNavigator.EnsureExists().ToMainMenu();
+    }
 
     // ── Utilidades ───────────────────────────────────────────────────────
 

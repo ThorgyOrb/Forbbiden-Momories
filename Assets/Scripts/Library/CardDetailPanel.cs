@@ -122,7 +122,8 @@ public class CardDetailPanel : MonoBehaviour
 
         ResetVisualState();
 
-        if (closeButton != null) closeButton.onClick.AddListener(Hide);
+        // El sonido de cancelar va DENTRO de Hide(), no aquí, para cubrir también el backdrop.
+        if (closeButton != null) { closeButton.onClick.AddListener(Hide); UIButtonSfx.HookHover(closeButton.gameObject); }
         if (backdropButton != null) backdropButton.onClick.AddListener(Hide);
     }
 
@@ -172,6 +173,7 @@ public class CardDetailPanel : MonoBehaviour
     public void Hide()
     {
         if (root == null || rootGroup.alpha <= 0f) return;
+        GameAudio.Back();
         if (_routine != null) StopCoroutine(_routine);
         _routine = StartCoroutine(PlayClose());
     }

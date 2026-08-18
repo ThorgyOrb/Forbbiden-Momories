@@ -56,10 +56,9 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private string storyScene = GameScenes.Story;
     [SerializeField] private string freeDuelScene = GameScenes.FreeDuel;   // pantalla de selección de rival
     [SerializeField] private string deckBuilderScene = GameScenes.DeckBuilder;
-    [SerializeField] private string collectionScene = GameScenes.Library;
+    [SerializeField] private string collectionScene = GameScenes.LibraryGods;
 
     // ── Estado interno ───────────────────────────────────────────────────
-    private AudioSource _music;
     private SettingsManager _settings;
     private GameNavigator _nav;
 
@@ -91,15 +90,9 @@ public class MainMenuController : MonoBehaviour
         if (toastText != null) toastText.alpha = 0f;
 
         SetupMusic();
-        _settings.OnSettingsChanged += RefreshMusicVolume;
 
         if (titleText != null) StartCoroutine(PulseTitle());
         SelectFirstButton();
-    }
-
-    void OnDestroy()
-    {
-        if (_settings != null) _settings.OnSettingsChanged -= RefreshMusicVolume;
     }
 
     void Update()
@@ -125,6 +118,8 @@ public class MainMenuController : MonoBehaviour
         opcionesButton.onClick.AddListener(OpenOptions);
         creditosButton.onClick.AddListener(OpenCredits);
         salirButton.onClick.AddListener(Salir);
+
+        foreach (var b in MenuButtons) UIButtonSfx.Hook(b);
     }
 
     private void WireOptionsPanel()
@@ -144,6 +139,13 @@ public class MainMenuController : MonoBehaviour
         fullscreenButton.onClick.AddListener(ToggleFullscreen);
         optionsBackButton.onClick.AddListener(CloseOptions);
         creditsBackButton.onClick.AddListener(CloseCredits);
+
+        // El sonido de clic/cancelar va DENTRO de cada método (CycleLanguage, CloseOptions...)
+        // para que también suene si se disparan por teclado (Escape), no solo al hacer clic.
+        UIButtonSfx.HookHover(languageButton.gameObject);
+        UIButtonSfx.HookHover(fullscreenButton.gameObject);
+        UIButtonSfx.HookHover(optionsBackButton.gameObject);
+        UIButtonSfx.HookHover(creditsBackButton.gameObject);
     }
 
     // ── Acciones de los botones ──────────────────────────────────────────
@@ -209,12 +211,14 @@ public class MainMenuController : MonoBehaviour
 
     private void CloseOptions()
     {
+        GameAudio.Back();
         optionsPanel.SetActive(false);
         SelectFirstButton();
     }
 
     private void CycleLanguage()
     {
+        GameAudio.Toggle();
         int next = (_settings.Language + 1) % 2; // 0 = Español, 1 = English
         _settings.SetLanguage(next);
         RefreshLanguageLabel();
@@ -222,6 +226,7 @@ public class MainMenuController : MonoBehaviour
 
     private void ToggleFullscreen()
     {
+        GameAudio.Toggle();
         _settings.SetFullscreen(!_settings.Fullscreen);
         RefreshFullscreenLabel();
     }
@@ -248,6 +253,7 @@ public class MainMenuController : MonoBehaviour
 
     private void CloseCredits()
     {
+        GameAudio.Back();
         creditsPanel.SetActive(false);
         SelectFirstButton();
     }
@@ -256,19 +262,9 @@ public class MainMenuController : MonoBehaviour
 
     private void SetupMusic()
     {
-        if (menuMusic == null) return;
-
-        _music = gameObject.AddComponent<AudioSource>();
-        _music.clip = menuMusic;
-        _music.loop = true;
-        _music.playOnAwake = false;
-        _music.volume = _settings.MusicVolume; // el volumen general ya lo aplica el AudioListener
-        _music.Play();
-    }
-
-    private void RefreshMusicVolume()
-    {
-        if (_music != null) _music.volume = _settings.MusicVolume;
+        // GameAudio ya puso la música mapeada a esta escena (GameAudioBank.sceneMusic) al
+        // cargar; este campo es solo un override manual si quieres una pista específica.
+        if (menuMusic != null) GameAudio.PlayMusic(menuMusic);
     }
 
     // ── Animación del título ─────────────────────────────────────────────

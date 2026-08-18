@@ -23,6 +23,8 @@ public static class GameScenes
     public const string DeckBuilder = "DeckBuilderScene";
     public const string Library = "LibraryScene";
     public const string LibraryCatalog = "LibraryCatalogScene";
+    // Rediseño del catálogo; es la que usa el botón "Colección" del menú.
+    public const string LibraryGods = "LibraryGodsScene";
     public const string Wireframe = "WireframeStage";
     public const string Sample = "SampleScene";
 

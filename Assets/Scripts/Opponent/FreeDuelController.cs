@@ -18,11 +18,6 @@ public class FreeDuelController : MonoBehaviour
     [SerializeField] private Button backButton;
     [SerializeField] private TextMeshProUGUI emptyText;
 
-    [Header("Orden")]
-    [SerializeField] private Button sortAppearanceButton;
-    [SerializeField] private Button sortDifficultyButton;
-    [SerializeField] private Button sortRegionButton;
-
     [Header("Lista")]
     [Tooltip("Content del ScrollView donde se instancian las tarjetas.")]
     [SerializeField] private Transform listContent;
@@ -32,17 +27,14 @@ public class FreeDuelController : MonoBehaviour
     [Header("Detalle")]
     [SerializeField] private OpponentDetailPanel detailPanel;
 
-    private FreeDuelService.SortMode _sort = FreeDuelService.SortMode.Appearance;
     private readonly List<GameObject> _spawned = new();
 
     void Start()
     {
         GameNavigator.EnsureExists();
 
-        if (backButton != null) backButton.onClick.AddListener(Back);
-        if (sortAppearanceButton != null) sortAppearanceButton.onClick.AddListener(() => SetSort(FreeDuelService.SortMode.Appearance));
-        if (sortDifficultyButton != null) sortDifficultyButton.onClick.AddListener(() => SetSort(FreeDuelService.SortMode.Difficulty));
-        if (sortRegionButton != null) sortRegionButton.onClick.AddListener(() => SetSort(FreeDuelService.SortMode.Region));
+        // El sonido de cancelar va DENTRO de Back() para que también suene con Escape.
+        if (backButton != null) { backButton.onClick.AddListener(Back); UIButtonSfx.HookHover(backButton.gameObject); }
 
         if (entryTemplate != null) entryTemplate.gameObject.SetActive(false);
 
@@ -58,18 +50,12 @@ public class FreeDuelController : MonoBehaviour
         }
     }
 
-    private void SetSort(FreeDuelService.SortMode mode)
-    {
-        _sort = mode;
-        Populate();
-    }
-
     private void Populate()
     {
         foreach (var go in _spawned) Destroy(go);
         _spawned.Clear();
 
-        List<OpponentData> opponents = FreeDuelService.GetUnlockedOpponents(_sort);
+        List<OpponentData> opponents = FreeDuelService.GetUnlockedOpponents(FreeDuelService.SortMode.Appearance);
 
         if (emptyText != null) emptyText.gameObject.SetActive(opponents.Count == 0);
 
@@ -94,5 +80,9 @@ public class FreeDuelController : MonoBehaviour
         }
     }
 
-    private void Back() => GameNavigator.EnsureExists().ToMainMenu();
+    private void Back()
+    {
+        GameAudio.Back();
+        GameNavigator.EnsureExists().ToMainMenu();
+    }
 }

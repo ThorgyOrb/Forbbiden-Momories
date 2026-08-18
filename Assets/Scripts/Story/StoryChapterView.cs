@@ -64,7 +64,11 @@ public class StoryChapterView : MonoBehaviour
             selectButton.onClick.RemoveAllListeners();
             // Los capítulos bloqueados no se pueden inspeccionar.
             selectButton.interactable = !locked;
-            if (!locked) selectButton.onClick.AddListener(() => onSelect?.Invoke());
+            if (!locked)
+            {
+                selectButton.onClick.AddListener(() => onSelect?.Invoke());
+                selectButton.onClick.AddListener(GameAudio.Click);
+            }
         }
     }
 }

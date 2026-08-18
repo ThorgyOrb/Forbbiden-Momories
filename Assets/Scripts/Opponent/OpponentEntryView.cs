@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Vista de UNA tarjeta de rival en la lista de Duelo Libre: retrato, nombre,
-/// dificultad, récord (victorias/derrotas), mejor puntuación, cartas descubiertas
-/// y el botón para retarlo.
+/// dificultad, récord (victorias/derrotas/mejor puntuación como "fichas" de dato
+/// separadas) y el progreso de cartas descubiertas como barra + contador.
 ///
 /// Dos interacciones:
 ///   • Tocar la tarjeta (cardButton)  → abre el DETALLE (cartas que dropea).
@@ -20,10 +20,19 @@ public class OpponentEntryView : MonoBehaviour
     [SerializeField] private Button cardButton;   // toda la tarjeta, abre el detalle
     [SerializeField] private Image portrait;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private TextMeshProUGUI difficultyText;
-    [SerializeField] private TextMeshProUGUI recordText;
-    [SerializeField] private TextMeshProUGUI bestScoreText;
-    [SerializeField] private TextMeshProUGUI discoveryText;
+    [Tooltip("5 fichas que marcan el nivel de dificultad (1-5), de izquierda a derecha.")]
+    [SerializeField] private Image[] difficultyPips;
+
+    [Header("Fichas de dato (solo el VALOR; la etiqueta es texto fijo del prefab)")]
+    [SerializeField] private TextMeshProUGUI winsValue;
+    [SerializeField] private TextMeshProUGUI lossesValue;
+    [SerializeField] private TextMeshProUGUI bestScoreValue;
+
+    [Header("Descubrimiento")]
+    [SerializeField] private TextMeshProUGUI discoveryValue;   // "18/27"
+    [Tooltip("Image de tipo Filled (horizontal) que se rellena con el % descubierto.")]
+    [SerializeField] private Image discoveryFill;
+
     [SerializeField] private Button duelButton;   // "Retar"
 
     public void Setup(OpponentData opp, OpponentProgress progress, int discovered, int total, Action onDuel, Action onDetail)
@@ -34,27 +43,37 @@ public class OpponentEntryView : MonoBehaviour
             portrait.enabled = opp.portrait != null;
         }
         if (nameText != null) nameText.text = opp.opponentName;
-        if (difficultyText != null) difficultyText.text = Stars(opp.difficultyLevel);
-        if (recordText != null)
-            recordText.text = $"Victorias: {progress?.wins ?? 0}    Derrotas: {progress?.losses ?? 0}";
-        if (bestScoreText != null) bestScoreText.text = $"Mejor puntuación: {progress?.bestScore ?? 0}";
-        if (discoveryText != null) discoveryText.text = $"Cartas descubiertas: {discovered}/{total}";
+        SetDifficultyPips(opp.difficultyLevel);
+
+        if (winsValue != null) winsValue.text = (progress?.wins ?? 0).ToString();
+        if (lossesValue != null) lossesValue.text = (progress?.losses ?? 0).ToString();
+        if (bestScoreValue != null) bestScoreValue.text = (progress?.bestScore ?? 0).ToString();
+
+        if (discoveryValue != null) discoveryValue.text = $"{discovered}/{total}";
+        if (discoveryFill != null) discoveryFill.fillAmount = total > 0 ? (float)discovered / total : 0f;
 
         if (cardButton != null)
         {
             cardButton.onClick.RemoveAllListeners();
             cardButton.onClick.AddListener(() => onDetail?.Invoke());
+            cardButton.onClick.AddListener(GameAudio.Click);
         }
         if (duelButton != null)
         {
             duelButton.onClick.RemoveAllListeners();
             duelButton.onClick.AddListener(() => onDuel?.Invoke());
+            duelButton.onClick.AddListener(GameAudio.Click);
         }
     }
 
-    private static string Stars(int level)
+    private static readonly Color PipFilled = new Color(0.98f, 0.82f, 0.35f);
+    private static readonly Color PipEmpty = new Color(0.98f, 0.82f, 0.35f, 0.18f);
+
+    private void SetDifficultyPips(int level)
     {
-        level = Mathf.Clamp(level, 0, 5);
-        return new string('★', level) + new string('☆', 5 - level);
+        if (difficultyPips == null) return;
+        level = Mathf.Clamp(level, 0, difficultyPips.Length);
+        for (int i = 0; i < difficultyPips.Length; i++)
+            if (difficultyPips[i] != null) difficultyPips[i].color = i < level ? PipFilled : PipEmpty;
     }
 }

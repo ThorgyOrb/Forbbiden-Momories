@@ -48,6 +48,7 @@ public class DeckCardView : MonoBehaviour
         {
             selectButton.onClick.RemoveAllListeners();
             selectButton.onClick.AddListener(() => onClick?.Invoke());
+            selectButton.onClick.AddListener(GameAudio.Click);
         }
     }
 

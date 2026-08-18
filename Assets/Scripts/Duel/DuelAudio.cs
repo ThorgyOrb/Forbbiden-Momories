@@ -1,11 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// Controlador de audio del duelo (singleton). Reproduce la música de fondo y un efecto
-/// por cada acción, leyendo los clips de <see cref="DuelAudioBank"/> ("Resources/DuelAudioBank").
-/// Se auto-crea con <see cref="Ensure"/> y TODO es null-safe: sin banco o sin clip, no suena.
+/// Vocabulario de audio del duelo (invocar, atacar, fusionar...). Singleton que traduce
+/// cada acción a un AudioClip de <see cref="DuelAudioBank"/> ("Resources/DuelAudioBank")
+/// y delega la reproducción real en <see cref="GameAudio"/>, el motor persistente
+/// compartido por todas las escenas: así la música del duelo hereda el fundido cruzado
+/// entre pistas y todos los efectos respetan los sliders de Música/Efectos de Opciones,
+/// igual que en el resto del juego. Se auto-crea con <see cref="Ensure"/> y TODO sigue
+/// siendo null-safe: sin banco o sin clip, no suena.
 ///
-/// Uso:
+/// Uso (sin cambios respecto a antes):
 ///   DuelAudio.Ensure();                       // arranca el sistema (una vez)
 ///   DuelAudio.Music();                        // música de fondo en bucle
 ///   DuelAudio.Play(DuelAudio.Sfx.Summon);     // un efecto puntual
@@ -26,12 +30,11 @@ public class DuelAudio : MonoBehaviour
     }
 
     [SerializeField] private DuelAudioBank bank;
-    private AudioSource _music;
-    private AudioSource _sfx;
 
     /// <summary>Crea el singleton si no existe (idempotente). Carga el banco de Resources.</summary>
     public static DuelAudio Ensure()
     {
+        GameAudio.EnsureExists(); // motor de música/efectos compartido por todo el juego
         if (Instance == null)
         {
             var go = new GameObject("DuelAudio");
@@ -45,17 +48,12 @@ public class DuelAudio : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         if (bank == null) bank = Resources.Load<DuelAudioBank>("DuelAudioBank");
-
-        _music = gameObject.AddComponent<AudioSource>();
-        _music.loop = true; _music.playOnAwake = false;
-        _sfx = gameObject.AddComponent<AudioSource>();
-        _sfx.playOnAwake = false;
     }
 
     void OnDestroy() { if (Instance == this) Instance = null; }
 
     // ── Música de fondo ─────────────────────────────────────────────────
-    /// <summary>Arranca la música de fondo (o el clip dado) en bucle.</summary>
+    /// <summary>Arranca la música de fondo (o el clip dado) en bucle, con fundido cruzado.</summary>
     public static void Music(AudioClip clip = null)
     { if (Instance != null) Instance.PlayMusic(clip); }
 
@@ -65,16 +63,13 @@ public class DuelAudio : MonoBehaviour
     public static void Defeat()
     { if (Instance != null && Instance.bank != null) Instance.PlayMusic(Instance.bank.defeatBgm); }
 
-    public static void StopMusic()
-    { if (Instance != null && Instance._music != null) Instance._music.Stop(); }
+    public static void StopMusic() => GameAudio.StopMusic();
 
     private void PlayMusic(AudioClip clip)
     {
         AudioClip c = clip != null ? clip : (bank != null ? bank.bgm : null);
-        if (c == null || _music == null) return;
-        _music.clip = c;
-        _music.volume = bank != null ? bank.bgmVolume : 0.5f;
-        _music.Play();
+        if (c == null) return;
+        GameAudio.PlayMusic(c, bank != null ? bank.bgmVolume : 0.5f);
     }
 
     // ── Efectos ─────────────────────────────────────────────────────────
@@ -84,9 +79,9 @@ public class DuelAudio : MonoBehaviour
 
     private void PlayOne(Sfx s)
     {
-        if (bank == null || _sfx == null) return;
+        if (bank == null) return;
         AudioClip c = Clip(s);
-        if (c != null) _sfx.PlayOneShot(c, bank.sfxVolume);
+        if (c != null) GameAudio.PlaySfx(c, bank.sfxVolume);
     }
 
     private AudioClip Clip(Sfx s) => s switch

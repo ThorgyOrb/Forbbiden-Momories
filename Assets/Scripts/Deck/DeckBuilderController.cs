@@ -176,8 +176,8 @@ public class DeckBuilderController : MonoBehaviour
         BuildFilterDropdowns();
         LoadDeckFromStore();
 
-        // Barra superior.
-        Wire(backButton, Back);
+        // Barra superior. El sonido de "Volver" va DENTRO de Back() (también suena con Escape).
+        WireBack(backButton, Back);
         Wire(saveButton, Save);
         Wire(newButton, NewDeck);
         Wire(exportButton, ExportDeck);
@@ -192,11 +192,11 @@ public class DeckBuilderController : MonoBehaviour
         WireCategory(catSpellButton, Category.Spell);
         WireCategory(catTrapButton, Category.Trap);
         WireCategory(catEquipButton, Category.Equip);
-        if (typeDropdown != null) typeDropdown.onValueChanged.AddListener(v => { _typeFilter = v - 1; _page = 0; RefreshCollection(); });
-        if (attributeDropdown != null) attributeDropdown.onValueChanged.AddListener(v => { _attrFilter = v - 1; _page = 0; RefreshCollection(); });
-        if (levelDropdown != null) levelDropdown.onValueChanged.AddListener(v => { _levelFilter = v; _page = 0; RefreshCollection(); });
-        if (rarityDropdown != null) rarityDropdown.onValueChanged.AddListener(v => { _rarityFilter = v - 1; _page = 0; RefreshCollection(); });
-        if (sortDropdown != null) sortDropdown.onValueChanged.AddListener(v => { _sort = v; _page = 0; RefreshCollection(); });
+        if (typeDropdown != null) typeDropdown.onValueChanged.AddListener(v => { GameAudio.Click(); _typeFilter = v - 1; _page = 0; RefreshCollection(); });
+        if (attributeDropdown != null) attributeDropdown.onValueChanged.AddListener(v => { GameAudio.Click(); _attrFilter = v - 1; _page = 0; RefreshCollection(); });
+        if (levelDropdown != null) levelDropdown.onValueChanged.AddListener(v => { GameAudio.Click(); _levelFilter = v; _page = 0; RefreshCollection(); });
+        if (rarityDropdown != null) rarityDropdown.onValueChanged.AddListener(v => { GameAudio.Click(); _rarityFilter = v - 1; _page = 0; RefreshCollection(); });
+        if (sortDropdown != null) sortDropdown.onValueChanged.AddListener(v => { GameAudio.Click(); _sort = v; _page = 0; RefreshCollection(); });
         Wire(clearFiltersButton, ClearFilters);
         Wire(prevPageButton, () => ChangePage(_page - 1));
         Wire(nextPageButton, () => ChangePage(_page + 1));
@@ -221,15 +221,15 @@ public class DeckBuilderController : MonoBehaviour
         Wire(deleteDeckButton, DeleteDeck);
         Wire(extraButton, () => SetStatus("Este modo no usa Extra Deck.", warn: true));
 
-        // Ajustes.
-        Wire(settingsCloseButton, () => ToggleSettings(false));
+        // Ajustes. El sonido de "cerrar" va DENTRO de ToggleSettings(false) (también suena con Escape).
+        WireBack(settingsCloseButton, () => ToggleSettings(false));
         Wire(resetDeckButton, ResetDeck);
 
         // Plantillas fuera de vista.
         if (collectionTemplate != null) collectionTemplate.gameObject.SetActive(false);
         if (deckRowTemplate != null) deckRowTemplate.gameObject.SetActive(false);
         if (pageButtonTemplate != null) pageButtonTemplate.gameObject.SetActive(false);
-        ToggleSettings(false);
+        if (settingsPanel != null) settingsPanel.SetActive(false); // estado inicial oculto SIN sonido (no es un "cancelar" real)
 
         RefreshDeckSlotDropdown();
         ShowMisDecks(false);
@@ -443,7 +443,10 @@ public class DeckBuilderController : MonoBehaviour
 
     private void WireCategory(Button b, Category cat)
     {
-        if (b != null) b.onClick.AddListener(() => SetCategory(cat));
+        if (b == null) return;
+        b.onClick.AddListener(() => SetCategory(cat));
+        b.onClick.AddListener(GameAudio.Click);
+        UIButtonSfx.HookHover(b.gameObject);
     }
 
     private void HighlightCategory()
@@ -619,6 +622,7 @@ public class DeckBuilderController : MonoBehaviour
                 var img = btn.GetComponent<Image>();
                 if (img != null) img.color = p == _page ? tabActiveColor : tabIdleColor;
                 btn.onClick.AddListener(() => ChangePage(page));
+                UIButtonSfx.Hook(btn);
             }
             _spawnedPages.Add(go);
         }
@@ -851,6 +855,7 @@ public class DeckBuilderController : MonoBehaviour
         int captured = index;
         rowGO.GetComponent<Button>().onClick.AddListener(() =>
         {
+            GameAudio.Click();
             OnDeckSlotChanged(captured);
             RefreshDeckSlotDropdown();
             ShowMisDecks(false);
@@ -882,6 +887,7 @@ public class DeckBuilderController : MonoBehaviour
         Stretch(delLbl);
         delGO.GetComponent<Button>().onClick.AddListener(() =>
         {
+            GameAudio.Click();
             DeckLibrary.SetActive(captured);
             LoadDeckFromStore();
             DeleteDeck();
@@ -1070,11 +1076,13 @@ public class DeckBuilderController : MonoBehaviour
     // ═══════════════════════════════════════════════════════════════════════
     private void ToggleSettings(bool show)
     {
+        if (!show) GameAudio.Back(); // cerrar el panel = cancelar
         if (settingsPanel != null) settingsPanel.SetActive(show);
     }
 
     private void Back()
     {
+        GameAudio.Back();
         if (_unsaved) SetStatus("Saliendo con cambios no guardados.", warn: true);
         GameNavigator.EnsureExists().ToMainMenu();
     }
@@ -1099,7 +1107,18 @@ public class DeckBuilderController : MonoBehaviour
 
     private static void Wire(Button b, UnityEngine.Events.UnityAction action)
     {
-        if (b != null) b.onClick.AddListener(action);
+        if (b == null) return;
+        b.onClick.AddListener(action);
+        b.onClick.AddListener(GameAudio.Click);
+        UIButtonSfx.HookHover(b.gameObject);
+    }
+
+    /// <summary>Como <see cref="Wire"/>, pero para acciones de "volver/cancelar" (sonido dedicado).</summary>
+    private static void WireBack(Button b, UnityEngine.Events.UnityAction action)
+    {
+        if (b == null) return;
+        b.onClick.AddListener(action);
+        UIButtonSfx.HookHover(b.gameObject);
     }
 
     private static void Set(TMP_Text t, string s) { if (t != null) t.text = s; }

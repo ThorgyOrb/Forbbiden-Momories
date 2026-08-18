@@ -63,7 +63,7 @@ public class LibraryCardSlot : MonoBehaviour
 
         var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
         // Pasamos nuestro propio RectTransform: es el punto de origen del vuelo de la carta.
-        entry.callback.AddListener((_) => _onClick?.Invoke(_entry, (RectTransform)transform));
+        entry.callback.AddListener((_) => { GameAudio.Click(); _onClick?.Invoke(_entry, (RectTransform)transform); });
         trigger.triggers.Add(entry);
     }
 }

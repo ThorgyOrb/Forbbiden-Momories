@@ -6653,7 +6653,7 @@ MonoBehaviour:
   storyScene: StoryScene
   freeDuelScene: FreeDuelScene
   deckBuilderScene: DeckBuilderScene
-  collectionScene: LibraryScene
+  collectionScene: LibraryGodsScene
 --- !u!4 &1843669349
 Transform:
   m_ObjectHideFlags: 0

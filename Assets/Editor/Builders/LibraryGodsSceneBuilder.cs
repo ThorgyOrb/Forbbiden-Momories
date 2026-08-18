@@ -108,9 +108,13 @@ public static class LibraryGodsSceneBuilder
         ringImg.fillMethod = Image.FillMethod.Radial360;
         ringImg.fillAmount = 0.55f;
 
-        // Buscador.
+        // Buscador (deja hueco a la derecha para el botón de volver).
         var search = MakeInputField(header, "Search", "Buscar carta...", out var searchField);
-        Place(search, new Vector2(0.75f, 0.2f), new Vector2(0.965f, 0.8f), Vector2.zero, Vector2.zero);
+        Place(search, new Vector2(0.75f, 0.2f), new Vector2(0.895f, 0.8f), Vector2.zero, Vector2.zero);
+
+        // Volver al menú.
+        var backBtn = MakeButton(header, "BtnBack", "‹ MENÚ", Violet, Bright);
+        Place(backBtn, new Vector2(0.905f, 0.2f), new Vector2(0.99f, 0.8f), Vector2.zero, Vector2.zero);
 
         // ═══════════════════════ TABS (solo sobre la grilla) ═══════════════════════
         // Las pestañas ocupan SOLO la columna central (alineadas con la grilla); así el
@@ -244,6 +248,7 @@ public static class LibraryGodsSceneBuilder
         var viewer = BuildModel3DViewer(root, out var model3DViewer);
 
         // ═══════════════════════ CABLEADO DEL CONTROLADOR ═══════════════════════
+        Set(ctrl, "backButton", backBtn);
         Set(ctrl, "gridContent", gridContent);
         Set(ctrl, "cardSlotPrefab", slotPrefab);
         Set(ctrl, "prevPageButton", prevBtn);
@@ -285,7 +290,7 @@ public static class LibraryGodsSceneBuilder
         Debug.Log($"LibraryGodsSceneBuilder: escena creada en {ScenePath}. Ábrela y dale Play.");
         EditorUtility.DisplayDialog("Library of the Gods",
             "Escena nueva creada en:\n" + ScenePath +
-            "\n\nEstilo plano con la paleta (placeholders para tu arte).\nBotón 'Ver modelo 3D' en el sidebar.", "OK");
+            "\n\nEstilo plano con la paleta (placeholders para tu arte).\nBotón 'Ver modelo 3D' en el panel derecho, botón '‹ MENÚ' junto al buscador.", "OK");
     }
 
     // ════════════════════════ Bloques de UI ════════════════════════

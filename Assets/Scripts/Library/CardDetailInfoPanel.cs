@@ -232,7 +232,9 @@ public class CardDetailInfoPanel : MonoBehaviour
         var tRT = (RectTransform)t.transform;
         Stretch(tRT, Vector2.zero, Vector2.zero);
 
-        go.GetComponent<Button>().onClick.AddListener(() => onClick());
+        var btn = go.GetComponent<Button>();
+        btn.onClick.AddListener(() => onClick());
+        UIButtonSfx.Hook(btn);
     }
 
     private void Divider()

@@ -48,6 +48,15 @@ public static class CardStyleKemet
         _                    => FrameCommon
     };
 
+    /// <summary>Color de MARCO según la rareza (el mismo mapeo que el borde de la carta).</summary>
+    public static Color FrameColorFor(CardRarity rarity) => rarity switch
+    {
+        CardRarity.Rare      => FrameRare,
+        CardRarity.Epic      => FrameEpic,
+        CardRarity.Legendary => FrameLegendary,
+        _                    => FrameCommon
+    };
+
     // ── Cuerpo (CardBase) por CATEGORÍA: obsidiana por defecto (monstruo), magia/equipo
     //    verde y trampa rosa. La silueta del CardBase es blanca → el color la tiñe limpio.
     public static readonly Color BaseObsidian   = new Color(0.047f, 0.043f, 0.063f); // por defecto

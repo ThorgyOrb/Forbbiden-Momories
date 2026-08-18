@@ -34,6 +34,7 @@ public class LibraryManager : MonoBehaviour
 
     void Start()
     {
+        GameNavigator.EnsureExists();
         LibraryCatalog.EnsureLoaded();
 
         EnsureResponsive();

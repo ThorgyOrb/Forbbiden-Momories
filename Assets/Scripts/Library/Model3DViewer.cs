@@ -74,7 +74,8 @@ public class Model3DViewer : MonoBehaviour
 
         if (modelCamera != null) modelCamera.gameObject.SetActive(false);
 
-        if (closeButton != null) closeButton.onClick.AddListener(Hide);
+        // El sonido de cancelar va DENTRO de Hide(), no aquí, para cubrir también el backdrop.
+        if (closeButton != null) { closeButton.onClick.AddListener(Hide); UIButtonSfx.HookHover(closeButton.gameObject); }
         if (backdropButton != null) backdropButton.onClick.AddListener(Hide);
 
         SetupDragRotation();
@@ -138,6 +139,7 @@ public class Model3DViewer : MonoBehaviour
 
     public void Hide()
     {
+        GameAudio.Back();
         if (_animRoutine != null) StopCoroutine(_animRoutine);
         if (rootGroup != null) rootGroup.interactable = false;
         _animRoutine = StartCoroutine(PlayCloseAnimation());

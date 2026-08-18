@@ -45,6 +45,7 @@ public class GameNavigator : MonoBehaviour
         // Garantiza que los managers globales estén vivos desde el arranque.
         SettingsManager.EnsureExists();
         PlayerCollection.EnsureExists();
+        GameAudio.EnsureExists();
     }
 
     // ── Navegación ───────────────────────────────────────────────────────
